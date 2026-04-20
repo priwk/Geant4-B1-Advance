@@ -1,0 +1,11 @@
+/control/verbose 2
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+
+# 初始化
+/run/initialize
+
+# 一次给一个足够大的事件数即可。
+# 当输入 CSV 记录耗尽时，PrimaryGeneratorAction 会自动 AbortRun(true)。
+/run/beamOn 2000000

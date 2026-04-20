@@ -1,0 +1,25 @@
+file(REMOVE_RECURSE
+  "B1"
+  "B1.pdb"
+  "CMakeFiles/B1.dir/B1.cc.o"
+  "CMakeFiles/B1.dir/B1.cc.o.d"
+  "CMakeFiles/B1.dir/src/ActionInitialization.cc.o"
+  "CMakeFiles/B1.dir/src/ActionInitialization.cc.o.d"
+  "CMakeFiles/B1.dir/src/DetectorConstruction.cc.o"
+  "CMakeFiles/B1.dir/src/DetectorConstruction.cc.o.d"
+  "CMakeFiles/B1.dir/src/EventAction.cc.o"
+  "CMakeFiles/B1.dir/src/EventAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/PhysicsList.cc.o"
+  "CMakeFiles/B1.dir/src/PhysicsList.cc.o.d"
+  "CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o"
+  "CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/RunAction.cc.o"
+  "CMakeFiles/B1.dir/src/RunAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/SteppingAction.cc.o"
+  "CMakeFiles/B1.dir/src/SteppingAction.cc.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/B1.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

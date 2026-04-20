@@ -1,0 +1,51 @@
+# vis.mac
+# Visualization settings for BN/ZnS microstructure model
+
+# Open OpenGL viewer
+/vis/open OGL 900x900-0+0
+
+# Build scene
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+
+# Black background
+/vis/viewer/set/background 0 0 0
+
+# Draw geometry
+/vis/drawVolume
+
+# Surface style with hidden edges
+/vis/viewer/set/style surface
+/vis/viewer/set/hiddenEdge true
+/vis/viewer/set/lineSegmentsPerCircle 64
+
+# Initial viewpoint
+# 60/30 is a good oblique 3D view for microstructure
+/vis/viewer/set/viewpointThetaPhi 60 30
+
+# Strong zoom because the world is much larger than the microstructure patch
+/vis/viewer/zoom 1
+
+# Small axes suited to micron-scale geometry
+/vis/scene/add/axes 0 0 0 20 um
+
+# Store and draw trajectories
+/tracking/storeTrajectory 1
+/vis/scene/add/trajectories smooth
+
+# Distinguish alpha and Li7 by particle type, and show step points
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
+
+# Optional explicit colors
+/vis/modeling/trajectories/drawByParticleID-0/set alpha cyan
+/vis/modeling/trajectories/drawByParticleID-0/set Li7 yellow
+
+# Accumulate events in the same scene
+/vis/scene/endOfEventAction accumulate
+
+# Re-enable refresh
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+/vis/viewer/flush
