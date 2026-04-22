@@ -1,0 +1,14 @@
+/control/verbose 2
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+
+/cfg/setRunMode StageA_NeutronPatch
+/cfg/setWeightRatio 1 2
+
+/run/initialize
+/run/beamOn 100000
+
+/cfg/setWeightRatio 1 1
+/run/reinitializeGeometry
+/run/beamOn 100000

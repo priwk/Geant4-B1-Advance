@@ -242,6 +242,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/lib64/cmake/Qt6WidgetsTools/Qt6WidgetsToolsTargets.cmake"
   "/lib64/cmake/Qt6WidgetsTools/Qt6WidgetsToolsVersionlessTargets.cmake"
   "/mnt/hgfs/Shared/B2/CMakeLists.txt"
+  "/mnt/hgfs/Shared/B2/StageA.mac"
   "CMakeFiles/3.26.5/CMakeCCompiler.cmake"
   "CMakeFiles/3.26.5/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.26.5/CMakeSystem.cmake"
@@ -419,6 +420,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/3.26.5/CMakeCXXCompiler.cmake"
   "init_vis.mac"
   "vis.mac"
+  "StageA.mac"
   ".qt/QtDeploySupport.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )

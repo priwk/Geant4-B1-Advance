@@ -3,14 +3,19 @@
 
 #include "G4VUserActionInitialization.hh"
 
+class AnalysisConfig;
+
 class ActionInitialization : public G4VUserActionInitialization
 {
 public:
-  ActionInitialization();
+  explicit ActionInitialization(AnalysisConfig *config);
   ~ActionInitialization() override;
 
   void BuildForMaster() const override;
   void Build() const override;
+
+private:
+  AnalysisConfig *fConfig;
 };
 
 #endif

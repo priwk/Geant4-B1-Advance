@@ -1,7 +1,7 @@
 #include "PhysicsList.hh"
 
 #include "G4EmStandardPhysics_option4.hh"
-#include "G4OpticalPhysics.hh"
+//#include "G4OpticalPhysics.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #include "G4IonPhysics.hh"
@@ -17,7 +17,7 @@ PhysicsList::PhysicsList() : G4VModularPhysicsList()
   RegisterPhysics(new G4EmStandardPhysics_option4());
 
   // 2. 光学过程：闪烁发光（Scintillation）、切伦科夫辐射及光学传输（反射/折射/吸收）
-  RegisterPhysics(new G4OpticalPhysics());
+  //RegisterPhysics(new G4OpticalPhysics());
 
   // 3. 强子过程：高精度热中子物理（包含中子弹性散射、非弹性散射、捕获和裂变）
   RegisterPhysics(new G4HadronElasticPhysicsHP());

@@ -1,12 +1,19 @@
 #include "ActionInitialization.hh"
 
-#include "PrimaryGeneratorAction.hh"
-#include "RunAction.hh"
-#include "EventAction.hh"
-#include "SteppingAction.hh"
+#include "AnalysisConfig.hh"
 
-ActionInitialization::ActionInitialization()
-    : G4VUserActionInitialization()
+#include "ModePrimaryGeneratorAction.hh"
+#include "ModeRunAction.hh"
+#include "ModeEventAction.hh"
+#include "ModeSteppingAction.hh"
+#include "StageAStackingAction.hh"
+
+#include "G4Exception.hh"
+#include "G4ios.hh"
+
+ActionInitialization::ActionInitialization(AnalysisConfig *config)
+    : G4VUserActionInitialization(),
+      fConfig(config)
 {
 }
 
@@ -14,21 +21,49 @@ ActionInitialization::~ActionInitialization() = default;
 
 void ActionInitialization::BuildForMaster() const
 {
-  auto *runAction = new RunAction(nullptr);
+  if (fConfig == nullptr)
+  {
+    G4Exception("ActionInitialization::BuildForMaster",
+                "BNZS_ACT_000", FatalException,
+                "AnalysisConfig pointer is null.");
+    return;
+  }
+
+  auto *runAction = new ModeRunAction(fConfig);
   SetUserAction(runAction);
 }
 
 void ActionInitialization::Build() const
 {
-  auto *primaryAction = new PrimaryGeneratorAction();
+  if (fConfig == nullptr)
+  {
+    G4Exception("ActionInitialization::Build",
+                "BNZS_ACT_001", FatalException,
+                "AnalysisConfig pointer is null.");
+    return;
+  }
+
+  G4cout << "[ActionInitialization] Build dispatcher actions."
+         << " current runMode = "
+         << AnalysisConfig::RunModeName(fConfig->runMode)
+         << G4endl;
+
+  auto *primaryAction = new ModePrimaryGeneratorAction(fConfig);
   SetUserAction(primaryAction);
 
-  auto *runAction = new RunAction(primaryAction);
+  auto *runAction = new ModeRunAction(fConfig);
   SetUserAction(runAction);
 
-  auto *eventAction = new EventAction(runAction, primaryAction);
+  auto *eventAction = new ModeEventAction(runAction, primaryAction, fConfig);
   SetUserAction(eventAction);
 
-  auto *steppingAction = new SteppingAction(eventAction, primaryAction);
+  auto *steppingAction = new ModeSteppingAction(
+      runAction,
+      fConfig,
+      eventAction->GetStageBEventAction(),
+      primaryAction->GetStageBPrimaryAction());
   SetUserAction(steppingAction);
+
+  auto *stackingAction = new StageAStackingAction(fConfig);
+  SetUserAction(stackingAction);
 }

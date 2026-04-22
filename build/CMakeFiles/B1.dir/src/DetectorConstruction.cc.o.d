@@ -218,6 +218,7 @@ CMakeFiles/B1.dir/src/DetectorConstruction.cc.o: \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/ThreeVector.h \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/defs.h \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/ThreeVector.icc \
+ /mnt/hgfs/Shared/B2/include/AnalysisConfig.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4RunManager.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4Event.hh \
  /usr/include/c++/11/set /usr/include/c++/11/bits/stl_set.h \

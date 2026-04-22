@@ -222,6 +222,54 @@ src/ActionInitialization.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ActionInitialization.cc.s
 .PHONY : src/ActionInitialization.cc.s
 
+src/AnalysisConfig.o: src/AnalysisConfig.cc.o
+.PHONY : src/AnalysisConfig.o
+
+# target to build an object file
+src/AnalysisConfig.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisConfig.cc.o
+.PHONY : src/AnalysisConfig.cc.o
+
+src/AnalysisConfig.i: src/AnalysisConfig.cc.i
+.PHONY : src/AnalysisConfig.i
+
+# target to preprocess a source file
+src/AnalysisConfig.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisConfig.cc.i
+.PHONY : src/AnalysisConfig.cc.i
+
+src/AnalysisConfig.s: src/AnalysisConfig.cc.s
+.PHONY : src/AnalysisConfig.s
+
+# target to generate assembly for a file
+src/AnalysisConfig.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisConfig.cc.s
+.PHONY : src/AnalysisConfig.cc.s
+
+src/AnalysisMessenger.o: src/AnalysisMessenger.cc.o
+.PHONY : src/AnalysisMessenger.o
+
+# target to build an object file
+src/AnalysisMessenger.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o
+.PHONY : src/AnalysisMessenger.cc.o
+
+src/AnalysisMessenger.i: src/AnalysisMessenger.cc.i
+.PHONY : src/AnalysisMessenger.i
+
+# target to preprocess a source file
+src/AnalysisMessenger.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisMessenger.cc.i
+.PHONY : src/AnalysisMessenger.cc.i
+
+src/AnalysisMessenger.s: src/AnalysisMessenger.cc.s
+.PHONY : src/AnalysisMessenger.s
+
+# target to generate assembly for a file
+src/AnalysisMessenger.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/AnalysisMessenger.cc.s
+.PHONY : src/AnalysisMessenger.cc.s
+
 src/DetectorConstruction.o: src/DetectorConstruction.cc.o
 .PHONY : src/DetectorConstruction.o
 
@@ -269,6 +317,102 @@ src/EventAction.s: src/EventAction.cc.s
 src/EventAction.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/EventAction.cc.s
 .PHONY : src/EventAction.cc.s
+
+src/ModeEventAction.o: src/ModeEventAction.cc.o
+.PHONY : src/ModeEventAction.o
+
+# target to build an object file
+src/ModeEventAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeEventAction.cc.o
+.PHONY : src/ModeEventAction.cc.o
+
+src/ModeEventAction.i: src/ModeEventAction.cc.i
+.PHONY : src/ModeEventAction.i
+
+# target to preprocess a source file
+src/ModeEventAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeEventAction.cc.i
+.PHONY : src/ModeEventAction.cc.i
+
+src/ModeEventAction.s: src/ModeEventAction.cc.s
+.PHONY : src/ModeEventAction.s
+
+# target to generate assembly for a file
+src/ModeEventAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeEventAction.cc.s
+.PHONY : src/ModeEventAction.cc.s
+
+src/ModePrimaryGeneratorAction.o: src/ModePrimaryGeneratorAction.cc.o
+.PHONY : src/ModePrimaryGeneratorAction.o
+
+# target to build an object file
+src/ModePrimaryGeneratorAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o
+.PHONY : src/ModePrimaryGeneratorAction.cc.o
+
+src/ModePrimaryGeneratorAction.i: src/ModePrimaryGeneratorAction.cc.i
+.PHONY : src/ModePrimaryGeneratorAction.i
+
+# target to preprocess a source file
+src/ModePrimaryGeneratorAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.i
+.PHONY : src/ModePrimaryGeneratorAction.cc.i
+
+src/ModePrimaryGeneratorAction.s: src/ModePrimaryGeneratorAction.cc.s
+.PHONY : src/ModePrimaryGeneratorAction.s
+
+# target to generate assembly for a file
+src/ModePrimaryGeneratorAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.s
+.PHONY : src/ModePrimaryGeneratorAction.cc.s
+
+src/ModeRunAction.o: src/ModeRunAction.cc.o
+.PHONY : src/ModeRunAction.o
+
+# target to build an object file
+src/ModeRunAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeRunAction.cc.o
+.PHONY : src/ModeRunAction.cc.o
+
+src/ModeRunAction.i: src/ModeRunAction.cc.i
+.PHONY : src/ModeRunAction.i
+
+# target to preprocess a source file
+src/ModeRunAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeRunAction.cc.i
+.PHONY : src/ModeRunAction.cc.i
+
+src/ModeRunAction.s: src/ModeRunAction.cc.s
+.PHONY : src/ModeRunAction.s
+
+# target to generate assembly for a file
+src/ModeRunAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeRunAction.cc.s
+.PHONY : src/ModeRunAction.cc.s
+
+src/ModeSteppingAction.o: src/ModeSteppingAction.cc.o
+.PHONY : src/ModeSteppingAction.o
+
+# target to build an object file
+src/ModeSteppingAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o
+.PHONY : src/ModeSteppingAction.cc.o
+
+src/ModeSteppingAction.i: src/ModeSteppingAction.cc.i
+.PHONY : src/ModeSteppingAction.i
+
+# target to preprocess a source file
+src/ModeSteppingAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeSteppingAction.cc.i
+.PHONY : src/ModeSteppingAction.cc.i
+
+src/ModeSteppingAction.s: src/ModeSteppingAction.cc.s
+.PHONY : src/ModeSteppingAction.s
+
+# target to generate assembly for a file
+src/ModeSteppingAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/ModeSteppingAction.cc.s
+.PHONY : src/ModeSteppingAction.cc.s
 
 src/PhysicsList.o: src/PhysicsList.cc.o
 .PHONY : src/PhysicsList.o
@@ -342,6 +486,102 @@ src/RunAction.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/RunAction.cc.s
 .PHONY : src/RunAction.cc.s
 
+src/StageAPrimaryGeneratorAction.o: src/StageAPrimaryGeneratorAction.cc.o
+.PHONY : src/StageAPrimaryGeneratorAction.o
+
+# target to build an object file
+src/StageAPrimaryGeneratorAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o
+.PHONY : src/StageAPrimaryGeneratorAction.cc.o
+
+src/StageAPrimaryGeneratorAction.i: src/StageAPrimaryGeneratorAction.cc.i
+.PHONY : src/StageAPrimaryGeneratorAction.i
+
+# target to preprocess a source file
+src/StageAPrimaryGeneratorAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.i
+.PHONY : src/StageAPrimaryGeneratorAction.cc.i
+
+src/StageAPrimaryGeneratorAction.s: src/StageAPrimaryGeneratorAction.cc.s
+.PHONY : src/StageAPrimaryGeneratorAction.s
+
+# target to generate assembly for a file
+src/StageAPrimaryGeneratorAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.s
+.PHONY : src/StageAPrimaryGeneratorAction.cc.s
+
+src/StageARunAction.o: src/StageARunAction.cc.o
+.PHONY : src/StageARunAction.o
+
+# target to build an object file
+src/StageARunAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageARunAction.cc.o
+.PHONY : src/StageARunAction.cc.o
+
+src/StageARunAction.i: src/StageARunAction.cc.i
+.PHONY : src/StageARunAction.i
+
+# target to preprocess a source file
+src/StageARunAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageARunAction.cc.i
+.PHONY : src/StageARunAction.cc.i
+
+src/StageARunAction.s: src/StageARunAction.cc.s
+.PHONY : src/StageARunAction.s
+
+# target to generate assembly for a file
+src/StageARunAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageARunAction.cc.s
+.PHONY : src/StageARunAction.cc.s
+
+src/StageAStackingAction.o: src/StageAStackingAction.cc.o
+.PHONY : src/StageAStackingAction.o
+
+# target to build an object file
+src/StageAStackingAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAStackingAction.cc.o
+.PHONY : src/StageAStackingAction.cc.o
+
+src/StageAStackingAction.i: src/StageAStackingAction.cc.i
+.PHONY : src/StageAStackingAction.i
+
+# target to preprocess a source file
+src/StageAStackingAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAStackingAction.cc.i
+.PHONY : src/StageAStackingAction.cc.i
+
+src/StageAStackingAction.s: src/StageAStackingAction.cc.s
+.PHONY : src/StageAStackingAction.s
+
+# target to generate assembly for a file
+src/StageAStackingAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageAStackingAction.cc.s
+.PHONY : src/StageAStackingAction.cc.s
+
+src/StageASteppingAction.o: src/StageASteppingAction.cc.o
+.PHONY : src/StageASteppingAction.o
+
+# target to build an object file
+src/StageASteppingAction.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageASteppingAction.cc.o
+.PHONY : src/StageASteppingAction.cc.o
+
+src/StageASteppingAction.i: src/StageASteppingAction.cc.i
+.PHONY : src/StageASteppingAction.i
+
+# target to preprocess a source file
+src/StageASteppingAction.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageASteppingAction.cc.i
+.PHONY : src/StageASteppingAction.cc.i
+
+src/StageASteppingAction.s: src/StageASteppingAction.cc.s
+.PHONY : src/StageASteppingAction.s
+
+# target to generate assembly for a file
+src/StageASteppingAction.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/B1.dir/build.make CMakeFiles/B1.dir/src/StageASteppingAction.cc.s
+.PHONY : src/StageASteppingAction.cc.s
+
 src/SteppingAction.o: src/SteppingAction.cc.o
 .PHONY : src/SteppingAction.o
 
@@ -385,12 +625,30 @@ help:
 	@echo "... src/ActionInitialization.o"
 	@echo "... src/ActionInitialization.i"
 	@echo "... src/ActionInitialization.s"
+	@echo "... src/AnalysisConfig.o"
+	@echo "... src/AnalysisConfig.i"
+	@echo "... src/AnalysisConfig.s"
+	@echo "... src/AnalysisMessenger.o"
+	@echo "... src/AnalysisMessenger.i"
+	@echo "... src/AnalysisMessenger.s"
 	@echo "... src/DetectorConstruction.o"
 	@echo "... src/DetectorConstruction.i"
 	@echo "... src/DetectorConstruction.s"
 	@echo "... src/EventAction.o"
 	@echo "... src/EventAction.i"
 	@echo "... src/EventAction.s"
+	@echo "... src/ModeEventAction.o"
+	@echo "... src/ModeEventAction.i"
+	@echo "... src/ModeEventAction.s"
+	@echo "... src/ModePrimaryGeneratorAction.o"
+	@echo "... src/ModePrimaryGeneratorAction.i"
+	@echo "... src/ModePrimaryGeneratorAction.s"
+	@echo "... src/ModeRunAction.o"
+	@echo "... src/ModeRunAction.i"
+	@echo "... src/ModeRunAction.s"
+	@echo "... src/ModeSteppingAction.o"
+	@echo "... src/ModeSteppingAction.i"
+	@echo "... src/ModeSteppingAction.s"
 	@echo "... src/PhysicsList.o"
 	@echo "... src/PhysicsList.i"
 	@echo "... src/PhysicsList.s"
@@ -400,6 +658,18 @@ help:
 	@echo "... src/RunAction.o"
 	@echo "... src/RunAction.i"
 	@echo "... src/RunAction.s"
+	@echo "... src/StageAPrimaryGeneratorAction.o"
+	@echo "... src/StageAPrimaryGeneratorAction.i"
+	@echo "... src/StageAPrimaryGeneratorAction.s"
+	@echo "... src/StageARunAction.o"
+	@echo "... src/StageARunAction.i"
+	@echo "... src/StageARunAction.s"
+	@echo "... src/StageAStackingAction.o"
+	@echo "... src/StageAStackingAction.i"
+	@echo "... src/StageAStackingAction.s"
+	@echo "... src/StageASteppingAction.o"
+	@echo "... src/StageASteppingAction.i"
+	@echo "... src/StageASteppingAction.s"
 	@echo "... src/SteppingAction.o"
 	@echo "... src/SteppingAction.i"
 	@echo "... src/SteppingAction.s"

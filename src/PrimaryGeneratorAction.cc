@@ -1,5 +1,6 @@
 #include "PrimaryGeneratorAction.hh"
 
+#include "AnalysisConfig.hh"
 #include "DetectorConstruction.hh"
 
 #include "G4Event.hh"
@@ -142,8 +143,9 @@ namespace
 
 // --------------------------------------------------------------------
 
-PrimaryGeneratorAction::PrimaryGeneratorAction()
+PrimaryGeneratorAction::PrimaryGeneratorAction(AnalysisConfig *config)
     : G4VUserPrimaryGeneratorAction(),
+      fConfig(config),
       fParticleGun(nullptr),
       fInputFiles(),
       fCurrentFileIndex(0),
@@ -185,6 +187,12 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 std::vector<std::string> PrimaryGeneratorAction::FindInputCsvFiles() const
 {
+  // Priority 0: AnalysisConfig -> single explicit file
+  if (fConfig != nullptr && !fConfig->captureCsvPath.empty())
+  {
+    return {fConfig->captureCsvPath};
+  }
+
   // Priority 1: environment variable -> single explicit file
   const char *envPath = std::getenv("BNZS_INPUT_CSV");
   if (envPath && std::string(envPath).size() > 0)
@@ -427,11 +435,18 @@ void PrimaryGeneratorAction::InitializeInputStreaming()
       return;
     }
 
-    if (rec.thickness_um <= localT_um)
+    if (!IsInputThicknessCompatible(rec.thickness_um, localT_um))
     {
+      std::ostringstream oss;
+      oss << "Found thickness incompatible with local micro thickness in: " << path
+          << " (input thickness = " << rec.thickness_um
+          << " um, local patch thickness = " << localT_um
+          << " um, allowEqual = "
+          << (((fConfig == nullptr) ? true : fConfig->allowThicknessEqualLocalPatch) ? "true" : "false")
+          << ")";
       G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
                   "BNZS007", FatalException,
-                  ("Found thickness <= local micro thickness in: " + path).c_str());
+                  oss.str().c_str());
       return;
     }
   }
@@ -473,6 +488,25 @@ void PrimaryGeneratorAction::ConfigureDetectorFromInput()
   // Only set composition once from the first input record.
   det->SetWeightRatio(fFirstRecordForGeometry.bn_wt,
                       fFirstRecordForGeometry.zns_wt);
+}
+
+// --------------------------------------------------------------------
+
+G4bool PrimaryGeneratorAction::IsInputThicknessCompatible(
+    G4double thickness_um, G4double localT_um) const
+{
+  const G4double tol = 1.0e-12;
+
+  // 默认新行为：允许 thickness == local patch thickness
+  const G4bool allowEqual =
+      (fConfig == nullptr) ? true : fConfig->allowThicknessEqualLocalPatch;
+
+  if (allowEqual)
+  {
+    return (thickness_um + tol >= localT_um);
+  }
+
+  return (thickness_um > localT_um + tol);
 }
 
 // --------------------------------------------------------------------

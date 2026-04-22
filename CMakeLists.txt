@@ -46,6 +46,7 @@ target_link_libraries(B1 ${Geant4_LIBRARIES})
 set(B1_SCRIPTS
   init_vis.mac
   vis.mac
+  StageA.mac
   )
 
 foreach(_script ${B1_SCRIPTS})

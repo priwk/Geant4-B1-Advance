@@ -212,6 +212,7 @@ CMakeFiles/B1.dir/src/RunAction.cc.o: \
  /usr/include/c++/11/x86_64-redhat-linux/bits/basic_file.h \
  /usr/include/c++/11/x86_64-redhat-linux/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc \
+ /mnt/hgfs/Shared/B2/include/AnalysisConfig.hh \
  /mnt/hgfs/Shared/B2/include/PrimaryGeneratorAction.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VUserPrimaryGeneratorAction.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4ParticleGun.hh \

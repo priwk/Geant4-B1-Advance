@@ -9,11 +9,12 @@
 
 class G4Run;
 class PrimaryGeneratorAction;
+class AnalysisConfig;
 
 class RunAction : public G4UserRunAction
 {
 public:
-  explicit RunAction(const PrimaryGeneratorAction *primaryAction);
+  explicit RunAction(PrimaryGeneratorAction *primaryAction, AnalysisConfig *config = nullptr);
   ~RunAction() override;
 
   void BeginOfRunAction(const G4Run *) override;
@@ -36,6 +37,7 @@ private:
 
 private:
   const PrimaryGeneratorAction *fPrimaryAction;
+  AnalysisConfig *fConfig;
   std::ofstream fStepCsv;
   std::string fStepCsvPath;
 };

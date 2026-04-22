@@ -11,6 +11,7 @@
 #include <vector>
 
 class G4Event;
+class AnalysisConfig;
 
 struct CaptureRecord
 {
@@ -28,7 +29,7 @@ struct CaptureRecord
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-  PrimaryGeneratorAction();
+  explicit PrimaryGeneratorAction(AnalysisConfig *config = nullptr);
   ~PrimaryGeneratorAction() override;
 
   void GeneratePrimaries(G4Event *event) override;
@@ -54,6 +55,7 @@ private:
   G4bool ReadFirstValidRecordFromFile(const std::string &path, CaptureRecord &rec) const;
   G4bool ParseOneRecordLine(const std::string &line, CaptureRecord &rec) const;
   void ConfigureDetectorFromInput();
+  G4bool IsInputThicknessCompatible(G4double thickness_um, G4double localT_um) const;
 
   // ---- event classification ----
   std::string DetermineSurfaceMode(const CaptureRecord &rec) const;
@@ -79,6 +81,7 @@ private:
       G4bool useGroundStateBranch) const;
 
 private:
+  AnalysisConfig *fConfig;
   G4ParticleGun *fParticleGun;
 
   // ---- multi-file streaming state ----

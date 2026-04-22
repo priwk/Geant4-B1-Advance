@@ -11,11 +11,12 @@
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class G4Material;
+class AnalysisConfig;
 
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-  DetectorConstruction();
+  explicit DetectorConstruction(AnalysisConfig *config);
   ~DetectorConstruction() override;
 
   G4VPhysicalVolume *Construct() override;
@@ -51,6 +52,8 @@ public:
   const std::vector<G4ThreeVector> &GetSafeBNCenters() const { return fSafeBNCenters; }
   const std::vector<G4ThreeVector> &GetUsableZnSCandidateCenters() const { return fUsableZnSCandidateCenters; }
   const std::vector<G4ThreeVector> &GetPlacedZnSCenters() const { return fPlacedZnSCenters; }
+
+  const G4String &GetLoadedPlacementFile() const { return fLoadedPlacementFile; }
 
 private:
   void DefineMaterials();
@@ -102,6 +105,11 @@ private:
   std::vector<G4ThreeVector> fSafeBNCenters;
   std::vector<G4ThreeVector> fUsableZnSCandidateCenters;
   std::vector<G4ThreeVector> fPlacedZnSCenters;
+
+  // ---- shared analysis config ----
+  AnalysisConfig *fConfig;
+
+  G4String fLoadedPlacementFile;
 };
 
 #endif

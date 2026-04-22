@@ -1,4 +1,5 @@
 #include "DetectorConstruction.hh"
+#include "AnalysisConfig.hh"
 
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
@@ -46,6 +47,26 @@ namespace
     std::vector<G4ThreeVector> bnCenters;
     std::vector<G4ThreeVector> znsCenters;
   };
+
+  // --------------------------------------------------------------------
+  // Overall composition parts for the whole micro-patch
+  // Keep consistent with the homogeneous model:
+  //   solid  = BN + ZnS particles
+  //   binder = binder in matrix background
+  //   air    = void in matrix background
+  // --------------------------------------------------------------------
+  G4double gSolidPart = 64.0;
+  G4double gBinderPart = 14.4;
+  G4double gAirPart = 21.6;
+
+  inline G4double ComputeMatrixVoidFractionFromOverallParts()
+  {
+    const G4double bgPart = gBinderPart + gAirPart;
+    if (bgPart <= 0.0)
+      return 0.0;
+
+    return gAirPart / bgPart; // 21.6 / (14.4 + 21.6) = 0.60
+  }
 
   std::string Trim(const std::string &s)
   {
@@ -449,7 +470,7 @@ namespace
 
 // --------------------------------------------------------------------
 
-DetectorConstruction::DetectorConstruction()
+DetectorConstruction::DetectorConstruction(AnalysisConfig *config)
     : G4VUserDetectorConstruction(),
       fScreenThickness(125.0 * um),
       fMicroThickness(30.0 * um),
@@ -460,7 +481,7 @@ DetectorConstruction::DetectorConstruction()
       fZnSPitch(2.0 * um),
       fOverlapGap(0.01 * um),
       fSafeMarginXY(8.0 * um),
-      fVoidVolumeFraction(0.425),
+      fVoidVolumeFraction(ComputeMatrixVoidFractionFromOverallParts()),
       fBnWt(1.0),
       fZnsWt(2.0),
       fVacuumMaterial(nullptr),
@@ -471,8 +492,25 @@ DetectorConstruction::DetectorConstruction()
       fWorldLogical(nullptr),
       fMatrixLogical(nullptr),
       fBNLogical(nullptr),
-      fZnSLogical(nullptr)
+      fZnSLogical(nullptr),
+      fConfig(config),
+      fLoadedPlacementFile("")
 {
+  if (fConfig != nullptr)
+  {
+    fPatchXY = fConfig->patchXY_um * um;
+    fMicroThickness = fConfig->microThickness_um * um;
+    fBnWt = fConfig->bnWt;
+    fZnsWt = fConfig->znsWt;
+
+    G4cout << "[DetectorConstruction] AnalysisConfig attached:"
+           << " mode=" << AnalysisConfig::RunModeName(fConfig->runMode)
+           << " patchXY=" << fConfig->patchXY_um << " um"
+           << " microThickness=" << fConfig->microThickness_um << " um"
+           << " bnWt=" << fConfig->bnWt
+           << " znsWt=" << fConfig->znsWt
+           << G4endl;
+  }
 }
 
 // --------------------------------------------------------------------
@@ -782,6 +820,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   fUsableZnSCandidateCenters.clear();
   fPlacedZnSCenters.clear();
 
+  // ---- sync latest config before geometry construction ----
+  if (fConfig != nullptr)
+  {
+    fPatchXY = fConfig->patchXY_um * um;
+    fMicroThickness = fConfig->microThickness_um * um;
+    fBnWt = fConfig->bnWt;
+    fZnsWt = fConfig->znsWt;
+  }
+
   DefineMaterials();
 
   const G4double localThickness = GetEffectiveLocalThickness();
@@ -827,12 +874,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   // =========================================================
   // Load external placement file instead of generating packing internally
   // =========================================================
-  const std::string loadedPlacementFile = PickRandomPlacementFilePath(fBnWt, fZnsWt);
+  G4cout << "[DetectorConstruction] Using BN:ZnS weight ratio = "
+         << fBnWt << ":" << fZnsWt << G4endl;
+
+  fLoadedPlacementFile = PickRandomPlacementFilePath(fBnWt, fZnsWt);
 
   G4cout << "[DetectorConstruction] Loading placement file: "
-         << loadedPlacementFile << G4endl;
+         << fLoadedPlacementFile << G4endl;
 
-  PlacementData loaded = ReadPlacementCSV(loadedPlacementFile);
+  PlacementData loaded = ReadPlacementCSV(fLoadedPlacementFile);
 
   ValidatePlacementData(loaded,
                         fPatchXY,
@@ -982,7 +1032,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
           nullptr,
           G4ThreeVector(-pos.x(), -pos.y(), -pos.z()));
 
-      const G4double clipVol = CalculateClippedVolume(pos, fBNRadius, fPatchXY, localThickness);
+      const G4double clipVol = CalculateClippedVolume(pos, fZnSRadius, fPatchXY, localThickness);
 
       auto *clippedLV = new G4LogicalVolume(
           clippedSolid, fZnSMaterial, lvName);
@@ -1017,12 +1067,29 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   const G4double phiAchieved =
       (Vpatch > 0.0) ? (particleVolume / Vpatch) : 0.0;
 
+  const G4double targetTotalPart = gSolidPart + gBinderPart + gAirPart;
+
+  const G4double targetSolidFrac =
+      (targetTotalPart > 0.0) ? (gSolidPart / targetTotalPart) : 0.0;
+  const G4double targetBinderFrac =
+      (targetTotalPart > 0.0) ? (gBinderPart / targetTotalPart) : 0.0;
+  const G4double targetAirFrac =
+      (targetTotalPart > 0.0) ? (gAirPart / targetTotalPart) : 0.0;
+
+  // actual overall fractions in the whole patch
+  const G4double achievedSolidFrac = phiAchieved;
+  const G4double achievedBinderFrac = (1.0 - phiAchieved) * (1.0 - fVoidVolumeFraction);
+  const G4double achievedAirFrac = (1.0 - phiAchieved) * fVoidVolumeFraction;
+
   const G4double achievedBNToZnSMass =
-      (totalBNMass > 0.0) ? (totalBNMass / totalZnSMass) : 0.0;
+      (totalZnSMass > 0.0) ? (totalBNMass / totalZnSMass) : 0.0;
+
+  const G4double achievedZnSToBNMass =
+      (totalBNMass > 0.0) ? (totalZnSMass / totalBNMass) : 0.0;
 
   G4cout
       << "\n[DetectorConstruction] External placement loaded"
-      << "\n  placement file            = " << loadedPlacementFile
+      << "\n  placement file            = " << fLoadedPlacementFile
       << "\n  screen thickness          = " << fScreenThickness / um << " um"
       << "\n  local thickness           = " << localThickness / um << " um"
       << "\n  patch XY                  = " << fPatchXY / um << " um"
@@ -1041,7 +1108,14 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
       << "\n  achieved BN mass          = " << totalBNMass / g << " g"
       << "\n  achieved ZnS mass         = " << totalZnSMass / g << " g"
       << "\n  achieved BN/ZnS mass      = " << achievedBNToZnSMass
-      << "\n  phi achieved              = " << phiAchieved;
+      << "\n  achieved ZnS/BN mass      = " << achievedZnSToBNMass
+      << "\n  phi achieved              = " << phiAchieved
+      << "\n  [solid | binder | air] target   = "
+      << gSolidPart << " | " << gBinderPart << " | " << gAirPart
+      << "\n  [solid | binder | air] achieved = "
+      << 100.0 * achievedSolidFrac << " | "
+      << 100.0 * achievedBinderFrac << " | "
+      << 100.0 * achievedAirFrac;
 
   if (clippedBNCount > 0)
   {

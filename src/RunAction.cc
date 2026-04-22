@@ -1,5 +1,6 @@
 #include "RunAction.hh"
 
+#include "AnalysisConfig.hh"
 #include "PrimaryGeneratorAction.hh"
 
 #include "G4Run.hh"
@@ -14,11 +15,12 @@
 
 // --------------------------------------------------------------------
 
-RunAction::RunAction(const PrimaryGeneratorAction *primaryAction)
+RunAction::RunAction(PrimaryGeneratorAction *primaryAction, AnalysisConfig *config)
     : G4UserRunAction(),
       fPrimaryAction(primaryAction),
       fStepCsv(),
-      fStepCsvPath("")
+      fStepCsvPath(""),
+      fConfig(config)
 {
 }
 
