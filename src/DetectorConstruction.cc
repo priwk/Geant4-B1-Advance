@@ -56,8 +56,8 @@ namespace
   //   air    = void in matrix background
   // --------------------------------------------------------------------
   G4double gSolidPart = 64.0;
-  G4double gBinderPart = 14.4;
-  G4double gAirPart = 21.6;
+  G4double gBinderPart = 21.6;
+  G4double gAirPart = 14.4;
 
   inline G4double ComputeMatrixVoidFractionFromOverallParts()
   {
@@ -88,16 +88,24 @@ namespace
     return std::filesystem::current_path().parent_path() / "Input" / "placements";
   }
 
+  std::string WeightPartToTagString(double v)
+  {
+    const double rounded = std::round(v);
+    if (std::fabs(v - rounded) < 1.0e-9)
+    {
+      std::ostringstream oss;
+      oss << static_cast<long long>(rounded);
+      return oss.str();
+    }
+
+    std::ostringstream oss;
+    oss << v;
+    return oss.str();
+  }
+
   std::string MakeRatioFolderName(G4double bnWt, G4double znsWt)
   {
-    // 支持 1:1, 2:1, 1:2, 1:3
-    // 也兼容 1:1.5 -> 2-3, 1:2.5 -> 2-5 这类情况
-    const long long scale = 1000;
-
-    long long a = static_cast<long long>(std::llround(bnWt * scale));
-    long long b = static_cast<long long>(std::llround(znsWt * scale));
-
-    if (a <= 0 || b <= 0)
+    if (bnWt <= 0.0 || znsWt <= 0.0)
     {
       G4Exception("DetectorConstruction::Construct",
                   "BNZS201", FatalException,
@@ -105,11 +113,8 @@ namespace
       return "";
     }
 
-    const long long g = std::gcd(std::llabs(a), std::llabs(b));
-    a /= g;
-    b /= g;
-
-    return std::to_string(a) + "-" + std::to_string(b);
+    return WeightPartToTagString(bnWt) + "-" +
+           WeightPartToTagString(znsWt);
   }
 
   std::string PickRandomPlacementFilePath(G4double bnWt, G4double znsWt)

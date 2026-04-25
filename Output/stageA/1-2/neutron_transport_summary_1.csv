@@ -1,2 +1,4 @@
+# placement_file,"/mnt/hgfs/Shared/B2/Input/placements/1-2/placement_0.64_0010_1.csv"
+# placement_basename,"placement_0.64_0010_1.csv"
 run_id,run_mode,patch_xy_um,micro_thickness_um,bn_wt,zns_wt,incident_count,capture_count,total_track_length_um,sigma_eff_per_um,sigma_eff_per_cm,capture_probability
-0,StageA_NeutronPatch,50,30,1,2,20000,823,588003,0.00139965,13.9965,0.04115
+3,StageA_NeutronPatch,50,30,1,2,100000,3938,2.94292e+06,0.00133813,13.3813,0.03938

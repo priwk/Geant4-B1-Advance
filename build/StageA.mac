@@ -4,11 +4,27 @@
 /tracking/verbose 0
 
 /cfg/setRunMode StageA_NeutronPatch
-/cfg/setWeightRatio 1 2
+/cfg/setWeightRatio 2 1
 
 /run/initialize
 /run/beamOn 100000
 
 /cfg/setWeightRatio 1 1
+/run/reinitializeGeometry
+/run/beamOn 100000
+
+/cfg/setWeightRatio 1 1.5
+/run/reinitializeGeometry
+/run/beamOn 100000
+
+/cfg/setWeightRatio 1 2
+/run/reinitializeGeometry
+/run/beamOn 100000
+
+/cfg/setWeightRatio 1 2.5
+/run/reinitializeGeometry
+/run/beamOn 100000
+
+/cfg/setWeightRatio 1 3
 /run/reinitializeGeometry
 /run/beamOn 100000
