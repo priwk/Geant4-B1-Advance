@@ -1,6 +1,6 @@
 CMakeFiles/B1.dir/B1.cc.o: /mnt/hgfs/Shared/B2/B1.cc \
  /usr/include/stdc-predef.h \
- /mnt/hgfs/Shared/B2/include/DetectorConstruction.hh \
+ /mnt/hgfs/Shared/B2/include/core/DetectorConstruction.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VUserDetectorConstruction.hh \
  /usr/local/geant4.11.4.0/include/Geant4/globals.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4ios.hh \
@@ -217,10 +217,10 @@ CMakeFiles/B1.dir/B1.cc.o: /mnt/hgfs/Shared/B2/B1.cc \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/ThreeVector.h \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/defs.h \
  /usr/local/clhep/2.4.7.2/include/CLHEP/Vector/ThreeVector.icc \
- /mnt/hgfs/Shared/B2/include/ActionInitialization.hh \
+ /mnt/hgfs/Shared/B2/include/core/ActionInitialization.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VUserActionInitialization.hh \
- /mnt/hgfs/Shared/B2/include/AnalysisConfig.hh \
- /mnt/hgfs/Shared/B2/include/AnalysisMessenger.hh \
+ /mnt/hgfs/Shared/B2/include/core/AnalysisConfig.hh \
+ /mnt/hgfs/Shared/B2/include/core/AnalysisMessenger.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4UImessenger.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4UIdirectory.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4UIcommand.hh \
@@ -639,7 +639,7 @@ CMakeFiles/B1.dir/B1.cc.o: /mnt/hgfs/Shared/B2/B1.cc \
  /usr/local/geant4.11.4.0/include/Geant4/G4UIbatch.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4UIExecutive.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VUIshell.hh \
- /mnt/hgfs/Shared/B2/include/PhysicsList.hh \
+ /mnt/hgfs/Shared/B2/include/core/PhysicsList.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VUserPhysicsList.hh \
  /usr/local/geant4.11.4.0/include/Geant4/G4VModularPhysicsList.hh \
  /usr/local/geant4.11.4.0/include/Geant4/Randomize.hh

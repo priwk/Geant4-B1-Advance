@@ -1,0 +1,44 @@
+
+**************************************************************
+ Geant4 version Name: geant4-11-04 [MT]   (5-December-2025)
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+[B1] AnalysisConfig initialized: runMode=StageA_NeutronPatch patchXY=50 um microThickness=30 um bnWt=1 znsWt=2
+[DetectorConstruction] AnalysisConfig attached: mode=StageA_NeutronPatch patchXY=50 um microThickness=30 um bnWt=1 znsWt=2
+[ActionInitialization] Build dispatcher actions. current runMode = StageA_NeutronPatch
+[StageAPrimaryGeneratorAction] Initialized: particle=neutron energy=0.0253 eV direction=(0,0,-1)
+[ModePrimaryGeneratorAction] Dispatcher initialized. current runMode = StageA_NeutronPatch
+[ModeRunAction] Dispatcher initialized. current runMode = StageA_NeutronPatch
+[ModeEventAction] Dispatcher initialized. current runMode = StageA_NeutronPatch
+[ModeSteppingAction] Dispatcher initialized. current runMode = StageA_NeutronPatch
+[StageAStackingAction] Initialized: secondary neutrons are kept; non-neutron secondaries are killed in Stage A
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/cfg/setRunMode StageA_NeutronPatch
+[AnalysisMessenger] runMode set to StageA_NeutronPatch
+/cfg/setWeightRatio 1 3
+[AnalysisMessenger] weight ratio set to BN:ZnS = 1:3
+/cfg/setPlacementFile /mnt/hgfs/Shared/B2/Input/placements/1-3/placement_f_0.64_0024.csv
+[AnalysisMessenger] placementFilePath set to /mnt/hgfs/Shared/B2/Input/placements/1-3/placement_f_0.64_0024.csv ; useRandomPlacement=false
+/run/initialize
+[DetectorConstruction] Using BN:ZnS weight ratio = 1:3
+[DetectorConstruction] Loading placement file: /mnt/hgfs/Shared/B2/Input/placements/1-3/placement_f_0.64_0024.csv
+
+-------- EEEE ------- G4Exception-START -------- EEEE -------
+*** G4Exception : BNZS207
+      issued by : DetectorConstruction::Construct
+Overlap detected in placement CSV! Fast check failed.
+*** Fatal Exception *** core dump ***
+ **** Track information is not available at this moment
+ **** Step information is not available at this moment
+
+-------- EEEE -------- G4Exception-END --------- EEEE -------
+
+
+*** G4Exception: Aborting execution ***

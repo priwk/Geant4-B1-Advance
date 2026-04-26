@@ -83,286 +83,286 @@ CMakeFiles/B1.dir/B1.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/B1.cc.s"
 	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/B1.cc -o CMakeFiles/B1.dir/B1.cc.s
 
-CMakeFiles/B1.dir/src/ActionInitialization.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/ActionInitialization.cc.o: /mnt/hgfs/Shared/B2/src/ActionInitialization.cc
-CMakeFiles/B1.dir/src/ActionInitialization.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/B1.dir/src/ActionInitialization.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/ActionInitialization.cc.o -MF CMakeFiles/B1.dir/src/ActionInitialization.cc.o.d -o CMakeFiles/B1.dir/src/ActionInitialization.cc.o -c /mnt/hgfs/Shared/B2/src/ActionInitialization.cc
+CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o: /mnt/hgfs/Shared/B2/src/core/ActionInitialization.cc
+CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o -MF CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o.d -o CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o -c /mnt/hgfs/Shared/B2/src/core/ActionInitialization.cc
 
-CMakeFiles/B1.dir/src/ActionInitialization.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/ActionInitialization.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/ActionInitialization.cc > CMakeFiles/B1.dir/src/ActionInitialization.cc.i
+CMakeFiles/B1.dir/src/core/ActionInitialization.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/core/ActionInitialization.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/core/ActionInitialization.cc > CMakeFiles/B1.dir/src/core/ActionInitialization.cc.i
 
-CMakeFiles/B1.dir/src/ActionInitialization.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/ActionInitialization.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/ActionInitialization.cc -o CMakeFiles/B1.dir/src/ActionInitialization.cc.s
+CMakeFiles/B1.dir/src/core/ActionInitialization.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/core/ActionInitialization.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/core/ActionInitialization.cc -o CMakeFiles/B1.dir/src/core/ActionInitialization.cc.s
 
-CMakeFiles/B1.dir/src/AnalysisConfig.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/AnalysisConfig.cc.o: /mnt/hgfs/Shared/B2/src/AnalysisConfig.cc
-CMakeFiles/B1.dir/src/AnalysisConfig.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/B1.dir/src/AnalysisConfig.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/AnalysisConfig.cc.o -MF CMakeFiles/B1.dir/src/AnalysisConfig.cc.o.d -o CMakeFiles/B1.dir/src/AnalysisConfig.cc.o -c /mnt/hgfs/Shared/B2/src/AnalysisConfig.cc
+CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o: /mnt/hgfs/Shared/B2/src/core/AnalysisConfig.cc
+CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o -MF CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o.d -o CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o -c /mnt/hgfs/Shared/B2/src/core/AnalysisConfig.cc
 
-CMakeFiles/B1.dir/src/AnalysisConfig.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/AnalysisConfig.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/AnalysisConfig.cc > CMakeFiles/B1.dir/src/AnalysisConfig.cc.i
+CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/core/AnalysisConfig.cc > CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.i
 
-CMakeFiles/B1.dir/src/AnalysisConfig.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/AnalysisConfig.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/AnalysisConfig.cc -o CMakeFiles/B1.dir/src/AnalysisConfig.cc.s
+CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/core/AnalysisConfig.cc -o CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.s
 
-CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o: /mnt/hgfs/Shared/B2/src/AnalysisMessenger.cc
-CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o -MF CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o.d -o CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o -c /mnt/hgfs/Shared/B2/src/AnalysisMessenger.cc
+CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o: /mnt/hgfs/Shared/B2/src/core/AnalysisMessenger.cc
+CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o -MF CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o.d -o CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o -c /mnt/hgfs/Shared/B2/src/core/AnalysisMessenger.cc
 
-CMakeFiles/B1.dir/src/AnalysisMessenger.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/AnalysisMessenger.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/AnalysisMessenger.cc > CMakeFiles/B1.dir/src/AnalysisMessenger.cc.i
+CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/core/AnalysisMessenger.cc > CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.i
 
-CMakeFiles/B1.dir/src/AnalysisMessenger.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/AnalysisMessenger.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/AnalysisMessenger.cc -o CMakeFiles/B1.dir/src/AnalysisMessenger.cc.s
+CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/core/AnalysisMessenger.cc -o CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.s
 
-CMakeFiles/B1.dir/src/DetectorConstruction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/DetectorConstruction.cc.o: /mnt/hgfs/Shared/B2/src/DetectorConstruction.cc
-CMakeFiles/B1.dir/src/DetectorConstruction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/B1.dir/src/DetectorConstruction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/DetectorConstruction.cc.o -MF CMakeFiles/B1.dir/src/DetectorConstruction.cc.o.d -o CMakeFiles/B1.dir/src/DetectorConstruction.cc.o -c /mnt/hgfs/Shared/B2/src/DetectorConstruction.cc
+CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o: /mnt/hgfs/Shared/B2/src/core/DetectorConstruction.cc
+CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o -MF CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o.d -o CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o -c /mnt/hgfs/Shared/B2/src/core/DetectorConstruction.cc
 
-CMakeFiles/B1.dir/src/DetectorConstruction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/DetectorConstruction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/DetectorConstruction.cc > CMakeFiles/B1.dir/src/DetectorConstruction.cc.i
+CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/core/DetectorConstruction.cc > CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.i
 
-CMakeFiles/B1.dir/src/DetectorConstruction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/DetectorConstruction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/DetectorConstruction.cc -o CMakeFiles/B1.dir/src/DetectorConstruction.cc.s
+CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/core/DetectorConstruction.cc -o CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.s
 
-CMakeFiles/B1.dir/src/EventAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/EventAction.cc.o: /mnt/hgfs/Shared/B2/src/EventAction.cc
-CMakeFiles/B1.dir/src/EventAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/B1.dir/src/EventAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/EventAction.cc.o -MF CMakeFiles/B1.dir/src/EventAction.cc.o.d -o CMakeFiles/B1.dir/src/EventAction.cc.o -c /mnt/hgfs/Shared/B2/src/EventAction.cc
+CMakeFiles/B1.dir/src/core/PhysicsList.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/core/PhysicsList.cc.o: /mnt/hgfs/Shared/B2/src/core/PhysicsList.cc
+CMakeFiles/B1.dir/src/core/PhysicsList.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/B1.dir/src/core/PhysicsList.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/core/PhysicsList.cc.o -MF CMakeFiles/B1.dir/src/core/PhysicsList.cc.o.d -o CMakeFiles/B1.dir/src/core/PhysicsList.cc.o -c /mnt/hgfs/Shared/B2/src/core/PhysicsList.cc
 
-CMakeFiles/B1.dir/src/EventAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/EventAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/EventAction.cc > CMakeFiles/B1.dir/src/EventAction.cc.i
+CMakeFiles/B1.dir/src/core/PhysicsList.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/core/PhysicsList.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/core/PhysicsList.cc > CMakeFiles/B1.dir/src/core/PhysicsList.cc.i
 
-CMakeFiles/B1.dir/src/EventAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/EventAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/EventAction.cc -o CMakeFiles/B1.dir/src/EventAction.cc.s
+CMakeFiles/B1.dir/src/core/PhysicsList.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/core/PhysicsList.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/core/PhysicsList.cc -o CMakeFiles/B1.dir/src/core/PhysicsList.cc.s
 
-CMakeFiles/B1.dir/src/ModeEventAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/ModeEventAction.cc.o: /mnt/hgfs/Shared/B2/src/ModeEventAction.cc
-CMakeFiles/B1.dir/src/ModeEventAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/B1.dir/src/ModeEventAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/ModeEventAction.cc.o -MF CMakeFiles/B1.dir/src/ModeEventAction.cc.o.d -o CMakeFiles/B1.dir/src/ModeEventAction.cc.o -c /mnt/hgfs/Shared/B2/src/ModeEventAction.cc
+CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o: /mnt/hgfs/Shared/B2/src/modes/ModeEventAction.cc
+CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o -MF CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o.d -o CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o -c /mnt/hgfs/Shared/B2/src/modes/ModeEventAction.cc
 
-CMakeFiles/B1.dir/src/ModeEventAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/ModeEventAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/ModeEventAction.cc > CMakeFiles/B1.dir/src/ModeEventAction.cc.i
+CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/modes/ModeEventAction.cc > CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.i
 
-CMakeFiles/B1.dir/src/ModeEventAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/ModeEventAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/ModeEventAction.cc -o CMakeFiles/B1.dir/src/ModeEventAction.cc.s
+CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/modes/ModeEventAction.cc -o CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.s
 
-CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/ModePrimaryGeneratorAction.cc
-CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/ModePrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/modes/ModePrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/modes/ModePrimaryGeneratorAction.cc
 
-CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/ModePrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.i
+CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/modes/ModePrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.i
 
-CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/ModePrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.s
+CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/modes/ModePrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.s
 
-CMakeFiles/B1.dir/src/ModeRunAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/ModeRunAction.cc.o: /mnt/hgfs/Shared/B2/src/ModeRunAction.cc
-CMakeFiles/B1.dir/src/ModeRunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/B1.dir/src/ModeRunAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/ModeRunAction.cc.o -MF CMakeFiles/B1.dir/src/ModeRunAction.cc.o.d -o CMakeFiles/B1.dir/src/ModeRunAction.cc.o -c /mnt/hgfs/Shared/B2/src/ModeRunAction.cc
+CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o: /mnt/hgfs/Shared/B2/src/modes/ModeRunAction.cc
+CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o -MF CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o.d -o CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o -c /mnt/hgfs/Shared/B2/src/modes/ModeRunAction.cc
 
-CMakeFiles/B1.dir/src/ModeRunAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/ModeRunAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/ModeRunAction.cc > CMakeFiles/B1.dir/src/ModeRunAction.cc.i
+CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/modes/ModeRunAction.cc > CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.i
 
-CMakeFiles/B1.dir/src/ModeRunAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/ModeRunAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/ModeRunAction.cc -o CMakeFiles/B1.dir/src/ModeRunAction.cc.s
+CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/modes/ModeRunAction.cc -o CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.s
 
-CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/ModeSteppingAction.cc
-CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o -MF CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/ModeSteppingAction.cc
+CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/modes/ModeSteppingAction.cc
+CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o -MF CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/modes/ModeSteppingAction.cc
 
-CMakeFiles/B1.dir/src/ModeSteppingAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/ModeSteppingAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/ModeSteppingAction.cc > CMakeFiles/B1.dir/src/ModeSteppingAction.cc.i
+CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/modes/ModeSteppingAction.cc > CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.i
 
-CMakeFiles/B1.dir/src/ModeSteppingAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/ModeSteppingAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/ModeSteppingAction.cc -o CMakeFiles/B1.dir/src/ModeSteppingAction.cc.s
+CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/modes/ModeSteppingAction.cc -o CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.s
 
-CMakeFiles/B1.dir/src/PhysicsList.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/PhysicsList.cc.o: /mnt/hgfs/Shared/B2/src/PhysicsList.cc
-CMakeFiles/B1.dir/src/PhysicsList.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/B1.dir/src/PhysicsList.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/PhysicsList.cc.o -MF CMakeFiles/B1.dir/src/PhysicsList.cc.o.d -o CMakeFiles/B1.dir/src/PhysicsList.cc.o -c /mnt/hgfs/Shared/B2/src/PhysicsList.cc
+CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/stageA/StageAPrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageA/StageAPrimaryGeneratorAction.cc
 
-CMakeFiles/B1.dir/src/PhysicsList.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/PhysicsList.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/PhysicsList.cc > CMakeFiles/B1.dir/src/PhysicsList.cc.i
+CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageA/StageAPrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.i
 
-CMakeFiles/B1.dir/src/PhysicsList.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/PhysicsList.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/PhysicsList.cc -o CMakeFiles/B1.dir/src/PhysicsList.cc.s
+CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageA/StageAPrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.s
 
-CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/PrimaryGeneratorAction.cc
-CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/PrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o: /mnt/hgfs/Shared/B2/src/stageA/StageARunAction.cc
+CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o -MF CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o.d -o CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageA/StageARunAction.cc
 
-CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/PrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.i
+CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageA/StageARunAction.cc > CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.i
 
-CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/PrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.s
+CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageA/StageARunAction.cc -o CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.s
 
-CMakeFiles/B1.dir/src/RunAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/RunAction.cc.o: /mnt/hgfs/Shared/B2/src/RunAction.cc
-CMakeFiles/B1.dir/src/RunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/B1.dir/src/RunAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/RunAction.cc.o -MF CMakeFiles/B1.dir/src/RunAction.cc.o.d -o CMakeFiles/B1.dir/src/RunAction.cc.o -c /mnt/hgfs/Shared/B2/src/RunAction.cc
+CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o: /mnt/hgfs/Shared/B2/src/stageA/StageAStackingAction.cc
+CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o -MF CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o.d -o CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageA/StageAStackingAction.cc
 
-CMakeFiles/B1.dir/src/RunAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/RunAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/RunAction.cc > CMakeFiles/B1.dir/src/RunAction.cc.i
+CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageA/StageAStackingAction.cc > CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.i
 
-CMakeFiles/B1.dir/src/RunAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/RunAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/RunAction.cc -o CMakeFiles/B1.dir/src/RunAction.cc.s
+CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageA/StageAStackingAction.cc -o CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.s
 
-CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/StageAPrimaryGeneratorAction.cc
-CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/StageAPrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/stageA/StageASteppingAction.cc
+CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o -MF CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageA/StageASteppingAction.cc
 
-CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/StageAPrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.i
+CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageA/StageASteppingAction.cc > CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.i
 
-CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/StageAPrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.s
+CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageA/StageASteppingAction.cc -o CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.s
 
-CMakeFiles/B1.dir/src/StageARunAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/StageARunAction.cc.o: /mnt/hgfs/Shared/B2/src/StageARunAction.cc
-CMakeFiles/B1.dir/src/StageARunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/B1.dir/src/StageARunAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/StageARunAction.cc.o -MF CMakeFiles/B1.dir/src/StageARunAction.cc.o.d -o CMakeFiles/B1.dir/src/StageARunAction.cc.o -c /mnt/hgfs/Shared/B2/src/StageARunAction.cc
+CMakeFiles/B1.dir/src/stageB/EventAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageB/EventAction.cc.o: /mnt/hgfs/Shared/B2/src/stageB/EventAction.cc
+CMakeFiles/B1.dir/src/stageB/EventAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/B1.dir/src/stageB/EventAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageB/EventAction.cc.o -MF CMakeFiles/B1.dir/src/stageB/EventAction.cc.o.d -o CMakeFiles/B1.dir/src/stageB/EventAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageB/EventAction.cc
 
-CMakeFiles/B1.dir/src/StageARunAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/StageARunAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/StageARunAction.cc > CMakeFiles/B1.dir/src/StageARunAction.cc.i
+CMakeFiles/B1.dir/src/stageB/EventAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageB/EventAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageB/EventAction.cc > CMakeFiles/B1.dir/src/stageB/EventAction.cc.i
 
-CMakeFiles/B1.dir/src/StageARunAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/StageARunAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/StageARunAction.cc -o CMakeFiles/B1.dir/src/StageARunAction.cc.s
+CMakeFiles/B1.dir/src/stageB/EventAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageB/EventAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageB/EventAction.cc -o CMakeFiles/B1.dir/src/stageB/EventAction.cc.s
 
-CMakeFiles/B1.dir/src/StageAStackingAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/StageAStackingAction.cc.o: /mnt/hgfs/Shared/B2/src/StageAStackingAction.cc
-CMakeFiles/B1.dir/src/StageAStackingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/B1.dir/src/StageAStackingAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/StageAStackingAction.cc.o -MF CMakeFiles/B1.dir/src/StageAStackingAction.cc.o.d -o CMakeFiles/B1.dir/src/StageAStackingAction.cc.o -c /mnt/hgfs/Shared/B2/src/StageAStackingAction.cc
+CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o: /mnt/hgfs/Shared/B2/src/stageB/PrimaryGeneratorAction.cc
+CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o -MF CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o.d -o CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageB/PrimaryGeneratorAction.cc
 
-CMakeFiles/B1.dir/src/StageAStackingAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/StageAStackingAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/StageAStackingAction.cc > CMakeFiles/B1.dir/src/StageAStackingAction.cc.i
+CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageB/PrimaryGeneratorAction.cc > CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.i
 
-CMakeFiles/B1.dir/src/StageAStackingAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/StageAStackingAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/StageAStackingAction.cc -o CMakeFiles/B1.dir/src/StageAStackingAction.cc.s
+CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageB/PrimaryGeneratorAction.cc -o CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.s
 
-CMakeFiles/B1.dir/src/StageASteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/StageASteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/StageASteppingAction.cc
-CMakeFiles/B1.dir/src/StageASteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/B1.dir/src/StageASteppingAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/StageASteppingAction.cc.o -MF CMakeFiles/B1.dir/src/StageASteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/StageASteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/StageASteppingAction.cc
+CMakeFiles/B1.dir/src/stageB/RunAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageB/RunAction.cc.o: /mnt/hgfs/Shared/B2/src/stageB/RunAction.cc
+CMakeFiles/B1.dir/src/stageB/RunAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/B1.dir/src/stageB/RunAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageB/RunAction.cc.o -MF CMakeFiles/B1.dir/src/stageB/RunAction.cc.o.d -o CMakeFiles/B1.dir/src/stageB/RunAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageB/RunAction.cc
 
-CMakeFiles/B1.dir/src/StageASteppingAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/StageASteppingAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/StageASteppingAction.cc > CMakeFiles/B1.dir/src/StageASteppingAction.cc.i
+CMakeFiles/B1.dir/src/stageB/RunAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageB/RunAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageB/RunAction.cc > CMakeFiles/B1.dir/src/stageB/RunAction.cc.i
 
-CMakeFiles/B1.dir/src/StageASteppingAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/StageASteppingAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/StageASteppingAction.cc -o CMakeFiles/B1.dir/src/StageASteppingAction.cc.s
+CMakeFiles/B1.dir/src/stageB/RunAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageB/RunAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageB/RunAction.cc -o CMakeFiles/B1.dir/src/stageB/RunAction.cc.s
 
-CMakeFiles/B1.dir/src/SteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
-CMakeFiles/B1.dir/src/SteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/SteppingAction.cc
-CMakeFiles/B1.dir/src/SteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/B1.dir/src/SteppingAction.cc.o"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/SteppingAction.cc.o -MF CMakeFiles/B1.dir/src/SteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/SteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/SteppingAction.cc
+CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o: CMakeFiles/B1.dir/flags.make
+CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o: /mnt/hgfs/Shared/B2/src/stageB/SteppingAction.cc
+CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o: CMakeFiles/B1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/hgfs/Shared/B2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o -MF CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o.d -o CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o -c /mnt/hgfs/Shared/B2/src/stageB/SteppingAction.cc
 
-CMakeFiles/B1.dir/src/SteppingAction.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/SteppingAction.cc.i"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/SteppingAction.cc > CMakeFiles/B1.dir/src/SteppingAction.cc.i
+CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.i"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/hgfs/Shared/B2/src/stageB/SteppingAction.cc > CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.i
 
-CMakeFiles/B1.dir/src/SteppingAction.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/SteppingAction.cc.s"
-	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/SteppingAction.cc -o CMakeFiles/B1.dir/src/SteppingAction.cc.s
+CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.s"
+	/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/hgfs/Shared/B2/src/stageB/SteppingAction.cc -o CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.s
 
 # Object files for target B1
 B1_OBJECTS = \
 "CMakeFiles/B1.dir/B1.cc.o" \
-"CMakeFiles/B1.dir/src/ActionInitialization.cc.o" \
-"CMakeFiles/B1.dir/src/AnalysisConfig.cc.o" \
-"CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o" \
-"CMakeFiles/B1.dir/src/DetectorConstruction.cc.o" \
-"CMakeFiles/B1.dir/src/EventAction.cc.o" \
-"CMakeFiles/B1.dir/src/ModeEventAction.cc.o" \
-"CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o" \
-"CMakeFiles/B1.dir/src/ModeRunAction.cc.o" \
-"CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o" \
-"CMakeFiles/B1.dir/src/PhysicsList.cc.o" \
-"CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o" \
-"CMakeFiles/B1.dir/src/RunAction.cc.o" \
-"CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o" \
-"CMakeFiles/B1.dir/src/StageARunAction.cc.o" \
-"CMakeFiles/B1.dir/src/StageAStackingAction.cc.o" \
-"CMakeFiles/B1.dir/src/StageASteppingAction.cc.o" \
-"CMakeFiles/B1.dir/src/SteppingAction.cc.o"
+"CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o" \
+"CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o" \
+"CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o" \
+"CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o" \
+"CMakeFiles/B1.dir/src/core/PhysicsList.cc.o" \
+"CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o" \
+"CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o" \
+"CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o" \
+"CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageB/EventAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageB/RunAction.cc.o" \
+"CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o"
 
 # External object files for target B1
 B1_EXTERNAL_OBJECTS =
 
 B1: CMakeFiles/B1.dir/B1.cc.o
-B1: CMakeFiles/B1.dir/src/ActionInitialization.cc.o
-B1: CMakeFiles/B1.dir/src/AnalysisConfig.cc.o
-B1: CMakeFiles/B1.dir/src/AnalysisMessenger.cc.o
-B1: CMakeFiles/B1.dir/src/DetectorConstruction.cc.o
-B1: CMakeFiles/B1.dir/src/EventAction.cc.o
-B1: CMakeFiles/B1.dir/src/ModeEventAction.cc.o
-B1: CMakeFiles/B1.dir/src/ModePrimaryGeneratorAction.cc.o
-B1: CMakeFiles/B1.dir/src/ModeRunAction.cc.o
-B1: CMakeFiles/B1.dir/src/ModeSteppingAction.cc.o
-B1: CMakeFiles/B1.dir/src/PhysicsList.cc.o
-B1: CMakeFiles/B1.dir/src/PrimaryGeneratorAction.cc.o
-B1: CMakeFiles/B1.dir/src/RunAction.cc.o
-B1: CMakeFiles/B1.dir/src/StageAPrimaryGeneratorAction.cc.o
-B1: CMakeFiles/B1.dir/src/StageARunAction.cc.o
-B1: CMakeFiles/B1.dir/src/StageAStackingAction.cc.o
-B1: CMakeFiles/B1.dir/src/StageASteppingAction.cc.o
-B1: CMakeFiles/B1.dir/src/SteppingAction.cc.o
+B1: CMakeFiles/B1.dir/src/core/ActionInitialization.cc.o
+B1: CMakeFiles/B1.dir/src/core/AnalysisConfig.cc.o
+B1: CMakeFiles/B1.dir/src/core/AnalysisMessenger.cc.o
+B1: CMakeFiles/B1.dir/src/core/DetectorConstruction.cc.o
+B1: CMakeFiles/B1.dir/src/core/PhysicsList.cc.o
+B1: CMakeFiles/B1.dir/src/modes/ModeEventAction.cc.o
+B1: CMakeFiles/B1.dir/src/modes/ModePrimaryGeneratorAction.cc.o
+B1: CMakeFiles/B1.dir/src/modes/ModeRunAction.cc.o
+B1: CMakeFiles/B1.dir/src/modes/ModeSteppingAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageA/StageAPrimaryGeneratorAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageA/StageARunAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageA/StageAStackingAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageA/StageASteppingAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageB/EventAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageB/PrimaryGeneratorAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageB/RunAction.cc.o
+B1: CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o
 B1: CMakeFiles/B1.dir/build.make
 B1: /usr/local/geant4.11.4.0/lib64/libG4Tree.so
 B1: /usr/local/geant4.11.4.0/lib64/libG4FR.so
