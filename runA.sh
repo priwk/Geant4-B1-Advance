@@ -3,4 +3,4 @@ mkdir build
 cd build
 cmake ..
 make
-./B1 StageA.mac
+./Geant4-MicroLight-BNZS StageA.mac

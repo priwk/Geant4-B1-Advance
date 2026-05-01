@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(B1)
+project(Geant4-MicroLight-BNZS)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -42,15 +42,16 @@ file(GLOB_RECURSE headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(B1 B1.cc ${sources} ${headers})
-target_link_libraries(B1 ${Geant4_LIBRARIES})
+set(BNZS_EXECUTABLE Geant4-MicroLight-BNZS)
+add_executable(${BNZS_EXECUTABLE} Geant4MicroLightBNZS.cc ${sources} ${headers})
+target_link_libraries(${BNZS_EXECUTABLE} ${Geant4_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
-# build B1. This is so that we can run the executable directly because it
+# build the executable. This is so that we can run it directly because it
 # relies on these scripts being in the current working directory.
 #
-set(B1_SCRIPTS
+set(BNZS_SCRIPTS
   init_vis.mac
   vis.mac
   StageA.mac
@@ -58,7 +59,7 @@ set(B1_SCRIPTS
   StageC_OpticalRVE.mac
   )
 
-foreach(_script ${B1_SCRIPTS})
+foreach(_script ${BNZS_SCRIPTS})
   configure_file(
     ${PROJECT_SOURCE_DIR}/${_script}
     ${PROJECT_BINARY_DIR}/${_script}
@@ -70,9 +71,9 @@ endforeach()
 # For internal Geant4 use - but has no effect if you build this
 #  standalone
 #
-#add_custom_target(B1 DEPENDS exampleB1)
+#add_custom_target(${BNZS_EXECUTABLE} DEPENDS exampleB1)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS B1 DESTINATION bin)
+install(TARGETS ${BNZS_EXECUTABLE} DESTINATION bin)

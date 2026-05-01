@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument(
         "--build-dir",
         default=None,
-        help="Build directory containing B1. Defaults to <project-root>/build.",
+        help="Build directory containing Geant4-MicroLight-BNZS. Defaults to <project-root>/build.",
     )
     parser.add_argument(
         "--source-dir",
@@ -76,12 +76,12 @@ def parse_args():
     parser.add_argument(
         "--run",
         action="store_true",
-        help="Actually execute B1 for each generated macro. Default only prints commands.",
+        help="Actually execute Geant4-MicroLight-BNZS for each generated macro. Default only prints commands.",
     )
     parser.add_argument(
         "--b1-name",
-        default="B1",
-        help="Executable name inside build-dir. Default: B1.",
+        default="Geant4-MicroLight-BNZS",
+        help="Executable name inside build-dir. Default: Geant4-MicroLight-BNZS.",
     )
     parser.add_argument(
         "--run-macro-coupling",

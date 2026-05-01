@@ -210,7 +210,11 @@ def main():
 
     project_root = Path(args.project_root).resolve() if args.project_root else Path(__file__).resolve().parent
     build_dir = Path(args.build_dir).resolve() if args.build_dir else project_root / "build"
-    executable = Path(args.executable).resolve() if args.executable else build_dir / "B1"
+    executable = (
+        Path(args.executable).resolve()
+        if args.executable
+        else build_dir / "Geant4-MicroLight-BNZS"
+    )
     macro = Path(args.macro).resolve() if args.macro else project_root / "run.mac"
 
     input_root = project_root / "Input" / "neutron_capture_positions"

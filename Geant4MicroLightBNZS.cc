@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   // 分析配置的 UI 命令入口：支持在 .mac 中用 /cfg/... 修改 runMode、captureCsvPath 等
   auto *analysisMessenger = new AnalysisMessenger(analysisConfig);
 
-  G4cout << "[B1] AnalysisConfig initialized:"
+  G4cout << "[Geant4-MicroLight-BNZS] AnalysisConfig initialized:"
          << " runMode=" << AnalysisConfig::RunModeName(analysisConfig->runMode)
          << " patchXY=" << analysisConfig->patchXY_um << " um"
          << " microThickness=" << analysisConfig->microThickness_um << " um"

@@ -1,4 +1,4 @@
-# Geant4-B1-Advance
+# Geant4-MicroLight-BNZS
 
 BN/ZnS 局部微结构 Geant4 模型。
 
@@ -197,7 +197,7 @@ python3 stageC_run_batch.py \
 Output/stageC_macros/<ratio_tag>/<thickness>/
 ```
 
-加上 `--run` 可对每个生成的宏执行 `build/B1`。
+加上 `--run` 可对每个生成的宏执行 `build/Geant4-MicroLight-BNZS`。
 加上 `--run-macro-coupling --l-att-um <value>`，
 可在所选排布运行结束后继续执行宏观耦合步骤。
 
@@ -250,7 +250,7 @@ bash batch_run.sh 1-2 1-3
 Input/placements/<ratio>/*.csv
 ```
 
-每次 `B1` 调用只使用一个固定排布和一个临时俘获分块，因此 Geant4 单次运行期间几何体不会变化。
+每次 `Geant4-MicroLight-BNZS` 调用只使用一个固定排布和一个临时俘获分块，因此 Geant4 单次运行期间几何体不会变化。
 默认回放倍数为 1。如果要在额外的旋转排布分配上重复回放同一批已打乱的俘获记录：
 
 ```bash
@@ -359,7 +359,7 @@ bash batch_run.sh 1-2 1-3
 4. 调用 `stageB_balanced_cycle.py`
 
 `stageB_balanced_cycle.py` 会把每个厚度的俘获记录打乱，再平均分配到同一配比目录下的多个排布文件，
-然后每次调用一次 `B1`，只使用一个固定排布和一个临时俘获分块。
+然后每次调用一次 `Geant4-MicroLight-BNZS`，只使用一个固定排布和一个临时俘获分块。
 
 常用的 `Stage B` 额外参数：
 
@@ -411,7 +411,7 @@ python3 stageB_balanced_cycle.py \
 - `--min-thickness-um`：跳过小于该值的厚度文件
 - `--keep-part-outputs`：保留分块输出，不只保留合并后的正式文件
 - `--merge-only`：只合并已有分块，不重新运行 Geant4
-- `--dry-run`：打印将执行的运行配置，不真正调用 `B1`
+- `--dry-run`：打印将执行的运行配置，不真正调用 `Geant4-MicroLight-BNZS`
 
 ### 2. 用新的 Stage B 输出重建 Stage C 源表
 

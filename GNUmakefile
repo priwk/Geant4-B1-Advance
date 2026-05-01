@@ -1,4 +1,4 @@
-name := B1
+name := Geant4-MicroLight-BNZS
 G4TARGET := $(name)
 G4EXLIB := true
 

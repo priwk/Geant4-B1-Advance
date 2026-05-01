@@ -3,4 +3,4 @@ mkdir build
 cd build
 cmake ..
 make
-./B1
+./Geant4-MicroLight-BNZS

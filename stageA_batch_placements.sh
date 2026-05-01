@@ -88,7 +88,7 @@ EOF
     BNZS_RUN_MODE=StageA_NeutronPatch \
       BNZS_PLACEMENT_FILE="$placement_rel" \
       BNZS_USE_RANDOM_PLACEMENT=0 \
-      ./B1 "$macro" > "$log" 2>&1
+      ./Geant4-MicroLight-BNZS "$macro" > "$log" 2>&1
   done
 
   echo "Summary: $summary"
