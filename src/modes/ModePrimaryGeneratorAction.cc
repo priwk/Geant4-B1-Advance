@@ -3,6 +3,7 @@
 #include "AnalysisConfig.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "StageAPrimaryGeneratorAction.hh"
+#include "StageCOpticalPrimaryGeneratorAction.hh"
 
 #include "G4Event.hh"
 #include "G4Exception.hh"
@@ -12,7 +13,8 @@ ModePrimaryGeneratorAction::ModePrimaryGeneratorAction(AnalysisConfig *config)
     : G4VUserPrimaryGeneratorAction(),
       fConfig(config),
       fStageBPrimary(nullptr),
-      fStageAPrimary(nullptr)
+      fStageAPrimary(nullptr),
+      fStageCPrimary(nullptr)
 {
     if (fConfig == nullptr)
     {
@@ -33,6 +35,10 @@ ModePrimaryGeneratorAction::ModePrimaryGeneratorAction(AnalysisConfig *config)
     {
         fStageBPrimary = new PrimaryGeneratorAction(fConfig);
     }
+    else if (fConfig->runMode == RunMode::StageC_OpticalRVE)
+    {
+        fStageCPrimary = new StageCOpticalPrimaryGeneratorAction(fConfig);
+    }
 
     G4cout << "[ModePrimaryGeneratorAction] Dispatcher initialized."
            << " current runMode = "
@@ -44,6 +50,7 @@ ModePrimaryGeneratorAction::~ModePrimaryGeneratorAction()
 {
     delete fStageAPrimary;
     delete fStageBPrimary;
+    delete fStageCPrimary;
 }
 
 void ModePrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
@@ -80,6 +87,14 @@ void ModePrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
                     "RunMode StageC_OpticalStub is selected, but Stage C primary generator is not implemented yet.");
         return;
 
+    case RunMode::StageC_OpticalRVE:
+        if (fStageCPrimary == nullptr)
+        {
+            fStageCPrimary = new StageCOpticalPrimaryGeneratorAction(fConfig);
+        }
+        fStageCPrimary->GeneratePrimaries(event);
+        return;
+
     default:
         G4Exception("ModePrimaryGeneratorAction::GeneratePrimaries",
                     "BNZS_MODE_PRI_006", FatalException,
@@ -91,4 +106,15 @@ void ModePrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
 PrimaryGeneratorAction *ModePrimaryGeneratorAction::GetStageBPrimaryAction() const
 {
     return fStageBPrimary;
+}
+
+StageCOpticalPrimaryGeneratorAction *ModePrimaryGeneratorAction::GetStageCPrimaryAction()
+{
+    if (fStageCPrimary == nullptr &&
+        fConfig != nullptr &&
+        fConfig->runMode == RunMode::StageC_OpticalRVE)
+    {
+        fStageCPrimary = new StageCOpticalPrimaryGeneratorAction(fConfig);
+    }
+    return fStageCPrimary;
 }

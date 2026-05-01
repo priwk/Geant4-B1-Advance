@@ -37,6 +37,12 @@ file(REMOVE_RECURSE
   "CMakeFiles/B1.dir/src/stageB/RunAction.cc.o.d"
   "CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o"
   "CMakeFiles/B1.dir/src/stageB/SteppingAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalPrimaryGeneratorAction.cc.o"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalPrimaryGeneratorAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalRunAction.cc.o"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalRunAction.cc.o.d"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalSteppingAction.cc.o"
+  "CMakeFiles/B1.dir/src/stageC/StageCOpticalSteppingAction.cc.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

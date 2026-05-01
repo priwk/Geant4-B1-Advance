@@ -159,6 +159,69 @@ namespace
            WeightPartToTagString(znsWt);
   }
 
+  std::filesystem::path ResolvePlacementPathForCurrentProject(const std::string &rawPath)
+  {
+    namespace fs = std::filesystem;
+
+    const fs::path input(rawPath);
+    std::error_code ec;
+
+    if (input.is_absolute() && fs::exists(input, ec))
+      return fs::weakly_canonical(input, ec);
+
+    if (fs::exists(input, ec))
+      return fs::weakly_canonical(input, ec);
+
+    const fs::path placementsRoot = MakePlacementRootDirectoryPath();
+    std::vector<fs::path> candidates;
+
+    const auto parts = input.lexically_normal();
+    if (!parts.empty())
+    {
+      std::vector<std::string> strings;
+      strings.reserve(std::distance(parts.begin(), parts.end()));
+      for (const auto &part : parts)
+      {
+        strings.push_back(part.string());
+      }
+
+      for (std::size_t i = 0; i + 1 < strings.size(); ++i)
+      {
+        if (strings[i] == "Input" && strings[i + 1] == "placements")
+        {
+          fs::path tail;
+          for (std::size_t j = i + 2; j < strings.size(); ++j)
+            tail /= strings[j];
+          if (!tail.empty())
+            candidates.push_back(placementsRoot / tail);
+          break;
+        }
+      }
+    }
+
+    if (!input.parent_path().filename().empty())
+      candidates.push_back(placementsRoot / input.parent_path().filename() / input.filename());
+
+    if (!input.filename().empty())
+    {
+      for (const auto &entry : fs::directory_iterator(placementsRoot, ec))
+      {
+        if (ec || !entry.is_directory())
+          continue;
+        candidates.push_back(entry.path() / input.filename());
+      }
+    }
+
+    for (const auto &candidate : candidates)
+    {
+      std::error_code existsEc;
+      if (fs::exists(candidate, existsEc) && !existsEc)
+        return fs::weakly_canonical(candidate, existsEc);
+    }
+
+    return input;
+  }
+
   std::string PickRandomPlacementFilePath(G4double bnWt, G4double znsWt)
   {
     namespace fs = std::filesystem;
@@ -219,12 +282,13 @@ namespace
   {
     PlacementData data;
 
-    std::ifstream fin(filePath.c_str(), std::ios::in);
+    const auto resolvedPath = ResolvePlacementPathForCurrentProject(filePath);
+    std::ifstream fin(resolvedPath.string().c_str(), std::ios::in);
     if (!fin.is_open())
     {
       G4Exception("DetectorConstruction::Construct",
                   "BNZS205", FatalException,
-                  ("Failed to open placement CSV: " + filePath).c_str());
+                  ("Failed to open placement CSV: " + resolvedPath.string()).c_str());
       return data;
     }
 
@@ -302,7 +366,7 @@ namespace
     {
       G4Exception("DetectorConstruction::Construct",
                   "BNZS207", FatalException,
-                  ("Placement CSV is empty: " + filePath).c_str());
+                  ("Placement CSV is empty: " + resolvedPath.string()).c_str());
       return data;
     }
 
@@ -539,6 +603,7 @@ DetectorConstruction::DetectorConstruction(AnalysisConfig *config)
       fZnSLogical(nullptr),
       fConfig(config),
       fLoadedPlacementFile(""),
+      fLoadedPlacementFileForRecord(""),
       fLoadedPlacementSeedBase("")
 {
   if (fConfig != nullptr)
@@ -772,9 +837,10 @@ void DetectorConstruction::DefineMaterials()
   // ---------------------------------------------------------
   // 2. 基质/空气孔隙混合物 (Binder + Voids Matrix)
   // ---------------------------------------------------------
-  // 假设树脂基质的折射率约为 1.5，吸收长度设置为 1 米（假设其相对透明）
-  G4double rindexMatrix[] = {1.5, 1.5, 1.5};
-  G4double absMatrix[] = {1.0 * m, 1.0 * m, 1.0 * m};
+  const G4double matrixRIndex = fConfig ? fConfig->opticalMatrixRIndex : 1.5;
+  const G4double matrixAbsLength = (fConfig ? fConfig->opticalMatrixAbsLengthUm : 1.0e6) * um;
+  G4double rindexMatrix[] = {matrixRIndex, matrixRIndex, matrixRIndex};
+  G4double absMatrix[] = {matrixAbsLength, matrixAbsLength, matrixAbsLength};
   auto *mptMatrix = new G4MaterialPropertiesTable();
   mptMatrix->AddProperty("RINDEX", photonEnergy, rindexMatrix, nEntries);
   mptMatrix->AddProperty("ABSLENGTH", photonEnergy, absMatrix, nEntries);
@@ -783,9 +849,10 @@ void DetectorConstruction::DefineMaterials()
   // ---------------------------------------------------------
   // 3. 氮化硼 (BN)
   // ---------------------------------------------------------
-  // 六方 BN 折射率较高，且对可见光吸收较强（不透明），吸收长度设短一点
-  G4double rindexBN[] = {2.1, 2.1, 2.1};
-  G4double absBN[] = {10.0 * um, 10.0 * um, 10.0 * um};
+  const G4double bnRIndex = fConfig ? fConfig->opticalBnRIndex : 2.1;
+  const G4double bnAbsLength = (fConfig ? fConfig->opticalBnAbsLengthUm : 10.0) * um;
+  G4double rindexBN[] = {bnRIndex, bnRIndex, bnRIndex};
+  G4double absBN[] = {bnAbsLength, bnAbsLength, bnAbsLength};
   auto *mptBN = new G4MaterialPropertiesTable();
   mptBN->AddProperty("RINDEX", photonEnergy, rindexBN, nEntries);
   mptBN->AddProperty("ABSLENGTH", photonEnergy, absBN, nEntries);
@@ -794,9 +861,10 @@ void DetectorConstruction::DefineMaterials()
   // ---------------------------------------------------------
   // 4. 闪烁体 (ZnS:Ag 0.1 wt%)
   // ---------------------------------------------------------
-  // ZnS 折射率极高 (~2.36)，微粉内部存在严重的自吸收和强散射
-  G4double rindexZnS[] = {2.36, 2.36, 2.36};
-  G4double absZnS[] = {50.0 * um, 50.0 * um, 50.0 * um};
+  const G4double znsRIndex = fConfig ? fConfig->opticalZnsRIndex : 2.36;
+  const G4double znsAbsLength = (fConfig ? fConfig->opticalZnsAbsLengthUm : 50.0) * um;
+  G4double rindexZnS[] = {znsRIndex, znsRIndex, znsRIndex};
+  G4double absZnS[] = {znsAbsLength, znsAbsLength, znsAbsLength};
 
   // 发光光谱相对强度 (在 2.75 eV 时达到峰值 1.0)
   G4double emissionZnS[] = {0.1, 1.0, 0.2};
@@ -822,6 +890,22 @@ void DetectorConstruction::DefineMaterials()
   mptZnS->AddConstProperty("SCINTILLATIONYIELD1", 1.0);
 
   fZnSMaterial->SetMaterialPropertiesTable(mptZnS);
+
+  if (fConfig != nullptr)
+  {
+    if (!fConfig->opticalParamsProvided && fConfig->runMode == RunMode::StageC_OpticalRVE)
+    {
+      G4cout << "[DetectorConstruction] Warning: Stage C optical parameters are using built-in placeholder defaults. "
+             << "Set /cfg/setOpticalParams matrix_n matrix_abs_um bn_n bn_abs_um zns_n zns_abs_um for physics runs."
+             << G4endl;
+    }
+
+    G4cout << "[DetectorConstruction] Optical params:"
+           << " matrix n/abs_um=" << matrixRIndex << "/" << matrixAbsLength / um
+           << " BN n/abs_um=" << bnRIndex << "/" << bnAbsLength / um
+           << " ZnS n/abs_um=" << znsRIndex << "/" << znsAbsLength / um
+           << G4endl;
+  }
 }
 
 // --------------------------------------------------------------------
@@ -927,7 +1011,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
       !fConfig->useRandomPlacement &&
       !fConfig->placementFilePath.empty())
   {
-    fLoadedPlacementFile = fConfig->placementFilePath;
+    fLoadedPlacementFile = ResolvePlacementPathForCurrentProject(fConfig->placementFilePath).string();
   }
   else
   {
@@ -936,6 +1020,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4cout << "[DetectorConstruction] Loading placement file: "
          << fLoadedPlacementFile << G4endl;
+
+  fLoadedPlacementFileForRecord = AnalysisConfig::PathForRecord(fLoadedPlacementFile);
 
   PlacementData loaded = ReadPlacementCSV(fLoadedPlacementFile);
   fLoadedPlacementSeedBase = loaded.seedBase.empty() ? "unknown" : loaded.seedBase;
@@ -1145,7 +1231,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4cout
       << "\n[DetectorConstruction] External placement loaded"
-      << "\n  placement file            = " << fLoadedPlacementFile
+      << "\n  placement file            = " << fLoadedPlacementFileForRecord
       << "\n  screen thickness          = " << fScreenThickness / um << " um"
       << "\n  local thickness           = " << localThickness / um << " um"
       << "\n  patch XY                  = " << fPatchXY / um << " um"

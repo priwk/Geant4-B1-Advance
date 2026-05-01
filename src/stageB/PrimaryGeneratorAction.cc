@@ -16,6 +16,7 @@
 #include "Randomize.hh"
 
 #include <algorithm>
+#include <cfloat>
 #include <cmath>
 #include <cstdlib>
 // #include <dirent.h>
@@ -61,15 +62,6 @@ namespace
         sinTheta * std::cos(phi),
         sinTheta * std::sin(phi),
         cosTheta);
-  }
-
-  G4double ClampValue(G4double x, G4double lo, G4double hi)
-  {
-    if (x < lo)
-      return lo;
-    if (x > hi)
-      return hi;
-    return x;
   }
 
   G4bool EndsWith(const std::string &s, const std::string &suffix)
@@ -136,8 +128,128 @@ namespace
       }
     }
 
-    std::sort(matches.begin(), matches.end());
+    auto thicknessTag = [](const std::string &path) -> G4double
+    {
+      const auto fileName = std::filesystem::path(path).filename().string();
+      const std::string key = "_neutron_capture_positions.csv";
+      const auto keyPos = fileName.find(key);
+      if (keyPos == std::string::npos)
+        return DBL_MAX;
+
+      try
+      {
+        return std::stod(fileName.substr(0, keyPos));
+      }
+      catch (...)
+      {
+        return DBL_MAX;
+      }
+    };
+
+    std::sort(matches.begin(), matches.end(),
+              [&](const std::string &a, const std::string &b)
+              {
+                const G4double ta = thicknessTag(a);
+                const G4double tb = thicknessTag(b);
+                if (std::abs(ta - tb) > 1.0e-12)
+                  return ta < tb;
+                return a < b;
+              });
     return matches;
+  }
+
+  std::string WeightPartToTagString(G4double v)
+  {
+    const G4double rounded = std::round(v);
+    if (std::fabs(v - rounded) < 1.0e-9)
+    {
+      std::ostringstream oss;
+      oss << static_cast<long long>(rounded);
+      return oss.str();
+    }
+
+    std::ostringstream oss;
+    oss << v;
+    return oss.str();
+  }
+
+  std::string MakeRatioFolderName(G4double bnWt, G4double znsWt)
+  {
+    return WeightPartToTagString(bnWt) + "-" + WeightPartToTagString(znsWt);
+  }
+
+  const G4double kXYMargin = 7.0 * um;
+  const G4double kZBulkMargin = 7.35 * um;
+
+  G4bool IsInsideSafeXY(const G4ThreeVector &p, const DetectorConstruction *det)
+  {
+    const G4double halfXY = 0.5 * det->GetPatchXYUm() * um;
+    return (std::abs(p.x()) <= halfXY - kXYMargin &&
+            std::abs(p.y()) <= halfXY - kXYMargin);
+  }
+
+  G4bool IsInsideBulkZWindow(const G4ThreeVector &p, const DetectorConstruction *det)
+  {
+    const G4double localT = det->GetEffectiveLocalThickness();
+    return (p.z() >= -0.5 * localT + kZBulkMargin &&
+            p.z() <= +0.5 * localT - kZBulkMargin);
+  }
+
+  G4bool IsBulkSphereFullyInSafeWindow(const G4ThreeVector &center,
+                                       G4double radius,
+                                       const DetectorConstruction *det)
+  {
+    const G4double halfXY = 0.5 * det->GetPatchXYUm() * um;
+    const G4double localT = det->GetEffectiveLocalThickness();
+
+    return (std::abs(center.x()) + radius <= halfXY - kXYMargin &&
+            std::abs(center.y()) + radius <= halfXY - kXYMargin &&
+            center.z() - radius >= -0.5 * localT + kZBulkMargin &&
+            center.z() + radius <= +0.5 * localT - kZBulkMargin);
+  }
+
+  G4bool IsBulkPointSafe(const G4ThreeVector &p, const DetectorConstruction *det)
+  {
+    return IsInsideSafeXY(p, det) && IsInsideBulkZWindow(p, det);
+  }
+
+  G4bool DoesSphereIntersectBulkSafeWindow(const G4ThreeVector &center,
+                                           G4double radius,
+                                           const DetectorConstruction *det)
+  {
+    const G4double safeHalfXY = 0.5 * det->GetPatchXYUm() * um - kXYMargin;
+    const G4double localT = det->GetEffectiveLocalThickness();
+    const G4double zMin = -0.5 * localT + kZBulkMargin;
+    const G4double zMax = +0.5 * localT - kZBulkMargin;
+
+    const G4double closestX = std::min(std::max(center.x(), -safeHalfXY), safeHalfXY);
+    const G4double closestY = std::min(std::max(center.y(), -safeHalfXY), safeHalfXY);
+    const G4double closestZ = std::min(std::max(center.z(), zMin), zMax);
+
+    const G4double dx = center.x() - closestX;
+    const G4double dy = center.y() - closestY;
+    const G4double dz = center.z() - closestZ;
+
+    return (dx * dx + dy * dy + dz * dz <= radius * radius);
+  }
+
+  G4bool IsSurfaceSliceSafelyInsideXY(const G4ThreeVector &center,
+                                      G4double diskRadius,
+                                      const DetectorConstruction *det)
+  {
+    const G4double halfXY = 0.5 * det->GetPatchXYUm() * um;
+    return (std::abs(center.x()) + diskRadius <= halfXY - kXYMargin &&
+            std::abs(center.y()) + diskRadius <= halfXY - kXYMargin);
+  }
+
+  G4bool DoesSurfaceSliceIntersectSafeXY(const G4ThreeVector &center,
+                                         G4double diskRadius,
+                                         const DetectorConstruction *det)
+  {
+    const G4double safeHalfXY = 0.5 * det->GetPatchXYUm() * um - kXYMargin;
+    const G4double dx = std::max(0.0, std::abs(center.x()) - safeHalfXY);
+    const G4double dy = std::max(0.0, std::abs(center.y()) - safeHalfXY);
+    return (dx * dx + dy * dy <= diskRadius * diskRadius);
   }
 }
 
@@ -202,12 +314,50 @@ std::vector<std::string> PrimaryGeneratorAction::FindInputCsvFiles() const
 
   namespace fs = std::filesystem;
 
-  // Priority 2: preferred new layout
+  // Priority 2: AnalysisConfig/env -> explicit ratio directory
+  std::string explicitDir;
+  if (fConfig != nullptr && !fConfig->captureInputDir.empty())
+  {
+    explicitDir = fConfig->captureInputDir;
+  }
+  else
+  {
+    const char *envDir = std::getenv("BNZS_INPUT_DIR");
+    if (envDir && std::string(envDir).size() > 0)
+    {
+      explicitDir = envDir;
+    }
+  }
+
+  if (!explicitDir.empty())
+  {
+    auto matches = CollectMatchingCsvFilesInDirectory(explicitDir);
+    if (matches.empty())
+    {
+      G4Exception("PrimaryGeneratorAction::FindInputCsvFiles",
+                  "BNZS001", FatalException,
+                  ("No *_neutron_capture_positions.csv found in explicit Stage B input directory: " + explicitDir).c_str());
+      return {};
+    }
+    return matches;
+  }
+
+  // Priority 3: preferred new layout, selected by current BN:ZnS ratio
   // ../Input/neutron_capture_positions/<ratio>/*.csv
   const fs::path captureRoot = MakeCaptureInputRootDirectoryPath();
 
   if (fs::exists(captureRoot) && fs::is_directory(captureRoot))
   {
+    if (fConfig != nullptr)
+    {
+      const fs::path ratioDir = captureRoot / MakeRatioFolderName(fConfig->bnWt, fConfig->znsWt);
+      auto matches = CollectMatchingCsvFilesInDirectory(ratioDir);
+      if (!matches.empty())
+      {
+        return matches;
+      }
+    }
+
     std::vector<fs::path> candidateRatioDirs;
 
     for (const auto &entry : fs::directory_iterator(captureRoot))
@@ -238,7 +388,7 @@ std::vector<std::string> PrimaryGeneratorAction::FindInputCsvFiles() const
       std::ostringstream oss;
       oss << "Multiple non-empty ratio folders found under "
           << captureRoot.string()
-          << ". Keep only one ratio folder for one run, or use BNZS_INPUT_CSV.";
+          << ". Set /cfg/setWeightRatio, /cfg/setCaptureDir, BNZS_INPUT_DIR, or BNZS_INPUT_CSV for one run.";
       G4Exception("PrimaryGeneratorAction::FindInputCsvFiles",
                   "BNZS001", FatalException,
                   oss.str().c_str());
@@ -246,7 +396,7 @@ std::vector<std::string> PrimaryGeneratorAction::FindInputCsvFiles() const
     }
   }
 
-  // Priority 3: backward compatibility
+  // Priority 4: backward compatibility
   // old flat layout: ../Input/*_neutron_capture_positions.csv
   const fs::path inputDir = MakeInputRootDirectoryPath();
   auto matches = CollectMatchingCsvFilesInDirectory(inputDir);
@@ -384,17 +534,55 @@ G4bool PrimaryGeneratorAction::ReadNextRecord(CaptureRecord &rec)
 
 void PrimaryGeneratorAction::InitializeInputStreaming()
 {
-  fInputFiles = FindInputCsvFiles();
+  const auto candidateInputFiles = FindInputCsvFiles();
+  fInputFiles.clear();
   fCurrentFileIndex = 0;
   fNoMoreInput = false;
   fTotalStreamedRecords = 0;
   fHasFirstRecordForGeometry = false;
 
-  if (fInputFiles.empty())
+  if (candidateInputFiles.empty())
   {
     G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
                 "BNZS003", FatalException,
                 "No input CSV files found.");
+    return;
+  }
+
+  const auto *det = dynamic_cast<const DetectorConstruction *>(
+      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+
+  const G4double localT_um = det ? det->GetEffectiveLocalThickness() / um : 30.0;
+
+  for (const auto &path : candidateInputFiles)
+  {
+    CaptureRecord rec;
+    if (!ReadFirstValidRecordFromFile(path, rec))
+    {
+      G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
+                  "BNZS005", FatalException,
+                  ("Failed to read first valid record from: " + path).c_str());
+      return;
+    }
+
+    if (!IsInputThicknessCompatible(rec.thickness_um, localT_um))
+    {
+      G4cout << "[PrimaryGeneratorAction] Skip input CSV thinner than local patch: "
+             << path
+             << " (input thickness = " << rec.thickness_um
+             << " um, local patch thickness = " << localT_um << " um)"
+             << G4endl;
+      continue;
+    }
+
+    fInputFiles.push_back(path);
+  }
+
+  if (fInputFiles.empty())
+  {
+    G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
+                "BNZS003", FatalException,
+                "No Stage B input CSV files are compatible with the local microstructure thickness.");
     return;
   }
 
@@ -409,11 +597,6 @@ void PrimaryGeneratorAction::InitializeInputStreaming()
 
   fFirstRecordForGeometry = refRec;
   fHasFirstRecordForGeometry = true;
-
-  const auto *det = dynamic_cast<const DetectorConstruction *>(
-      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
-  const G4double localT_um = det ? det->GetEffectiveLocalThickness() / um : 30.0;
 
   for (const auto &path : fInputFiles)
   {
@@ -432,21 +615,6 @@ void PrimaryGeneratorAction::InitializeInputStreaming()
       G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
                   "BNZS006", FatalException,
                   ("Mixed BN:ZnS ratios are not allowed across input files: " + path).c_str());
-      return;
-    }
-
-    if (!IsInputThicknessCompatible(rec.thickness_um, localT_um))
-    {
-      std::ostringstream oss;
-      oss << "Found thickness incompatible with local micro thickness in: " << path
-          << " (input thickness = " << rec.thickness_um
-          << " um, local patch thickness = " << localT_um
-          << " um, allowEqual = "
-          << (((fConfig == nullptr) ? true : fConfig->allowThicknessEqualLocalPatch) ? "true" : "false")
-          << ")";
-      G4Exception("PrimaryGeneratorAction::InitializeInputStreaming",
-                  "BNZS007", FatalException,
-                  oss.str().c_str());
       return;
     }
   }
@@ -553,22 +721,15 @@ G4double PrimaryGeneratorAction::DetermineTargetLocalZ(
     return -0.5 * localT + (rec.thickness_um - rec.depth_um) * um;
   }
 
-  // bulk: keep the relative ordering of depth, but clamp it away from both surfaces
-  const G4double zRaw = +0.5 * localT - rec.depth_um * um;
-
-  // choose a conservative "do not get too close to z-surfaces" margin
-  const G4double zSafeMargin = 7.0 * um; // can tune: 5~8 um
-  const G4double zMinSafe = -0.5 * localT + zSafeMargin;
-  const G4double zMaxSafe = +0.5 * localT - zSafeMargin;
-
-  return ClampValue(zRaw, zMinSafe, zMaxSafe);
+  // Bulk events keep depth_um only as macroscopic metadata.
+  // The local capture point is sampled later from the RVE bulk-safe BN volume.
+  return 0.0;
 }
 
 // --------------------------------------------------------------------
 
 G4bool PrimaryGeneratorAction::SelectBNSphereForTargetZ(
     G4double targetZ,
-    const std::string &mode,
     G4ThreeVector &chosenCenter,
     G4double &usedZ,
     G4bool &usedFallback) const
@@ -577,19 +738,15 @@ G4bool PrimaryGeneratorAction::SelectBNSphereForTargetZ(
       G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
   const G4double R = det->GetBNRadius();
-  const G4double eps = 1.0e-6 * um;
 
-  // first try safe BN centers
   auto trySelect = [&](const std::vector<G4ThreeVector> &centers,
+                       G4bool requireSafeXY,
                        G4ThreeVector &centerOut,
                        G4double &zOut,
                        G4bool &fallbackOut) -> G4bool
   {
     std::vector<G4int> candidateIdx;
     std::vector<G4double> weights;
-    std::vector<G4double> rxyList;
-
-    G4double maxRxy = 0.0;
 
     for (G4int i = 0; i < static_cast<G4int>(centers.size()); ++i)
     {
@@ -599,34 +756,25 @@ G4bool PrimaryGeneratorAction::SelectBNSphereForTargetZ(
         const G4double baseW = pi * (R * R - dz * dz);
         if (baseW > 0.0)
         {
-          const G4double rxy =
-              std::sqrt(centers[i].x() * centers[i].x() +
-                        centers[i].y() * centers[i].y());
+          const G4double diskR = std::sqrt(std::max(0.0, R * R - dz * dz));
+          if (requireSafeXY && !IsSurfaceSliceSafelyInsideXY(centers[i], diskR, det))
+          {
+            continue;
+          }
+
+          if (!requireSafeXY && !DoesSurfaceSliceIntersectSafeXY(centers[i], diskR, det))
+          {
+            continue;
+          }
 
           candidateIdx.push_back(i);
           weights.push_back(baseW);
-          rxyList.push_back(rxy);
-
-          if (rxy > maxRxy)
-            maxRxy = rxy;
         }
       }
     }
 
     if (!candidateIdx.empty())
     {
-      // For bulk events, favor BN spheres closer to XY center
-      if (mode == "bulk" && maxRxy > 0.0)
-      {
-        for (G4int k = 0; k < static_cast<G4int>(weights.size()); ++k)
-        {
-          const G4double x = rxyList[k] / maxRxy;  // 0 at center, 1 at outermost candidate
-          const G4double centrality = 1.0 - x * x; // larger near center
-          const G4double centralBoost = 0.25 + 0.75 * centrality;
-          weights[k] *= centralBoost;
-        }
-      }
-
       const G4double sumW = std::accumulate(weights.begin(), weights.end(), 0.0);
       G4double pick = G4UniformRand() * sumW;
 
@@ -637,58 +785,34 @@ G4bool PrimaryGeneratorAction::SelectBNSphereForTargetZ(
         {
           centerOut = centers[candidateIdx[k]];
           zOut = targetZ;
-          fallbackOut = false;
+          fallbackOut = !requireSafeXY;
           return true;
         }
       }
     }
 
-    if (centers.empty())
-      return false;
-
-    // fallback: nearest in z, and for bulk break ties toward smaller rxy
-    G4double bestScore = DBL_MAX;
-    G4int bestIdx = -1;
-
-    for (G4int i = 0; i < static_cast<G4int>(centers.size()); ++i)
-    {
-      const G4double dzAbs = std::abs(targetZ - centers[i].z());
-      const G4double rxy =
-          std::sqrt(centers[i].x() * centers[i].x() +
-                    centers[i].y() * centers[i].y());
-
-      G4double score = dzAbs;
-      if (mode == "bulk")
-      {
-        score += 0.05 * rxy; // light penalty for being far from XY center
-      }
-
-      if (score < bestScore)
-      {
-        bestScore = score;
-        bestIdx = i;
-      }
-    }
-
-    if (bestIdx < 0)
-      return false;
-
-    centerOut = centers[bestIdx];
-    zOut = ClampValue(targetZ,
-                      centerOut.z() - (R - eps),
-                      centerOut.z() + (R - eps));
-    fallbackOut = true;
-    return true;
+    return false;
   };
 
-  // first safe BN
-  if (trySelect(det->GetSafeBNCenters(), chosenCenter, usedZ, usedFallback))
+  // Prefer cross-section disks that remain well inside the RVE XY boundary.
+  if (trySelect(det->GetSafeBNCenters(), true, chosenCenter, usedZ, usedFallback))
   {
     return true;
   }
 
-  // then all BN
-  if (trySelect(det->GetPlacedBNCenters(), chosenCenter, usedZ, usedFallback))
+  if (trySelect(det->GetPlacedBNCenters(), true, chosenCenter, usedZ, usedFallback))
+  {
+    return true;
+  }
+
+  // Last resort: preserve the surface-depth mapping, but only if the slice
+  // intersects the XY safety window and a safe point can be rejection-sampled.
+  if (trySelect(det->GetSafeBNCenters(), false, chosenCenter, usedZ, usedFallback))
+  {
+    return true;
+  }
+
+  if (trySelect(det->GetPlacedBNCenters(), false, chosenCenter, usedZ, usedFallback))
   {
     return true;
   }
@@ -713,6 +837,136 @@ G4ThreeVector PrimaryGeneratorAction::SamplePointInSphereSlice(
   const G4double y = center.y() + r * std::sin(phi);
 
   return G4ThreeVector(x, y, zSlice);
+}
+
+// --------------------------------------------------------------------
+
+G4bool PrimaryGeneratorAction::SampleSafePointInSphereSlice(
+    const G4ThreeVector &center,
+    G4double zSlice,
+    G4double sphereRadius,
+    G4ThreeVector &point) const
+{
+  const auto *det = dynamic_cast<const DetectorConstruction *>(
+      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+
+  for (G4int trial = 0; trial < 4096; ++trial)
+  {
+    const G4ThreeVector p = SamplePointInSphereSlice(center, zSlice, sphereRadius);
+    if (IsInsideSafeXY(p, det))
+    {
+      point = p;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// --------------------------------------------------------------------
+
+G4ThreeVector PrimaryGeneratorAction::SamplePointInSphereVolume(
+    const G4ThreeVector &center,
+    G4double sphereRadius) const
+{
+  const G4double cosTheta = 2.0 * G4UniformRand() - 1.0;
+  const G4double sinTheta = std::sqrt(std::max(0.0, 1.0 - cosTheta * cosTheta));
+  const G4double phi = twopi * G4UniformRand();
+  const G4double r = sphereRadius * std::cbrt(G4UniformRand());
+
+  return center + G4ThreeVector(
+                      r * sinTheta * std::cos(phi),
+                      r * sinTheta * std::sin(phi),
+                      r * cosTheta);
+}
+
+// --------------------------------------------------------------------
+
+G4bool PrimaryGeneratorAction::SampleBulkCapturePoint(
+    G4ThreeVector &chosenCenter,
+    G4ThreeVector &capturePoint,
+    G4bool &usedFallback) const
+{
+  const auto *det = dynamic_cast<const DetectorConstruction *>(
+      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+
+  const G4double R = det->GetBNRadius();
+
+  auto collectFullySafeCenters = [&](const std::vector<G4ThreeVector> &centers)
+  {
+    std::vector<G4ThreeVector> out;
+    for (const auto &c : centers)
+    {
+      if (IsBulkSphereFullyInSafeWindow(c, R, det))
+      {
+        out.push_back(c);
+      }
+    }
+    return out;
+  };
+
+  auto chooseCenterUniformly = [](const std::vector<G4ThreeVector> &centers)
+  {
+    const G4int idx = std::min(
+        static_cast<G4int>(centers.size()) - 1,
+        static_cast<G4int>(G4UniformRand() * centers.size()));
+    return centers[idx];
+  };
+
+  auto safeCenters = collectFullySafeCenters(det->GetSafeBNCenters());
+  if (safeCenters.empty())
+  {
+    safeCenters = collectFullySafeCenters(det->GetPlacedBNCenters());
+  }
+
+  if (!safeCenters.empty())
+  {
+    chosenCenter = chooseCenterUniformly(safeCenters);
+    capturePoint = SamplePointInSphereVolume(chosenCenter, R);
+    usedFallback = false;
+    return true;
+  }
+
+  // Fallback for sparse/pathological placements: find a BN sphere that still
+  // contains at least one point in the safe bulk window, then rejection-sample.
+  std::vector<G4ThreeVector> candidateCenters;
+  for (const auto &c : det->GetSafeBNCenters())
+  {
+    if (DoesSphereIntersectBulkSafeWindow(c, R, det))
+    {
+      candidateCenters.push_back(c);
+    }
+  }
+
+  if (candidateCenters.empty())
+  {
+    for (const auto &c : det->GetPlacedBNCenters())
+    {
+      if (DoesSphereIntersectBulkSafeWindow(c, R, det))
+      {
+        candidateCenters.push_back(c);
+      }
+    }
+  }
+
+  if (candidateCenters.empty())
+  {
+    return false;
+  }
+
+  chosenCenter = chooseCenterUniformly(candidateCenters);
+  for (G4int trial = 0; trial < 4096; ++trial)
+  {
+    const G4ThreeVector p = SamplePointInSphereVolume(chosenCenter, R);
+    if (IsBulkPointSafe(p, det))
+    {
+      capturePoint = p;
+      usedFallback = true;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // --------------------------------------------------------------------
@@ -791,44 +1045,55 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
   fCurrentSurfaceMode = DetermineSurfaceMode(fCurrentRecord);
   fCurrentTargetLocalZ = DetermineTargetLocalZ(fCurrentRecord, fCurrentSurfaceMode);
 
-  // small z jitter to avoid over-discrete slicing
   const auto *det = dynamic_cast<const DetectorConstruction *>(
       G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
-  const G4double localT = det->GetEffectiveLocalThickness();
-  const G4double zJitter = 0.5 * um; // start small: 0.5 um
-
-  // do NOT jitter true surface events too much
-  if (fCurrentSurfaceMode == "bulk")
-  {
-    fCurrentTargetLocalZ += (2.0 * G4UniformRand() - 1.0) * zJitter;
-    fCurrentTargetLocalZ = ClampValue(
-        fCurrentTargetLocalZ,
-        -0.5 * localT + 1.0 * um,
-        +0.5 * localT - 1.0 * um);
-  }
 
   G4ThreeVector chosenCenter;
   G4double usedZ = 0.0;
   G4bool usedFallback = false;
 
-  if (!SelectBNSphereForTargetZ(
-          fCurrentTargetLocalZ,
-          fCurrentSurfaceMode,
-          chosenCenter,
-          usedZ,
-          usedFallback))
+  if (fCurrentSurfaceMode == "bulk")
   {
-    G4Exception("PrimaryGeneratorAction::GeneratePrimaries",
-                "BNZS008", FatalException,
-                "Failed to find any BN sphere for current capture event.");
-    return;
+    if (!SampleBulkCapturePoint(chosenCenter, fCurrentLocalCapturePosition, usedFallback))
+    {
+      G4Exception("PrimaryGeneratorAction::GeneratePrimaries",
+                  "BNZS008", FatalException,
+                  "Failed to sample a safe bulk BN capture point.");
+      return;
+    }
+
+    usedZ = fCurrentLocalCapturePosition.z();
+    fCurrentTargetLocalZ = usedZ;
+  }
+  else
+  {
+    if (!SelectBNSphereForTargetZ(
+            fCurrentTargetLocalZ,
+            chosenCenter,
+            usedZ,
+            usedFallback))
+    {
+      G4Exception("PrimaryGeneratorAction::GeneratePrimaries",
+                  "BNZS008", FatalException,
+                  "Failed to find any BN sphere for current surface capture event.");
+      return;
+    }
+
+    if (!SampleSafePointInSphereSlice(
+            chosenCenter,
+            usedZ,
+            det->GetBNRadius(),
+            fCurrentLocalCapturePosition))
+    {
+      G4Exception("PrimaryGeneratorAction::GeneratePrimaries",
+                  "BNZS010", FatalException,
+                  "Failed to sample a surface capture point inside the XY safety window.");
+      return;
+    }
   }
 
   fCurrentSelectedBNCenter = chosenCenter;
   fCurrentUsedLocalZ = usedZ;
-  fCurrentLocalCapturePosition = SamplePointInSphereSlice(
-      chosenCenter, usedZ, det->GetBNRadius());
 
   // choose branch
   const G4bool useGroundStateBranch = (G4UniformRand() < 0.063);

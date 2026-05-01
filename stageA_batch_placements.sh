@@ -8,6 +8,16 @@ OUTPUT_ROOT="$PROJECT_ROOT/Output/stageA"
 LOG_DIR="$PROJECT_ROOT/logs/stageA"
 EVENTS="${STAGEA_EVENTS:-100000}"
 
+project_relpath() {
+  python3 - "$PROJECT_ROOT" "$1" <<'PY'
+from pathlib import Path
+import sys
+root = Path(sys.argv[1]).resolve()
+target = Path(sys.argv[2]).resolve()
+print(target.relative_to(root).as_posix())
+PY
+}
+
 mkdir -p "$BUILD_DIR" "$LOG_DIR"
 
 echo "=== Build ==="
@@ -58,6 +68,7 @@ for ratio in "${ratios[@]}"; do
     base="$(basename "$placement")"
     macro="$BUILD_DIR/stageA_batch_current.mac"
     log="$LOG_DIR/${ratio}_${base%.*}.log"
+    placement_rel="$(project_relpath "$placement")"
 
     cat > "$macro" <<EOF
 /control/verbose 2
@@ -67,7 +78,7 @@ for ratio in "${ratios[@]}"; do
 
 /cfg/setRunMode StageA_NeutronPatch
 /cfg/setWeightRatio $bn_wt $zns_wt
-/cfg/setPlacementFile $placement
+/cfg/setPlacementFile $placement_rel
 
 /run/initialize
 /run/beamOn $EVENTS
@@ -75,7 +86,7 @@ EOF
 
     echo ">>> $ratio / $base"
     BNZS_RUN_MODE=StageA_NeutronPatch \
-      BNZS_PLACEMENT_FILE="$placement" \
+      BNZS_PLACEMENT_FILE="$placement_rel" \
       BNZS_USE_RANDOM_PLACEMENT=0 \
       ./B1 "$macro" > "$log" 2>&1
   done

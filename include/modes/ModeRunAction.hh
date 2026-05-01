@@ -8,6 +8,9 @@ class G4Run;
 class AnalysisConfig;
 class RunAction;
 class StageARunAction;
+class PrimaryGeneratorAction;
+class StageCOpticalPrimaryGeneratorAction;
+class StageCOpticalRunAction;
 
 class ModeRunAction : public G4UserRunAction
 {
@@ -21,12 +24,16 @@ public:
   // Accessors for later dispatcher layers
   RunAction *GetStageBRunAction() const;
   StageARunAction *GetStageARunAction() const;
+  StageCOpticalRunAction *GetStageCRunAction() const;
+  void SetStageBPrimaryAction(const PrimaryGeneratorAction *primaryAction);
+  void SetStageCPrimaryAction(const StageCOpticalPrimaryGeneratorAction *primaryAction);
 
 private:
   AnalysisConfig *fConfig;
 
   RunAction *fStageBRunAction;
   StageARunAction *fStageARunAction;
+  StageCOpticalRunAction *fStageCRunAction;
 };
 
 #endif

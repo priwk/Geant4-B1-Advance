@@ -96,6 +96,9 @@ void ModeEventAction::BeginOfEventAction(const G4Event *event)
                 "RunMode StageC_OpticalStub is selected, but Stage C event action is not implemented yet.");
     return;
 
+  case RunMode::StageC_OpticalRVE:
+    return;
+
   default:
     G4Exception("ModeEventAction::BeginOfEventAction",
                 "BNZS_MODE_EVT_007", FatalException,
@@ -135,6 +138,9 @@ void ModeEventAction::EndOfEventAction(const G4Event *event)
     G4Exception("ModeEventAction::EndOfEventAction",
                 "BNZS_MODE_EVT_010", FatalException,
                 "RunMode StageC_OpticalStub is selected, but Stage C event action is not implemented yet.");
+    return;
+
+  case RunMode::StageC_OpticalRVE:
     return;
 
   default:

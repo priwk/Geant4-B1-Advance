@@ -28,6 +28,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include/modes
   ${PROJECT_SOURCE_DIR}/include/stageA
   ${PROJECT_SOURCE_DIR}/include/stageB
+  ${PROJECT_SOURCE_DIR}/include/stageC
   )
 
 
@@ -53,6 +54,8 @@ set(B1_SCRIPTS
   init_vis.mac
   vis.mac
   StageA.mac
+  StageC_test.mac
+  StageC_OpticalRVE.mac
   )
 
 foreach(_script ${B1_SCRIPTS})
@@ -73,4 +76,3 @@ endforeach()
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS B1 DESTINATION bin)
-

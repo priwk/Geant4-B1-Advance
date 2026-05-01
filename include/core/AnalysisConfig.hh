@@ -1,13 +1,15 @@
 #ifndef AnalysisConfig_h
 #define AnalysisConfig_h 1
 
+#include <filesystem>
 #include <string>
 
 enum class RunMode
 {
   StageA_NeutronPatch,  // 固定 50x50x30 um^3 微结构 patch 做热中子等效化
   StageB_ReplayAlphaLi, // 读取 capture CSV，重放 alpha / Li7
-  StageC_OpticalStub    // 预留光学接口骨架
+  StageC_OpticalStub,   // 预留光学接口骨架
+  StageC_OpticalRVE     // 读取 ZnS step source，原位追踪 optical photon
 };
 
 class AnalysisConfig
@@ -17,6 +19,9 @@ public:
   ~AnalysisConfig();
 
   static const char *RunModeName(RunMode mode);
+  static std::filesystem::path ProjectRootPath();
+  static std::string PathForRecord(const std::filesystem::path &path);
+  static std::string PathForRecord(const std::string &path);
 
 public:
   // ---- 全局运行模式 ----
@@ -36,9 +41,19 @@ public:
 
   // ---- Stage B 输入 ----
   std::string captureCsvPath;
+  std::string captureInputDir;
 
   // ---- Stage C 预留输入 ----
   std::string opticalSourcePath;
+  std::string sourceSampling;
+  int opticalSamplesPerStep;
+  bool opticalParamsProvided;
+  double opticalMatrixRIndex;
+  double opticalMatrixAbsLengthUm;
+  double opticalBnRIndex;
+  double opticalBnAbsLengthUm;
+  double opticalZnsRIndex;
+  double opticalZnsAbsLengthUm;
 
   // ---- Stage B 深度映射兼容开关 ----
   // true: 允许 thickness_um == local patch thickness

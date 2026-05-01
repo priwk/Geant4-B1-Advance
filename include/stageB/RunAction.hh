@@ -20,6 +20,8 @@ public:
   void BeginOfRunAction(const G4Run *) override;
   void EndOfRunAction(const G4Run *) override;
 
+  void SetPrimaryAction(const PrimaryGeneratorAction *primaryAction);
+
   // For multi-input streaming:
   // switch output CSV according to the current input CSV path.
   void SwitchOutputCsvForInputPath(const std::string &inputPath);
@@ -31,6 +33,7 @@ public:
 private:
   std::string MakeOutputCsvPath() const;
   std::string MakeOutputCsvPathFromInputPath(const std::string &inputPath) const;
+  std::string RecordInputPathForSummary(const std::string &inputPath) const;
   std::string ExtractThicknessTagFromInputPath(const std::string &inputPath) const;
   void EnsureDataDirectory() const;
   void WriteStepCsvHeader();

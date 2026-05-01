@@ -1,8 +1,8 @@
 /run/verbose 2
 /run/initialize
 /control/execute vis.mac
-/vis/open OGL 900x900-0+0
-/vis/sceneHandler/create OGL
+/vis/open OGLSQt 900x900-0+0
+/vis/sceneHandler/create OGLSQt
 /vis/viewer/create ! ! 900x900-0+0
 /vis/viewer/refresh
 /vis/viewer/set/autoRefresh false

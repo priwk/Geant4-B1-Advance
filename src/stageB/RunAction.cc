@@ -11,6 +11,7 @@
 // #include <cstring>
 // #include <sys/stat.h>
 // #include <sys/types.h>
+#include <cstdlib>
 #include <filesystem>
 
 // --------------------------------------------------------------------
@@ -36,10 +37,17 @@ RunAction::~RunAction()
 
 // --------------------------------------------------------------------
 
+void RunAction::SetPrimaryAction(const PrimaryGeneratorAction *primaryAction)
+{
+    fPrimaryAction = primaryAction;
+}
+
+// --------------------------------------------------------------------
+
 void RunAction::EnsureDataDirectory() const
 {
     namespace fs = std::filesystem;
-    fs::path outputDir = fs::current_path().parent_path() / "Output";
+    fs::path outputDir = fs::current_path().parent_path() / "Output" / "stageB";
     std::error_code ec;
 
     if (!fs::exists(outputDir))
@@ -57,7 +65,7 @@ void RunAction::EnsureDataDirectory() const
 
 std::string RunAction::ExtractThicknessTagFromInputPath(const std::string &inputPath) const
 {
-    // Example: Input/125_neutron_capture_positions.csv -> 125
+    // Example: Input/neutron_capture_positions/1-2/125_neutron_capture_positions.csv -> 125
     const std::string key = "_neutron_capture_positions.csv";
 
     std::size_t slashPos = inputPath.find_last_of("/\\");
@@ -81,9 +89,31 @@ std::string RunAction::MakeOutputCsvPathFromInputPath(const std::string &inputPa
     std::string tag = ExtractThicknessTagFromInputPath(inputPath);
 
     namespace fs = std::filesystem;
-    fs::path outPath = fs::current_path().parent_path() / "Output" / (tag + "_alpha_li_steps.csv");
+    fs::path inPath(inputPath);
+    std::string ratioTag = "unknown";
+
+    const char *ratioEnv = std::getenv("BNZS_OUTPUT_RATIO");
+    if (ratioEnv != nullptr && std::string(ratioEnv).size() > 0)
+    {
+        ratioTag = ratioEnv;
+    }
+    else if (inPath.has_parent_path())
+    {
+        const std::string parentName = inPath.parent_path().filename().string();
+        if (!parentName.empty())
+        {
+            ratioTag = parentName;
+        }
+    }
+
+    fs::path outPath = fs::current_path().parent_path() / "Output" / "stageB" / ratioTag / (tag + "_alpha_li_steps.csv");
 
     return outPath.string();
+}
+
+std::string RunAction::RecordInputPathForSummary(const std::string &inputPath) const
+{
+    return AnalysisConfig::PathForRecord(inputPath);
 }
 
 std::string RunAction::MakeOutputCsvPath() const
@@ -113,6 +143,10 @@ void RunAction::WriteStepCsvHeader()
         << "corr_x_um,"
         << "corr_y_um,"
         << "depth_um,"
+        << "placement_file,"
+        << "local_capture_x_um,"
+        << "local_capture_y_um,"
+        << "local_capture_z_um,"
         << "surface_mode,"
         << "target_local_z_um,"
         << "used_local_z_um,"
@@ -159,6 +193,15 @@ void RunAction::SwitchOutputCsvForInputPath(const std::string &inputPath)
     }
 
     fStepCsvPath = newPath;
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    fs::create_directories(fs::path(fStepCsvPath).parent_path(), ec);
+    if (ec)
+    {
+        G4cerr << "[RunAction] Warning: failed to create output directory: "
+               << ec.message() << G4endl;
+    }
+
     fStepCsv.open(fStepCsvPath.c_str(), std::ios::out);
 
     if (!fStepCsv.is_open())
@@ -192,6 +235,15 @@ void RunAction::BeginOfRunAction(const G4Run *run)
     else
     {
         fStepCsvPath = MakeOutputCsvPath();
+        namespace fs = std::filesystem;
+        std::error_code ec;
+        fs::create_directories(fs::path(fStepCsvPath).parent_path(), ec);
+        if (ec)
+        {
+            G4cerr << "[RunAction] Warning: failed to create output directory: "
+                   << ec.message() << G4endl;
+        }
+
         fStepCsv.open(fStepCsvPath.c_str(), std::ios::out);
 
         if (!fStepCsv.is_open())
@@ -212,7 +264,7 @@ void RunAction::BeginOfRunAction(const G4Run *run)
     if (fPrimaryAction)
     {
         G4cout
-            << "\n  input CSV  = " << fPrimaryAction->GetLoadedInputFile()
+            << "\n  input CSV  = " << RecordInputPathForSummary(fPrimaryAction->GetLoadedInputFile())
             << "\n  streamed input records so far = " << fPrimaryAction->GetTotalLoadedEvents();
     }
 

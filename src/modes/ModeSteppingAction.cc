@@ -2,12 +2,16 @@
 
 #include "AnalysisConfig.hh"
 #include "ModeRunAction.hh"
+#include "ModePrimaryGeneratorAction.hh"
 
 #include "EventAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
 #include "StageARunAction.hh"
 #include "StageASteppingAction.hh"
+#include "StageCOpticalPrimaryGeneratorAction.hh"
+#include "StageCOpticalRunAction.hh"
+#include "StageCOpticalSteppingAction.hh"
 
 #include "G4Step.hh"
 #include "G4Exception.hh"
@@ -15,12 +19,18 @@
 
 ModeSteppingAction::ModeSteppingAction(ModeRunAction *modeRunAction,
                                        AnalysisConfig *config,
+                                       ModePrimaryGeneratorAction *modePrimaryAction,
                                        EventAction *stageBEventAction,
-                                       PrimaryGeneratorAction *stageBPrimaryAction)
+                                       PrimaryGeneratorAction *stageBPrimaryAction,
+                                       StageCOpticalPrimaryGeneratorAction *stageCPrimaryAction)
     : G4UserSteppingAction(),
       fConfig(config),
+      fModePrimaryAction(modePrimaryAction),
+      fStageCRunAction(nullptr),
+      fStageCPrimaryAction(stageCPrimaryAction),
       fStageBSteppingAction(nullptr),
-      fStageASteppingAction(nullptr)
+      fStageASteppingAction(nullptr),
+      fStageCSteppingAction(nullptr)
 {
     if (fConfig == nullptr)
     {
@@ -56,6 +66,15 @@ ModeSteppingAction::ModeSteppingAction(ModeRunAction *modeRunAction,
         fStageBSteppingAction = new SteppingAction(stageBEventAction, stageBPrimaryAction);
     }
 
+    fStageCRunAction = modeRunAction->GetStageCRunAction();
+    if (fStageCRunAction != nullptr && fStageCPrimaryAction != nullptr)
+    {
+        fStageCSteppingAction = new StageCOpticalSteppingAction(
+            fStageCRunAction,
+            fStageCPrimaryAction,
+            fConfig);
+    }
+
     G4cout << "[ModeSteppingAction] Dispatcher initialized."
            << " current runMode = "
            << AnalysisConfig::RunModeName(fConfig->runMode)
@@ -66,6 +85,7 @@ ModeSteppingAction::~ModeSteppingAction()
 {
     delete fStageASteppingAction;
     delete fStageBSteppingAction;
+    delete fStageCSteppingAction;
 }
 
 void ModeSteppingAction::UserSteppingAction(const G4Step *step)
@@ -106,6 +126,33 @@ void ModeSteppingAction::UserSteppingAction(const G4Step *step)
         G4Exception("ModeSteppingAction::UserSteppingAction",
                     "BNZS_MODE_STEP_007", FatalException,
                     "RunMode StageC_OpticalStub is selected, but Stage C stepping action is not implemented yet.");
+        return;
+
+    case RunMode::StageC_OpticalRVE:
+        if (fStageCSteppingAction == nullptr)
+        {
+            if (fStageCPrimaryAction == nullptr && fModePrimaryAction != nullptr)
+            {
+                fStageCPrimaryAction = fModePrimaryAction->GetStageCPrimaryAction();
+            }
+
+            if (fStageCRunAction != nullptr && fStageCPrimaryAction != nullptr)
+            {
+                fStageCSteppingAction = new StageCOpticalSteppingAction(
+                    fStageCRunAction,
+                    fStageCPrimaryAction,
+                    fConfig);
+            }
+
+            if (fStageCSteppingAction == nullptr)
+            {
+                G4Exception("ModeSteppingAction::UserSteppingAction",
+                            "BNZS_MODE_STEP_009", FatalException,
+                            "Stage C optical stepping action is null after lazy initialization.");
+                return;
+            }
+        }
+        fStageCSteppingAction->UserSteppingAction(step);
         return;
 
     default:

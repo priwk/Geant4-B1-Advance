@@ -1,7 +1,7 @@
-/mnt/hgfs/Shared/B2/build/CMakeFiles/B1.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/edit_cache.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/rebuild_cache.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/list_install_components.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/install.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/install/local.dir
-/mnt/hgfs/Shared/B2/build/CMakeFiles/install/strip.dir
+/home/jagora/g4work/B2/build/CMakeFiles/B1.dir
+/home/jagora/g4work/B2/build/CMakeFiles/edit_cache.dir
+/home/jagora/g4work/B2/build/CMakeFiles/rebuild_cache.dir
+/home/jagora/g4work/B2/build/CMakeFiles/list_install_components.dir
+/home/jagora/g4work/B2/build/CMakeFiles/install.dir
+/home/jagora/g4work/B2/build/CMakeFiles/install/local.dir
+/home/jagora/g4work/B2/build/CMakeFiles/install/strip.dir

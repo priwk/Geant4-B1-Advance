@@ -64,7 +64,6 @@ private:
   // ---- BN selection and point sampling ----
   G4bool SelectBNSphereForTargetZ(
       G4double targetZ,
-      const std::string &mode,
       G4ThreeVector &chosenCenter,
       G4double &usedZ,
       G4bool &usedFallback) const;
@@ -72,6 +71,21 @@ private:
   G4ThreeVector SamplePointInSphereSlice(
       const G4ThreeVector &center,
       G4double zSlice,
+      G4double sphereRadius) const;
+
+  G4bool SampleSafePointInSphereSlice(
+      const G4ThreeVector &center,
+      G4double zSlice,
+      G4double sphereRadius,
+      G4ThreeVector &point) const;
+
+  G4bool SampleBulkCapturePoint(
+      G4ThreeVector &chosenCenter,
+      G4ThreeVector &capturePoint,
+      G4bool &usedFallback) const;
+
+  G4ThreeVector SamplePointInSphereVolume(
+      const G4ThreeVector &center,
       G4double sphereRadius) const;
 
   // ---- reaction generation ----

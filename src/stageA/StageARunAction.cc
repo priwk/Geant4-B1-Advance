@@ -408,7 +408,7 @@ void StageARunAction::AppendSummaryRow(const G4Run *run) const
 
         if (detector != nullptr)
         {
-            placementFile = detector->GetLoadedPlacementFile();
+            placementFile = detector->GetLoadedPlacementFileForRecord();
             seedBase = detector->GetLoadedPlacementSeedBase();
             if (!placementFile.empty())
             {

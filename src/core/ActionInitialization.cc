@@ -52,6 +52,8 @@ void ActionInitialization::Build() const
   SetUserAction(primaryAction);
 
   auto *runAction = new ModeRunAction(fConfig);
+  runAction->SetStageBPrimaryAction(primaryAction->GetStageBPrimaryAction());
+  runAction->SetStageCPrimaryAction(primaryAction->GetStageCPrimaryAction());
   SetUserAction(runAction);
 
   auto *eventAction = new ModeEventAction(runAction, primaryAction, fConfig);
@@ -60,8 +62,10 @@ void ActionInitialization::Build() const
   auto *steppingAction = new ModeSteppingAction(
       runAction,
       fConfig,
+      primaryAction,
       eventAction->GetStageBEventAction(),
-      primaryAction->GetStageBPrimaryAction());
+      primaryAction->GetStageBPrimaryAction(),
+      primaryAction->GetStageCPrimaryAction());
   SetUserAction(steppingAction);
 
   auto *stackingAction = new StageAStackingAction(fConfig);

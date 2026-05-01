@@ -7,6 +7,7 @@ class AnalysisConfig;
 class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithABool;
+class G4UIcommand;
 
 class AnalysisMessenger : public G4UImessenger
 {
@@ -22,9 +23,14 @@ private:
   G4UIdirectory *fCfgDir;
   G4UIcmdWithAString *fRunModeCmd;
   G4UIcmdWithAString *fCaptureCsvCmd;
+  G4UIcmdWithAString *fCaptureDirCmd;
+  G4UIcmdWithAString *fOpticalSourceCmd;
+  G4UIcmdWithAString *fSourceSamplingCmd;
   G4UIcmdWithAString *fPlacementFileCmd;
   G4UIcmdWithABool *fUseRandomPlacementCmd;
   G4UIcmdWithABool *fAllowThicknessEqualCmd;
+  G4UIcommand *fOpticalSamplesPerStepCmd;
+  G4UIcommand *fOpticalParamsCmd;
   G4UIcommand *fWeightRatioCmd;
 };
 

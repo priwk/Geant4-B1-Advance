@@ -3,6 +3,7 @@
 #include "EventAction.hh"
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
+#include "DetectorConstruction.hh"
 
 #include "G4Step.hh"
 #include "G4Track.hh"
@@ -12,6 +13,7 @@
 #include "G4StepPoint.hh"
 #include "G4TrackStatus.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4RunManager.hh"
 
 #include <cmath>
 #include <fstream>
@@ -21,6 +23,13 @@
 // helpers
 namespace
 {
+    G4bool StartsWith(const G4String &s, const char *prefix)
+    {
+        const std::string value = s;
+        const std::string p = prefix;
+        return value.rfind(p, 0) == 0;
+    }
+
     G4bool IsTrackedHeavyParticle(const G4Track *track)
     {
         const auto *def = track->GetDefinition();
@@ -75,9 +84,9 @@ namespace
 
         const auto &lvName = lv->GetName();
 
-        if (lvName == "BN_LV")
+        if (lvName == "BN_LV" || StartsWith(lvName, "BN_ClipLV_"))
             return "BN";
-        if (lvName == "ZnS_LV")
+        if (lvName == "ZnS_LV" || StartsWith(lvName, "ZnS_ClipLV_"))
             return "ZnS";
         if (lvName == "MatrixLV")
             return "binder_void";
@@ -156,13 +165,21 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         runAction->SwitchOutputCsvForInputPath(fPrimaryAction->GetLoadedInputFile());
     }
 
-    if (runAction && runAction->IsStepCsvOpen())
+    if (runAction && fPrimaryAction && runAction->IsStepCsvOpen())
     {
         std::ofstream &csv = runAction->GetStepCsv();
 
-        const auto &rec = fEventAction->GetCurrentRecord();
-        //const auto &capturePos = fEventAction->GetCurrentLocalCapturePosition();
-        const auto &bnCenter = fEventAction->GetCurrentSelectedBNCenter();
+        const auto &rec = fPrimaryAction->GetCurrentRecord();
+        const auto &capturePos = fPrimaryAction->GetCurrentLocalCapturePosition();
+        const auto &bnCenter = fPrimaryAction->GetCurrentSelectedBNCenter();
+        std::string placementFile = "unknown";
+
+        const auto *det = dynamic_cast<const DetectorConstruction *>(
+            G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        if (det)
+        {
+            placementFile = det->GetLoadedPlacementFileForRecord();
+        }
 
         csv
             << rec.eventID << ","
@@ -174,9 +191,13 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
             << rec.corr_x_um << ","
             << rec.corr_y_um << ","
             << rec.depth_um << ","
-            << fEventAction->GetCurrentSurfaceMode() << ","
-            << fEventAction->GetCurrentTargetLocalZ() / um << ","
-            << fEventAction->GetCurrentUsedLocalZ() / um << ","
+            << placementFile << ","
+            << capturePos.x() / um << ","
+            << capturePos.y() / um << ","
+            << capturePos.z() / um << ","
+            << fPrimaryAction->GetCurrentSurfaceMode() << ","
+            << fPrimaryAction->GetCurrentTargetLocalZ() / um << ","
+            << fPrimaryAction->GetCurrentUsedLocalZ() / um << ","
             << bnCenter.x() / um << ","
             << bnCenter.y() / um << ","
             << bnCenter.z() / um << ","

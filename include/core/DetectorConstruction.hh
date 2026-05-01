@@ -54,6 +54,7 @@ public:
   const std::vector<G4ThreeVector> &GetPlacedZnSCenters() const { return fPlacedZnSCenters; }
 
   const G4String &GetLoadedPlacementFile() const { return fLoadedPlacementFile; }
+  const G4String &GetLoadedPlacementFileForRecord() const { return fLoadedPlacementFileForRecord; }
   const G4String &GetLoadedPlacementSeedBase() const { return fLoadedPlacementSeedBase; }
 
 private:
@@ -111,6 +112,7 @@ private:
   AnalysisConfig *fConfig;
 
   G4String fLoadedPlacementFile;
+  G4String fLoadedPlacementFileForRecord;
   G4String fLoadedPlacementSeedBase;
 };
 
