@@ -103,7 +103,10 @@ def parse_args():
     parser.add_argument(
         "--stagea-summary",
         default=None,
-        help="Stage A neutron_transport_summary.csv. Defaults to Output/stageA/<ratio-tag>/neutron_transport_summary.csv.",
+        help=(
+            "Macro-model neutron_transport_summary.csv. Defaults to "
+            "Input/stageA/<ratio-tag>/neutron_transport_summary/neutron_transport_summary.csv."
+        ),
     )
     parser.add_argument(
         "--attenuation-csv",
@@ -254,11 +257,33 @@ def read_stagea_capture(stagea_summary):
     rows = read_csv(path)
     sigmas = [to_float(row, "sigma_eff_per_um", 0.0) for row in rows]
     sigmas = [value for value in sigmas if value > 0.0]
-    incidents = [to_int(row, "incident_count", 0) for row in rows]
+    incidents = [
+        to_int(
+            row,
+            "incident_count",
+            to_int(row, "n_incident", 0),
+        )
+        for row in rows
+    ]
     incidents = [value for value in incidents if value > 0]
     mean_sigma = sum(sigmas) / len(sigmas) if sigmas else None
     mean_incident = sum(incidents) / len(incidents) if incidents else None
     return mean_sigma, mean_incident
+
+
+def read_stagea_summary_by_thickness(stagea_summary):
+    path = Path(stagea_summary)
+    if not path.is_file():
+        return {}
+
+    rows = read_csv(path)
+    by_thickness = {}
+    for row in rows:
+        thickness = row.get("thickness_um", "").strip()
+        if not thickness:
+            continue
+        by_thickness[thickness] = row
+    return by_thickness
 
 
 def p_capture_for_thickness(mean_sigma_eff, thickness_um):
@@ -610,12 +635,27 @@ def process_thickness(
 
     total_initial = sums["front"] + sums["back"] + sums["side"] + sums["absorbed"] + sums["lost"]
     frac_denom = total_initial if total_initial > 0.0 else 1.0
-    p_capture = p_capture_for_thickness(stagea_sigma, thickness_um)
-    mean_incident = stagea_incident
-    if mean_incident is not None and p_capture != "":
-        n_incident = int(round(mean_incident * max(1, len([p for p in placements if p]))))
+    summary_row = stagea_rows_by_thickness.get(thickness_label, {})
+    n_incident = to_int(
+        summary_row,
+        "n_incident",
+        to_int(summary_row, "incident_count", 0),
+    )
+    n_absorb = to_int(
+        summary_row,
+        "n_absorb",
+        to_int(summary_row, "capture_count", 0),
+    )
+
+    p_capture = ""
+    if n_incident > 0 and n_absorb >= 0:
+        p_capture = n_absorb / n_incident
     else:
-        n_incident = ""
+        p_capture = p_capture_for_thickness(stagea_sigma, thickness_um)
+        if stagea_incident is not None and p_capture != "":
+            n_incident = int(round(stagea_incident))
+        else:
+            n_incident = ""
 
     ci_low, ci_high = bootstrap_ci(front_values, bootstrap, rng)
     ratio_label = ratio_label or ratio_label_from_parts(bn_wt, zns_wt)
@@ -627,7 +667,7 @@ def process_thickness(
         "thickness_um": fmt(thickness_um),
         "P_capture": fmt(p_capture) if p_capture != "" else "",
         "n_captured_events": str(n_events),
-        "n_total_incident_neutrons": str(n_incident),
+        "n_total_incident_neutrons": str(n_incident) if n_incident != "" else "",
         "mean_visible_edep_ZnS_keV_per_capture": fmt(sums["visible"] / denom),
         "mean_n_photon0_per_capture": fmt(sums["n_photon0"] / denom),
         "mean_local_front_escape_per_capture": fmt(sums["front"] / denom),
@@ -658,7 +698,16 @@ def main():
     project_root = Path(args.project_root).resolve() if args.project_root else Path(__file__).resolve().parent
     stagec_dir = Path(args.stagec_dir).resolve() if args.stagec_dir else project_root / "Output" / "stageC" / args.ratio_tag
     event_source_dir = Path(args.event_source_dir).resolve() if args.event_source_dir else project_root / "Input" / "alpha_li_steps" / args.ratio_tag
-    stagea_summary = Path(args.stagea_summary).resolve() if args.stagea_summary else project_root / "Output" / "stageA" / args.ratio_tag / "neutron_transport_summary.csv"
+    stagea_summary = (
+        Path(args.stagea_summary).resolve()
+        if args.stagea_summary
+        else project_root
+        / "Input"
+        / "stageA"
+        / args.ratio_tag
+        / "neutron_transport_summary"
+        / "neutron_transport_summary.csv"
+    )
     output = Path(args.output).resolve() if args.output else stagec_dir / "thickness_light_yield_curve.csv"
     if args.spot_output == "auto":
         spot_output = stagec_dir / f"readout_spot_table_{args.macro_model}.csv"
@@ -676,6 +725,7 @@ def main():
 
     l_att_um, mu_eff = read_attenuation(args)
     stagea_sigma, stagea_incident = read_stagea_capture(stagea_summary)
+    stagea_rows_by_thickness = read_stagea_summary_by_thickness(stagea_summary)
 
     grouped = defaultdict(list)
     for path in sorted(stagec_dir.glob("*_local_optical_kernel_events.csv")):

@@ -226,6 +226,15 @@ Output/stageC/<ratio_tag>/readout_spot_table_<macro_model>.csv
 `mean_macro_side_to_back_light_per_capture`
 会单独报告这部分贡献。
 
+默认情况下，`stageC_macro_coupling.py` 会从外部宏观模型结果读取厚度级捕获统计：
+
+```text
+Input/stageA/<ratio_tag>/neutron_transport_summary/neutron_transport_summary.csv
+```
+
+优先使用该表中的 `n_incident` 与 `n_absorb` 计算 `P_capture` 和
+`*_per_incident_neutron` 列；如果缺失，再回退到 `sigma_eff_per_um`。
+
 如果要在不手工编辑宏文件的情况下运行多个拆分排布，先生成一批 Stage C 宏：
 
 ```bash
