@@ -204,6 +204,7 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
       fPlacementFileCmd(nullptr),
       fUseRandomPlacementCmd(nullptr),
       fAllowThicknessEqualCmd(nullptr),
+      fWriteStageCPhotonCsvCmd(nullptr),
       fOpticalSamplesPerStepCmd(nullptr),
       fOpticalParamsCmd(nullptr),
       fWeightRatioCmd(nullptr)
@@ -253,6 +254,12 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
   fAllowThicknessEqualCmd->SetParameterName("allowEqual", false);
   fAllowThicknessEqualCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
+  fWriteStageCPhotonCsvCmd = new G4UIcmdWithABool("/cfg/setWriteStageCPhotonCsv", this);
+  fWriteStageCPhotonCsvCmd->SetGuidance("Enable or disable Stage C per-photon CSV output.");
+  fWriteStageCPhotonCsvCmd->SetGuidance("Default is false to avoid very large output files.");
+  fWriteStageCPhotonCsvCmd->SetParameterName("writePhotonCsv", false);
+  fWriteStageCPhotonCsvCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
   fOpticalSamplesPerStepCmd = new G4UIcommand("/cfg/setSamplePhotonsPerStep", this);
   fOpticalSamplesPerStepCmd->SetGuidance("Set Stage C sampled optical photons per ZnS step.");
   fOpticalSamplesPerStepCmd->SetGuidance("Each sampled photon weight is n_photon_step / N_sample_photons_per_step.");
@@ -300,6 +307,7 @@ AnalysisMessenger::~AnalysisMessenger()
   delete fWeightRatioCmd;
   delete fOpticalParamsCmd;
   delete fOpticalSamplesPerStepCmd;
+  delete fWriteStageCPhotonCsvCmd;
   delete fAllowThicknessEqualCmd;
   delete fUseRandomPlacementCmd;
   delete fPlacementFileCmd;
@@ -468,6 +476,16 @@ void AnalysisMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
 
     G4cout << "[AnalysisMessenger] allowThicknessEqualLocalPatch set to "
            << (fConfig->allowThicknessEqualLocalPatch ? "true" : "false")
+           << G4endl;
+    return;
+  }
+  if (command == fWriteStageCPhotonCsvCmd)
+  {
+    fConfig->writeStageCPhotonCsv =
+        fWriteStageCPhotonCsvCmd->GetNewBoolValue(newValue);
+
+    G4cout << "[AnalysisMessenger] writeStageCPhotonCsv set to "
+           << (fConfig->writeStageCPhotonCsv ? "true" : "false")
            << G4endl;
     return;
   }

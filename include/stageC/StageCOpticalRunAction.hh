@@ -127,6 +127,7 @@ private:
 
   std::ofstream fPhotonCsv;
   std::ofstream fExitPhotonCsv;
+  bool fWritePhotonCsv;
   std::string fPhotonCsvPath;
   std::string fExitPhotonCsvPath;
   std::string fSummaryCsvPath;

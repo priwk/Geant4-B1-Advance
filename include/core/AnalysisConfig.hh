@@ -47,6 +47,7 @@ public:
   std::string opticalSourcePath;
   std::string sourceSampling;
   int opticalSamplesPerStep;
+  bool writeStageCPhotonCsv;
   bool opticalParamsProvided;
   double opticalMatrixRIndex;
   double opticalMatrixAbsLengthUm;

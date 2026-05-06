@@ -29,6 +29,7 @@ private:
   G4UIcmdWithAString *fPlacementFileCmd;
   G4UIcmdWithABool *fUseRandomPlacementCmd;
   G4UIcmdWithABool *fAllowThicknessEqualCmd;
+  G4UIcmdWithABool *fWriteStageCPhotonCsvCmd;
   G4UIcommand *fOpticalSamplesPerStepCmd;
   G4UIcommand *fOpticalParamsCmd;
   G4UIcommand *fWeightRatioCmd;
