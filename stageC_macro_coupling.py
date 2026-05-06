@@ -28,6 +28,8 @@ OUTPUT_FIELDS = [
     "mean_local_side_escape_per_capture",
     "mean_macro_weighted_front_light_per_capture",
     "mean_macro_weighted_back_light_per_capture",
+    "mean_macro_side_to_front_light_per_capture",
+    "mean_macro_side_to_back_light_per_capture",
     "mean_macro_weighted_front_light_per_incident_neutron",
     "mean_macro_weighted_back_light_per_incident_neutron",
     "side_escape_fraction",
@@ -39,6 +41,39 @@ OUTPUT_FIELDS = [
     "n_placements",
     "bootstrap_ci_low",
     "bootstrap_ci_high",
+]
+
+SPOT_OUTPUT_FIELDS = [
+    "ratio_label",
+    "bn_wt",
+    "zns_wt",
+    "thickness_um",
+    "placement_file",
+    "source_event_uid",
+    "eventID",
+    "macro_model",
+    "readout_face",
+    "exit_surface",
+    "capture_depth_um",
+    "capture_x_um",
+    "capture_y_um",
+    "local_capture_x_um",
+    "local_capture_y_um",
+    "local_capture_z_um",
+    "exit_x_um",
+    "exit_y_um",
+    "exit_z_um",
+    "exit_global_x_um",
+    "exit_global_y_um",
+    "exit_global_depth_um",
+    "readout_x_um",
+    "readout_y_um",
+    "exit_dir_x",
+    "exit_dir_y",
+    "exit_dir_z",
+    "local_weight",
+    "macro_path_um",
+    "readout_weight",
 ]
 
 
@@ -99,6 +134,17 @@ def parse_args():
         "--output",
         default=None,
         help="Output CSV. Defaults to Output/stageC/<ratio-tag>/thickness_light_yield_curve.csv.",
+    )
+    parser.add_argument(
+        "--spot-output",
+        nargs="?",
+        const="auto",
+        default=None,
+        help=(
+            "Optional readout-plane spot table CSV. "
+            "Pass an explicit path, or use --spot-output with no value for "
+            "Output/stageC/<ratio-tag>/readout_spot_table_<macro-model>.csv."
+        ),
     )
     parser.add_argument(
         "--bootstrap",
@@ -283,6 +329,95 @@ def attenuation_path_length(row, thickness_um, face, macro_model, epsilon_cos):
     return depth_to_readout / max(cosz, epsilon_cos)
 
 
+def global_exit_state(row):
+    capture_x = to_float(row, "capture_x_um", 0.0)
+    capture_y = to_float(row, "capture_y_um", 0.0)
+    depth = to_float(row, "capture_depth_um", to_float(row, "depth_um", 0.0))
+
+    local_capture_x = to_float(row, "local_capture_x_um", 0.0)
+    local_capture_y = to_float(row, "local_capture_y_um", 0.0)
+    local_capture_z = to_float(row, "local_capture_z_um", 0.0)
+
+    exit_x = to_float(row, "exit_x_um", 0.0)
+    exit_y = to_float(row, "exit_y_um", 0.0)
+    exit_z = to_float(row, "exit_z_um", 0.0)
+
+    x_global = capture_x + (exit_x - local_capture_x)
+    y_global = capture_y + (exit_y - local_capture_y)
+    depth_global = depth - (exit_z - local_capture_z)
+    return x_global, y_global, depth_global
+
+
+def propagate_to_readout(row, thickness_um, readout_face, l_att_um, epsilon_cos):
+    ux = to_float(row, "exit_dir_x", 0.0)
+    uy = to_float(row, "exit_dir_y", 0.0)
+    uz = to_float(row, "exit_dir_z", 0.0)
+    weight = to_float(row, "weight", 0.0)
+
+    _, _, depth_global = global_exit_state(row)
+
+    if readout_face == "front":
+        if uz <= epsilon_cos:
+            return None
+        s_um = max(0.0, depth_global) / uz
+    elif readout_face == "back":
+        if uz >= -epsilon_cos:
+            return None
+        s_um = max(0.0, thickness_um - depth_global) / (-uz)
+    else:
+        return None
+
+    x0, y0, _ = global_exit_state(row)
+    transmitted = weight * math.exp(-s_um / l_att_um)
+    return {
+        "x_read_um": x0 + ux * s_um,
+        "y_read_um": y0 + uy * s_um,
+        "path_um": s_um,
+        "weight": transmitted,
+    }
+
+
+def write_spot_row(writer, row, thickness_um, macro_model, readout_face, spot):
+    if writer is None or spot is None:
+        return
+
+    x_global, y_global, depth_global = global_exit_state(row)
+    writer.writerow(
+        {
+            "ratio_label": row.get("ratio_label", "").strip(),
+            "bn_wt": fmt(to_float(row, "bn_wt", 0.0)),
+            "zns_wt": fmt(to_float(row, "zns_wt", 0.0)),
+            "thickness_um": fmt(thickness_um),
+            "placement_file": row.get("placement_file", "").strip(),
+            "source_event_uid": row.get("source_event_uid", "").strip(),
+            "eventID": row.get("eventID", "").strip(),
+            "macro_model": macro_model,
+            "readout_face": readout_face,
+            "exit_surface": row.get("exit_surface", "").strip(),
+            "capture_depth_um": fmt(to_float(row, "capture_depth_um", to_float(row, "depth_um", 0.0))),
+            "capture_x_um": fmt(to_float(row, "capture_x_um", 0.0)),
+            "capture_y_um": fmt(to_float(row, "capture_y_um", 0.0)),
+            "local_capture_x_um": fmt(to_float(row, "local_capture_x_um", 0.0)),
+            "local_capture_y_um": fmt(to_float(row, "local_capture_y_um", 0.0)),
+            "local_capture_z_um": fmt(to_float(row, "local_capture_z_um", 0.0)),
+            "exit_x_um": fmt(to_float(row, "exit_x_um", 0.0)),
+            "exit_y_um": fmt(to_float(row, "exit_y_um", 0.0)),
+            "exit_z_um": fmt(to_float(row, "exit_z_um", 0.0)),
+            "exit_global_x_um": fmt(x_global),
+            "exit_global_y_um": fmt(y_global),
+            "exit_global_depth_um": fmt(depth_global),
+            "readout_x_um": fmt(spot["x_read_um"]),
+            "readout_y_um": fmt(spot["y_read_um"]),
+            "exit_dir_x": fmt(to_float(row, "exit_dir_x", 0.0)),
+            "exit_dir_y": fmt(to_float(row, "exit_dir_y", 0.0)),
+            "exit_dir_z": fmt(to_float(row, "exit_dir_z", 0.0)),
+            "local_weight": fmt(to_float(row, "weight", 0.0)),
+            "macro_path_um": fmt(spot["path_um"]),
+            "readout_weight": fmt(spot["weight"]),
+        }
+    )
+
+
 def bootstrap_ci(values, iterations, rng):
     if iterations <= 0 or not values:
         return "", ""
@@ -309,6 +444,7 @@ def process_thickness(
     epsilon_cos,
     bootstrap,
     rng,
+    spot_writer=None,
 ):
     first_match = KERNEL_RE.fullmatch(kernel_files[0].name)
     thickness_label = first_match.group("thickness")
@@ -351,6 +487,8 @@ def process_thickness(
                     "lost": 0.0,
                     "macro_front": 0.0,
                     "macro_back": 0.0,
+                    "macro_side_to_front": 0.0,
+                    "macro_side_to_back": 0.0,
                 },
             )
 
@@ -378,24 +516,85 @@ def process_thickness(
 
     for exit_file in exit_files:
         for row in read_csv(exit_file):
-            face = row.get("exit_surface", "").strip()
-            if face not in ("front", "back"):
-                continue
-            key = (
+            key = event_key(row)
+            src = event_sources.get(key)
+            fallback_key = (
                 "event-placement",
                 str(row.get("eventID", "")).strip(),
                 placement_name(row.get("placement_file", "")),
             )
-            event = events.get(key)
+            if src is None:
+                src = event_sources.get(fallback_key)
+
+            merged_row = dict(src) if isinstance(src, dict) else {}
+            merged_row.update(row)
+
+            face = merged_row.get("exit_surface", "").strip()
+            if face not in ("front", "back", "side"):
+                continue
+            event = events.get(fallback_key)
             if event is None:
                 continue
-            s_um = attenuation_path_length(row, thickness_um, face, macro_model, epsilon_cos)
-            weight = to_float(row, "weight", 0.0)
-            transmitted = weight * math.exp(-s_um / l_att_um)
-            if face == "front":
-                event["macro_front"] += transmitted
-            else:
-                event["macro_back"] += transmitted
+            if face in ("front", "back"):
+                s_um = attenuation_path_length(merged_row, thickness_um, face, macro_model, epsilon_cos)
+                weight = to_float(merged_row, "weight", 0.0)
+                transmitted = weight * math.exp(-s_um / l_att_um)
+                if face == "front":
+                    event["macro_front"] += transmitted
+                else:
+                    event["macro_back"] += transmitted
+                write_spot_row(
+                    spot_writer,
+                    merged_row,
+                    thickness_um,
+                    macro_model,
+                    face,
+                    {
+                        "x_read_um": global_exit_state(merged_row)[0],
+                        "y_read_um": global_exit_state(merged_row)[1],
+                        "path_um": s_um,
+                        "weight": transmitted,
+                    },
+                )
+                continue
+
+            front_hit = propagate_to_readout(
+                merged_row,
+                thickness_um,
+                "front",
+                l_att_um,
+                epsilon_cos,
+            )
+            if front_hit is not None:
+                event["macro_front"] += front_hit["weight"]
+                event["macro_side_to_front"] += front_hit["weight"]
+                write_spot_row(
+                    spot_writer,
+                    merged_row,
+                    thickness_um,
+                    macro_model,
+                    "front",
+                    front_hit,
+                )
+
+            back_hit = propagate_to_readout(
+                merged_row,
+                thickness_um,
+                "back",
+                l_att_um,
+                epsilon_cos,
+            )
+            if back_hit is not None:
+                event["macro_back"] += back_hit["weight"]
+                event["macro_side_to_back"] += back_hit["weight"]
+                write_spot_row(
+                    spot_writer,
+                    merged_row,
+                    thickness_um,
+                    macro_model,
+                    "back",
+                    back_hit,
+                )
 
     if n_source_events > len(events):
         for row in event_sources.values():
@@ -420,6 +619,8 @@ def process_thickness(
                     "lost": 0.0,
                     "macro_front": 0.0,
                     "macro_back": 0.0,
+                    "macro_side_to_front": 0.0,
+                    "macro_side_to_back": 0.0,
                 },
             )
 
@@ -474,6 +675,8 @@ def process_thickness(
         "mean_local_side_escape_per_capture": fmt(sums["side"] / denom),
         "mean_macro_weighted_front_light_per_capture": fmt(sums["macro_front"] / denom),
         "mean_macro_weighted_back_light_per_capture": fmt(sums["macro_back"] / denom),
+        "mean_macro_side_to_front_light_per_capture": fmt(sums["macro_side_to_front"] / denom),
+        "mean_macro_side_to_back_light_per_capture": fmt(sums["macro_side_to_back"] / denom),
         "mean_macro_weighted_front_light_per_incident_neutron": fmt((p_capture * sums["macro_front"] / denom) if p_capture != "" else ""),
         "mean_macro_weighted_back_light_per_incident_neutron": fmt((p_capture * sums["macro_back"] / denom) if p_capture != "" else ""),
         "side_escape_fraction": fmt(sums["side"] / frac_denom),
@@ -506,6 +709,12 @@ def main():
         / "neutron_transport_summary.csv"
     )
     output = Path(args.output).resolve() if args.output else stagec_dir / "thickness_light_yield_curve.csv"
+    if args.spot_output == "auto":
+        spot_output = stagec_dir / f"readout_spot_table_{args.macro_model}.csv"
+    elif args.spot_output:
+        spot_output = Path(args.spot_output).resolve()
+    else:
+        spot_output = None
 
     if not stagec_dir.is_dir():
         raise SystemExit(f"Stage C directory not found: {stagec_dir}")
@@ -530,23 +739,37 @@ def main():
 
     rng = random.Random(args.seed)
     rows = []
-    for _, kernel_files in sorted(grouped.items(), key=lambda item: float(item[0])):
-        rows.append(
-            process_thickness(
-                kernel_files,
-                stagec_dir,
-                event_source_dir,
-                stagea_sigma,
-                stagea_incident,
-                stagea_rows_by_thickness,
-                l_att_um,
-                mu_eff,
-                args.macro_model,
-                args.epsilon_cos,
-                args.bootstrap,
-                rng,
+    spot_file = None
+    spot_writer = None
+    try:
+        if spot_output is not None:
+            spot_output.parent.mkdir(parents=True, exist_ok=True)
+            spot_file = spot_output.open("w", newline="", encoding="utf-8")
+            spot_writer = csv.DictWriter(spot_file, fieldnames=SPOT_OUTPUT_FIELDS)
+            spot_writer.writeheader()
+
+        for _, kernel_files in sorted(grouped.items(), key=lambda item: float(item[0])):
+            rows.append(
+                process_thickness(
+                    kernel_files,
+                    stagec_dir,
+                    event_source_dir,
+                    stagea_sigma,
+                    stagea_incident,
+                    stagea_rows_by_thickness,
+                    l_att_um,
+                    mu_eff,
+                    args.macro_model,
+                    args.epsilon_cos,
+                    args.bootstrap,
+                    rng,
+                    spot_writer=spot_writer,
+                )
             )
-        )
+    finally:
+        if spot_file is not None:
+            spot_file.flush()
+            spot_file.close()
 
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", newline="", encoding="utf-8") as f:
@@ -562,6 +785,7 @@ def main():
     print(f"Stage A summary: {stagea_summary if stagea_summary.is_file() else 'not found'}")
     print(f"Macro model:     {args.macro_model}")
     print(f"L_att_um:        {l_att_um:g}")
+    print(f"Spot output:     {spot_output if spot_output is not None else 'disabled'}")
     print(f"Thickness rows:  {len(rows)}")
     for row in rows:
         if not row.get("_has_zero_light_columns", False):

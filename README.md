@@ -147,6 +147,20 @@ Output/stageC/<ratio_tag>/<source_stem>_local_optical_kernel_steps.csv
 Output/stageC/<ratio_tag>/<source_stem>_local_optical_exit_photons.csv
 ```
 
+默认情况下，为了避免逐光子 CSV 导致输出体积过大，
+`*_optical_photons.csv` 不再写出。
+如需调试逐光子结局，可显式开启：
+
+```text
+/cfg/setWriteStageCPhotonCsv true
+```
+
+或设置环境变量：
+
+```bash
+BNZS_WRITE_STAGEC_PHOTON_CSV=1
+```
+
 `*_local_optical_kernel_events.csv` 会按原始 Stage B 的 `eventID` 聚合采样光子权重，
 报告前表面、后表面、侧面逃逸权重，吸收/损失权重，逃逸效率，平均逃逸角，
 以及平均路径长度。`*_local_optical_exit_photons.csv` 只保留逃逸光子，
@@ -176,10 +190,41 @@ ratio_label,bn_wt,zns_wt,L_att_um,mu_eff_per_um,source,fit_method
 Output/stageC/<ratio_tag>/thickness_light_yield_curve.csv
 ```
 
+如果要额外导出可用于后续 PSF / MTF / 分辨率分析的“读出面光斑点表”，
+可加上：
+
+```bash
+python3 stageC_macro_coupling.py \
+  --ratio-tag 1-1.5 \
+  --l-att-um 1000 \
+  --macro-model angle-resolved \
+  --spot-output
+```
+
+这会额外写出：
+
+```text
+Output/stageC/<ratio_tag>/readout_spot_table_<macro_model>.csv
+```
+
+该表会为每个参与宏观传播的逃逸光子保留：
+
+- 事件锚点：`source_event_uid`, `eventID`, `placement_file`
+- 宏观俘获位置：`capture_x_um`, `capture_y_um`, `capture_depth_um`
+- 局部锚点：`local_capture_x_um`, `local_capture_y_um`, `local_capture_z_um`
+- 局部出口态：`exit_surface`, `exit_x_um`, `exit_y_um`, `exit_z_um`, `exit_dir_x/y/z`
+- 全局出口位置：`exit_global_x_um`, `exit_global_y_um`, `exit_global_depth_um`
+- 读出面位置与权重：`readout_x_um`, `readout_y_um`, `macro_path_um`, `readout_weight`
+
 `depth-only` 对前端读出使用 `s = capture_depth_um`，
 对后端读出使用 `s = thickness_um - capture_depth_um`。
 `angle-resolved` 使用 `s / max(abs(exit_dir_z), epsilon)`。
-侧向逃逸会单独报告，不计入读出光。
+当前宏观耦合会继续利用 `*_local_optical_exit_photons.csv` 中的侧向逃逸光子：
+先结合 Stage B 事件锚点恢复全局出口位置，再沿出口方向投影到前/后读出面，
+并乘以宏观衰减。输出中的
+`mean_macro_side_to_front_light_per_capture` 与
+`mean_macro_side_to_back_light_per_capture`
+会单独报告这部分贡献。
 
 默认情况下，`stageC_macro_coupling.py` 会从外部宏观模型结果读取厚度级捕获统计：
 
@@ -592,7 +637,9 @@ Output/stageC/<ratio>/<source_stem>_local_optical_exit_photons.csv
 其中：
 
 - `*_optical_photons.csv`
-  记录每个采样光子的结局、终点位置和权重
+  默认关闭；仅在 `/cfg/setWriteStageCPhotonCsv true` 或
+  `BNZS_WRITE_STAGEC_PHOTON_CSV=1` 时写出，用于记录每个采样光子的结局、
+  终点位置和权重
 - `*_local_optical_exit_photons.csv`
   只保留成功从前、后、侧面逃逸的光子
 - `*_local_optical_kernel_events.csv`

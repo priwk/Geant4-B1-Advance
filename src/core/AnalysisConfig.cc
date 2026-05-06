@@ -206,6 +206,7 @@ AnalysisConfig::AnalysisConfig()
       opticalSourcePath(""),
       sourceSampling("uniformAlongStep"),
       opticalSamplesPerStep(1),
+      writeStageCPhotonCsv(false),
       opticalParamsProvided(false),
       opticalMatrixRIndex(1.5),
       opticalMatrixAbsLengthUm(1.0e6),
@@ -324,6 +325,12 @@ AnalysisConfig::AnalysisConfig()
     catch (...)
     {
     }
+  }
+
+  const char *writePhotonCsvEnv = std::getenv("BNZS_WRITE_STAGEC_PHOTON_CSV");
+  if (writePhotonCsvEnv != nullptr)
+  {
+    writeStageCPhotonCsv = IsTruthyEnv(writePhotonCsvEnv);
   }
 
   auto readOpticalDoubleEnv = [&](const char *name, double &target)

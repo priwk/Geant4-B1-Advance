@@ -80,6 +80,7 @@ StageCOpticalRunAction::StageCOpticalRunAction(AnalysisConfig *config)
       fPrimaryAction(nullptr),
       fPhotonCsv(),
       fExitPhotonCsv(),
+      fWritePhotonCsv(config != nullptr ? config->writeStageCPhotonCsv : false),
       fPhotonCsvPath(""),
       fExitPhotonCsvPath(""),
       fSummaryCsvPath(""),
@@ -163,16 +164,19 @@ void StageCOpticalRunAction::OpenOutputs()
   fStepKernelCsvPath = DisplayPath(outDir / (stem + "_local_optical_kernel_steps.csv"));
   fSummaryCsvPath = DisplayPath(outDir / (stem + "_optical_summary.csv"));
 
-  fPhotonCsv.open(fPhotonCsvPath.c_str(), std::ios::out);
-  if (!fPhotonCsv)
+  if (fWritePhotonCsv)
   {
-    G4Exception("StageCOpticalRunAction::OpenOutputs",
-                "BNZS_C_RUN_001", FatalException,
-                ("Failed to open Stage C photon CSV: " + fPhotonCsvPath).c_str());
-    return;
-  }
+    fPhotonCsv.open(fPhotonCsvPath.c_str(), std::ios::out);
+    if (!fPhotonCsv)
+    {
+      G4Exception("StageCOpticalRunAction::OpenOutputs",
+                  "BNZS_C_RUN_001", FatalException,
+                  ("Failed to open Stage C photon CSV: " + fPhotonCsvPath).c_str());
+      return;
+    }
 
-  WritePhotonHeader();
+    WritePhotonHeader();
+  }
 
   fExitPhotonCsv.open(fExitPhotonCsvPath.c_str(), std::ios::out);
   if (!fExitPhotonCsv)
@@ -273,7 +277,8 @@ void StageCOpticalRunAction::BeginOfRunAction(const G4Run *run)
 
   G4cout << "\n[StageCOpticalRunAction] Begin run " << run->GetRunID()
          << "\n  source CSV  = " << SourcePathForLog(fConfig, fPrimaryAction)
-         << "\n  photon CSV  = " << fPhotonCsvPath
+         << "\n  photon CSV  = "
+         << (fWritePhotonCsv ? fPhotonCsvPath : std::string("disabled"))
          << "\n  exit CSV    = " << fExitPhotonCsvPath
          << "\n  kernel CSV  = " << fKernelCsvPath
          << "\n  step kernel = " << fStepKernelCsvPath
@@ -336,41 +341,41 @@ void StageCOpticalRunAction::RecordPhotonOutcome(
     const std::string &finalPhase,
     G4double trackLength)
 {
-  if (!fPhotonCsv.is_open())
-    return;
-
   const auto &source = photon.source;
   const G4double weight = photon.photonWeight;
 
-  fPhotonCsv
-      << photon.geantEventID << ","
-      << source.source_event_uid << ","
-      << source.source_step_uid << ","
-      << source.eventID << ","
-      << source.trackID << ","
-      << source.stepID << ","
-      << source.particle << ","
-      << source.thickness_um << ","
-      << source.bn_wt << ","
-      << source.zns_wt << ","
-      << source.ratio_label << ","
-      << source.depth_um << ","
-      << source.capture_depth_um << ","
-      << photon.sourceSampling << ","
-      << photon.sampleIndex << ","
-      << photon.samplesPerStep << ","
-      << weight << ","
-      << source.n_photon_step << ","
-      << photon.sourcePosition.x() / um << ","
-      << photon.sourcePosition.y() / um << ","
-      << photon.sourcePosition.z() / um << ","
-      << outcome << ","
-      << finalPosition.x() / um << ","
-      << finalPosition.y() / um << ","
-      << finalPosition.z() / um << ","
-      << finalPhase << ","
-      << trackLength / um
-      << "\n";
+  if (fWritePhotonCsv && fPhotonCsv.is_open())
+  {
+    fPhotonCsv
+        << photon.geantEventID << ","
+        << source.source_event_uid << ","
+        << source.source_step_uid << ","
+        << source.eventID << ","
+        << source.trackID << ","
+        << source.stepID << ","
+        << source.particle << ","
+        << source.thickness_um << ","
+        << source.bn_wt << ","
+        << source.zns_wt << ","
+        << source.ratio_label << ","
+        << source.depth_um << ","
+        << source.capture_depth_um << ","
+        << photon.sourceSampling << ","
+        << photon.sampleIndex << ","
+        << photon.samplesPerStep << ","
+        << weight << ","
+        << source.n_photon_step << ","
+        << photon.sourcePosition.x() / um << ","
+        << photon.sourcePosition.y() / um << ","
+        << photon.sourcePosition.z() / um << ","
+        << outcome << ","
+        << finalPosition.x() / um << ","
+        << finalPosition.y() / um << ","
+        << finalPosition.z() / um << ","
+        << finalPhase << ","
+        << trackLength / um
+        << "\n";
+  }
 
   ++fRecordedPhotons;
   fRecordedWeight += weight;
