@@ -1,6 +1,7 @@
 #include "ModeSteppingAction.hh"
 
 #include "AnalysisConfig.hh"
+#include "ModeEventAction.hh"
 #include "ModeRunAction.hh"
 #include "ModePrimaryGeneratorAction.hh"
 
@@ -12,8 +13,12 @@
 #include "StageCOpticalPrimaryGeneratorAction.hh"
 #include "StageCOpticalRunAction.hh"
 #include "StageCOpticalSteppingAction.hh"
+#include "StageDOpticalEventAction.hh"
+#include "StageDOpticalRunAction.hh"
+#include "StageDOpticalSteppingAction.hh"
 
 #include "G4Step.hh"
+#include "G4EventManager.hh"
 #include "G4Exception.hh"
 #include "G4ios.hh"
 
@@ -22,15 +27,18 @@ ModeSteppingAction::ModeSteppingAction(ModeRunAction *modeRunAction,
                                        ModePrimaryGeneratorAction *modePrimaryAction,
                                        EventAction *stageBEventAction,
                                        PrimaryGeneratorAction *stageBPrimaryAction,
-                                       StageCOpticalPrimaryGeneratorAction *stageCPrimaryAction)
+                                       StageCOpticalPrimaryGeneratorAction *stageCPrimaryAction,
+                                       StageDOpticalEventAction *stageDEventAction)
     : G4UserSteppingAction(),
       fConfig(config),
       fModePrimaryAction(modePrimaryAction),
       fStageCRunAction(nullptr),
       fStageCPrimaryAction(stageCPrimaryAction),
+      fStageDRunAction(nullptr),
       fStageBSteppingAction(nullptr),
       fStageASteppingAction(nullptr),
-      fStageCSteppingAction(nullptr)
+      fStageCSteppingAction(nullptr),
+      fStageDSteppingAction(nullptr)
 {
     if (fConfig == nullptr)
     {
@@ -75,6 +83,15 @@ ModeSteppingAction::ModeSteppingAction(ModeRunAction *modeRunAction,
             fConfig);
     }
 
+    fStageDRunAction = modeRunAction->GetStageDRunAction();
+    if (fStageDRunAction != nullptr && stageDEventAction != nullptr)
+    {
+        fStageDSteppingAction = new StageDOpticalSteppingAction(
+            fStageDRunAction,
+            stageDEventAction,
+            fConfig);
+    }
+
     G4cout << "[ModeSteppingAction] Dispatcher initialized."
            << " current runMode = "
            << AnalysisConfig::RunModeName(fConfig->runMode)
@@ -86,6 +103,37 @@ ModeSteppingAction::~ModeSteppingAction()
     delete fStageASteppingAction;
     delete fStageBSteppingAction;
     delete fStageCSteppingAction;
+    delete fStageDSteppingAction;
+}
+
+StageDOpticalSteppingAction *ModeSteppingAction::EnsureStageDSteppingAction()
+{
+    if (fStageDSteppingAction != nullptr)
+        return fStageDSteppingAction;
+
+    if (fStageDRunAction == nullptr && fModePrimaryAction != nullptr)
+    {
+        // fStageDRunAction is owned by ModeRunAction and should already exist
+        // whenever dispatcher actions were built; keep this branch defensive.
+    }
+
+    auto *eventDispatcher = dynamic_cast<ModeEventAction *>(
+        G4EventManager::GetEventManager()->GetUserEventAction());
+    StageDOpticalEventAction *stageDEventAction =
+        eventDispatcher ? eventDispatcher->GetStageDEventAction() : nullptr;
+
+    if (stageDEventAction == nullptr && eventDispatcher != nullptr)
+        stageDEventAction = eventDispatcher->GetStageDEventAction();
+
+    if (fStageDRunAction != nullptr && stageDEventAction != nullptr)
+    {
+        fStageDSteppingAction = new StageDOpticalSteppingAction(
+            fStageDRunAction,
+            stageDEventAction,
+            fConfig);
+    }
+
+    return fStageDSteppingAction;
 }
 
 void ModeSteppingAction::UserSteppingAction(const G4Step *step)
@@ -153,6 +201,17 @@ void ModeSteppingAction::UserSteppingAction(const G4Step *step)
             }
         }
         fStageCSteppingAction->UserSteppingAction(step);
+        return;
+
+    case RunMode::StageD_OpticalHomogenization:
+        if (EnsureStageDSteppingAction() == nullptr)
+        {
+            G4Exception("ModeSteppingAction::UserSteppingAction",
+                        "BNZS_MODE_STEP_010", FatalException,
+                        "Stage D optical stepping action is null.");
+            return;
+        }
+        fStageDSteppingAction->UserSteppingAction(step);
         return;
 
     default:

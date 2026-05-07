@@ -5,6 +5,8 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithABool.hh"
+#include "G4UIcmdWithADouble.hh"
+#include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcommand.hh"
 #include "G4UIparameter.hh"
 #include "G4ios.hh"
@@ -43,6 +45,48 @@ namespace
     return s;
   }
 
+  std::string NormalizeStageDSourceMode(const std::string &raw)
+  {
+    const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "uniform_zns" || value == "uniformzns")
+      return "uniform_ZnS";
+    if (value == "uniform_all_phase" || value == "uniformallphase")
+      return "uniform_all_phase";
+    if (value == "from_zns_step_sources" || value == "fromznsstepsources")
+      return "from_zns_step_sources";
+    return "";
+  }
+
+  std::string NormalizeStageDBoundaryMode(const std::string &raw)
+  {
+    const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "escape")
+      return "escape";
+    if (value == "same_phase_reentry" || value == "samephasereentry")
+      return "same_phase_reentry";
+    return "";
+  }
+
+  std::string NormalizeStageDReentryMode(const std::string &raw)
+  {
+    const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "same_phase_rho_over_r" || value == "samephaserhooverr")
+      return "same_phase_rho_over_R";
+    if (value == "same_phase_random" || value == "samephaserandom")
+      return "same_phase_random";
+    return "";
+  }
+
+  std::string NormalizeStageDMatrixReentryMode(const std::string &raw)
+  {
+    const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "random_matrix" || value == "randommatrix")
+      return "random_matrix";
+    if (value == "distance_matched_matrix" || value == "distancematchedmatrix")
+      return "distance_matched_matrix";
+    return "";
+  }
+
   RunMode ParseRunModeOrThrow(const std::string &raw)
   {
     const std::string v = ToLowerCopy(Trim(raw));
@@ -59,10 +103,13 @@ namespace
     if (v == "stagec_opticalrve" || v == "opticalrve")
       return RunMode::StageC_OpticalRVE;
 
+    if (v == "staged_opticalhomogenization" || v == "staged" || v == "d")
+      return RunMode::StageD_OpticalHomogenization;
+
     G4Exception("AnalysisMessenger::ParseRunModeOrThrow",
                 "BNZS_CFG_001", FatalException,
                 ("Unknown run mode: " + raw +
-                 ". Supported values: StageA_NeutronPatch, StageB_ReplayAlphaLi, StageC_OpticalStub, StageC_OpticalRVE")
+                 ". Supported values: StageA_NeutronPatch, StageB_ReplayAlphaLi, StageC_OpticalStub, StageC_OpticalRVE, StageD_OpticalHomogenization")
                     .c_str());
 
     return RunMode::StageB_ReplayAlphaLi;
@@ -205,6 +252,17 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
       fUseRandomPlacementCmd(nullptr),
       fAllowThicknessEqualCmd(nullptr),
       fWriteStageCPhotonCsvCmd(nullptr),
+      fStageDDir(nullptr),
+      fStageDWavelengthNmCmd(nullptr),
+      fStageDSourceModeCmd(nullptr),
+      fStageDBoundaryModeCmd(nullptr),
+      fStageDReentryModeCmd(nullptr),
+      fStageDMatrixReentryModeCmd(nullptr),
+      fStageDThetaThresholdDegCmd(nullptr),
+      fStageDMaxReentryCmd(nullptr),
+      fStageDMaxStepsCmd(nullptr),
+      fStageDMaxPathLengthUmCmd(nullptr),
+      fStageDOutputDirCmd(nullptr),
       fOpticalSamplesPerStepCmd(nullptr),
       fOpticalParamsCmd(nullptr),
       fWeightRatioCmd(nullptr)
@@ -214,7 +272,7 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
 
   fRunModeCmd = new G4UIcmdWithAString("/cfg/setRunMode", this);
   fRunModeCmd->SetGuidance("Set analysis run mode.");
-  fRunModeCmd->SetGuidance("Supported: StageA_NeutronPatch | StageB_ReplayAlphaLi | StageC_OpticalStub | StageC_OpticalRVE");
+  fRunModeCmd->SetGuidance("Supported: StageA_NeutronPatch | StageB_ReplayAlphaLi | StageC_OpticalStub | StageC_OpticalRVE | StageD_OpticalHomogenization");
   fRunModeCmd->SetParameterName("runMode", false);
   fRunModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -259,6 +317,64 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
   fWriteStageCPhotonCsvCmd->SetGuidance("Default is false to avoid very large output files.");
   fWriteStageCPhotonCsvCmd->SetParameterName("writePhotonCsv", false);
   fWriteStageCPhotonCsvCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDDir = new G4UIdirectory("/cfg/stageD/");
+  fStageDDir->SetGuidance("Stage D optical homogenization configuration.");
+
+  fStageDWavelengthNmCmd = new G4UIcmdWithADouble("/cfg/stageD/setWavelengthNm", this);
+  fStageDWavelengthNmCmd->SetGuidance("Set Stage D optical photon wavelength in nm.");
+  fStageDWavelengthNmCmd->SetParameterName("wavelengthNm", false);
+  fStageDWavelengthNmCmd->SetRange("wavelengthNm>0.");
+  fStageDWavelengthNmCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDSourceModeCmd = new G4UIcmdWithAString("/cfg/stageD/setSourceMode", this);
+  fStageDSourceModeCmd->SetGuidance("Set Stage D source mode: uniform_ZnS | uniform_all_phase | from_zns_step_sources.");
+  fStageDSourceModeCmd->SetParameterName("sourceMode", false);
+  fStageDSourceModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDBoundaryModeCmd = new G4UIcmdWithAString("/cfg/stageD/setBoundaryMode", this);
+  fStageDBoundaryModeCmd->SetGuidance("Set Stage D boundary mode: escape | same_phase_reentry.");
+  fStageDBoundaryModeCmd->SetParameterName("boundaryMode", false);
+  fStageDBoundaryModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDReentryModeCmd = new G4UIcmdWithAString("/cfg/stageD/setReentryMode", this);
+  fStageDReentryModeCmd->SetGuidance("Set Stage D same-phase sphere re-entry mode: same_phase_rho_over_R | same_phase_random.");
+  fStageDReentryModeCmd->SetParameterName("reentryMode", false);
+  fStageDReentryModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDMatrixReentryModeCmd = new G4UIcmdWithAString("/cfg/stageD/setMatrixReentryMode", this);
+  fStageDMatrixReentryModeCmd->SetGuidance("Set Stage D matrix re-entry mode: random_matrix | distance_matched_matrix.");
+  fStageDMatrixReentryModeCmd->SetParameterName("matrixReentryMode", false);
+  fStageDMatrixReentryModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDThetaThresholdDegCmd = new G4UIcmdWithADouble("/cfg/stageD/setThetaThresholdDeg", this);
+  fStageDThetaThresholdDegCmd->SetGuidance("Set Stage D minimum direction change angle counted as effective scatter.");
+  fStageDThetaThresholdDegCmd->SetParameterName("thetaThresholdDeg", false);
+  fStageDThetaThresholdDegCmd->SetRange("thetaThresholdDeg>=0.");
+  fStageDThetaThresholdDegCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDMaxReentryCmd = new G4UIcmdWithAnInteger("/cfg/stageD/setMaxReentry", this);
+  fStageDMaxReentryCmd->SetGuidance("Set Stage D maximum allowed statistical re-entries per photon.");
+  fStageDMaxReentryCmd->SetParameterName("maxReentry", false);
+  fStageDMaxReentryCmd->SetRange("maxReentry>0");
+  fStageDMaxReentryCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDMaxStepsCmd = new G4UIcmdWithAnInteger("/cfg/stageD/setMaxSteps", this);
+  fStageDMaxStepsCmd->SetGuidance("Set Stage D maximum allowed Geant4 steps per photon.");
+  fStageDMaxStepsCmd->SetParameterName("maxSteps", false);
+  fStageDMaxStepsCmd->SetRange("maxSteps>0");
+  fStageDMaxStepsCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDMaxPathLengthUmCmd = new G4UIcmdWithADouble("/cfg/stageD/setMaxPathLengthUm", this);
+  fStageDMaxPathLengthUmCmd->SetGuidance("Set Stage D maximum accumulated physical path length per photon in um.");
+  fStageDMaxPathLengthUmCmd->SetParameterName("maxPathLengthUm", false);
+  fStageDMaxPathLengthUmCmd->SetRange("maxPathLengthUm>0.");
+  fStageDMaxPathLengthUmCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDOutputDirCmd = new G4UIcmdWithAString("/cfg/stageD/setOutputDir", this);
+  fStageDOutputDirCmd->SetGuidance("Override Stage D output directory.");
+  fStageDOutputDirCmd->SetParameterName("outputDir", false);
+  fStageDOutputDirCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
   fOpticalSamplesPerStepCmd = new G4UIcommand("/cfg/setSamplePhotonsPerStep", this);
   fOpticalSamplesPerStepCmd->SetGuidance("Set Stage C sampled optical photons per ZnS step.");
@@ -308,6 +424,17 @@ AnalysisMessenger::~AnalysisMessenger()
   delete fOpticalParamsCmd;
   delete fOpticalSamplesPerStepCmd;
   delete fWriteStageCPhotonCsvCmd;
+  delete fStageDOutputDirCmd;
+  delete fStageDMaxPathLengthUmCmd;
+  delete fStageDMaxStepsCmd;
+  delete fStageDMaxReentryCmd;
+  delete fStageDThetaThresholdDegCmd;
+  delete fStageDMatrixReentryModeCmd;
+  delete fStageDReentryModeCmd;
+  delete fStageDBoundaryModeCmd;
+  delete fStageDSourceModeCmd;
+  delete fStageDWavelengthNmCmd;
+  delete fStageDDir;
   delete fAllowThicknessEqualCmd;
   delete fUseRandomPlacementCmd;
   delete fPlacementFileCmd;
@@ -486,6 +613,123 @@ void AnalysisMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
 
     G4cout << "[AnalysisMessenger] writeStageCPhotonCsv set to "
            << (fConfig->writeStageCPhotonCsv ? "true" : "false")
+           << G4endl;
+    return;
+  }
+  if (command == fStageDWavelengthNmCmd)
+  {
+    fConfig->stageD_wavelength_nm =
+        fStageDWavelengthNmCmd->GetNewDoubleValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_wavelength_nm set to "
+           << fConfig->stageD_wavelength_nm
+           << G4endl;
+    return;
+  }
+  if (command == fStageDSourceModeCmd)
+  {
+    const std::string normalized = NormalizeStageDSourceMode(newValue);
+    if (normalized.empty())
+    {
+      G4Exception("AnalysisMessenger::SetNewValue",
+                  "BNZS_CFG_009", FatalException,
+                  "Stage D sourceMode must be uniform_ZnS, uniform_all_phase, or from_zns_step_sources.");
+      return;
+    }
+    fConfig->stageD_source_mode = normalized;
+    G4cout << "[AnalysisMessenger] stageD_source_mode set to "
+           << fConfig->stageD_source_mode
+           << G4endl;
+    return;
+  }
+  if (command == fStageDBoundaryModeCmd)
+  {
+    const std::string normalized = NormalizeStageDBoundaryMode(newValue);
+    if (normalized.empty())
+    {
+      G4Exception("AnalysisMessenger::SetNewValue",
+                  "BNZS_CFG_010", FatalException,
+                  "Stage D boundaryMode must be escape or same_phase_reentry.");
+      return;
+    }
+    fConfig->stageD_boundary_mode = normalized;
+    G4cout << "[AnalysisMessenger] stageD_boundary_mode set to "
+           << fConfig->stageD_boundary_mode
+           << G4endl;
+    return;
+  }
+  if (command == fStageDReentryModeCmd)
+  {
+    const std::string normalized = NormalizeStageDReentryMode(newValue);
+    if (normalized.empty())
+    {
+      G4Exception("AnalysisMessenger::SetNewValue",
+                  "BNZS_CFG_011", FatalException,
+                  "Stage D reentryMode must be same_phase_rho_over_R or same_phase_random.");
+      return;
+    }
+    fConfig->stageD_reentry_mode = normalized;
+    G4cout << "[AnalysisMessenger] stageD_reentry_mode set to "
+           << fConfig->stageD_reentry_mode
+           << G4endl;
+    return;
+  }
+  if (command == fStageDMatrixReentryModeCmd)
+  {
+    const std::string normalized = NormalizeStageDMatrixReentryMode(newValue);
+    if (normalized.empty())
+    {
+      G4Exception("AnalysisMessenger::SetNewValue",
+                  "BNZS_CFG_012", FatalException,
+                  "Stage D matrixReentryMode must be random_matrix or distance_matched_matrix.");
+      return;
+    }
+    fConfig->stageD_matrix_reentry_mode = normalized;
+    G4cout << "[AnalysisMessenger] stageD_matrix_reentry_mode set to "
+           << fConfig->stageD_matrix_reentry_mode
+           << G4endl;
+    return;
+  }
+  if (command == fStageDThetaThresholdDegCmd)
+  {
+    fConfig->stageD_theta_threshold_deg =
+        fStageDThetaThresholdDegCmd->GetNewDoubleValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_theta_threshold_deg set to "
+           << fConfig->stageD_theta_threshold_deg
+           << G4endl;
+    return;
+  }
+  if (command == fStageDMaxReentryCmd)
+  {
+    fConfig->stageD_max_reentry =
+        fStageDMaxReentryCmd->GetNewIntValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_max_reentry set to "
+           << fConfig->stageD_max_reentry
+           << G4endl;
+    return;
+  }
+  if (command == fStageDMaxStepsCmd)
+  {
+    fConfig->stageD_max_steps =
+        fStageDMaxStepsCmd->GetNewIntValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_max_steps set to "
+           << fConfig->stageD_max_steps
+           << G4endl;
+    return;
+  }
+  if (command == fStageDMaxPathLengthUmCmd)
+  {
+    fConfig->stageD_max_path_length_um =
+        fStageDMaxPathLengthUmCmd->GetNewDoubleValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_max_path_length_um set to "
+           << fConfig->stageD_max_path_length_um
+           << G4endl;
+    return;
+  }
+  if (command == fStageDOutputDirCmd)
+  {
+    fConfig->stageD_output_dir = Trim(newValue);
+    G4cout << "[AnalysisMessenger] stageD_output_dir set to "
+           << fConfig->stageD_output_dir
            << G4endl;
     return;
   }

@@ -36,6 +36,11 @@ G4ClassificationOfNewTrack StageAStackingAction::ClassifyNewTrack(const G4Track 
     const G4ParticleDefinition *particle = track->GetParticleDefinition();
     const G4String particleName = (particle != nullptr) ? particle->GetParticleName() : "unknown";
 
+    if (fConfig != nullptr && fConfig->runMode != RunMode::StageA_NeutronPatch)
+    {
+        return fUrgent;
+    }
+
     // 保留所有 primary
     if (track->GetParentID() == 0)
     {

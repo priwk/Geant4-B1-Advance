@@ -627,6 +627,66 @@ DetectorConstruction::DetectorConstruction(AnalysisConfig *config)
 
 DetectorConstruction::~DetectorConstruction() = default;
 
+DetectorConstruction::Phase DetectorConstruction::FindPhaseAtPointUm(
+    G4double xUm,
+    G4double yUm,
+    G4double zUm) const
+{
+  return FindPhaseAtPoint(G4ThreeVector(xUm * um, yUm * um, zUm * um));
+}
+
+DetectorConstruction::Phase DetectorConstruction::FindPhaseAtPoint(
+    const G4ThreeVector &point) const
+{
+  const G4double halfX = 0.5 * fPatchXY;
+  const G4double halfY = 0.5 * fPatchXY;
+  const G4double halfZ = 0.5 * GetEffectiveLocalThickness();
+
+  const auto isInsideSphere = [&](const SphereInfo &sphere)
+  {
+    return (point - sphere.center).mag2() <= sphere.radius * sphere.radius;
+  };
+
+  for (const auto &sphere : fBNSpheres)
+  {
+    if (isInsideSphere(sphere))
+      return Phase::BN;
+  }
+
+  for (const auto &sphere : fZnSSpheres)
+  {
+    if (isInsideSphere(sphere))
+      return Phase::ZnS;
+  }
+
+  if (std::abs(point.x()) <= halfX &&
+      std::abs(point.y()) <= halfY &&
+      std::abs(point.z()) <= halfZ)
+  {
+    return Phase::Matrix;
+  }
+
+  return Phase::World;
+}
+
+const char *DetectorConstruction::PhaseName(Phase phase)
+{
+  switch (phase)
+  {
+  case Phase::BN:
+    return "BN";
+  case Phase::ZnS:
+    return "ZnS";
+  case Phase::Matrix:
+    return "Matrix";
+  case Phase::World:
+    return "World";
+  case Phase::Unknown:
+  default:
+    return "Unknown";
+  }
+}
+
 // --------------------------------------------------------------------
 
 void DetectorConstruction::NotifyGeometryChanged()
@@ -948,6 +1008,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   fSafeBNCenters.clear();
   fUsableZnSCandidateCenters.clear();
   fPlacedZnSCenters.clear();
+  fBNSpheres.clear();
+  fZnSSpheres.clear();
   fLoadedPlacementSeedBase = "";
 
   // ---- sync latest config before geometry construction ----
@@ -1035,6 +1097,26 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   fPlacedBNCenters = loaded.bnCenters;
   fPlacedZnSCenters = loaded.znsCenters;
+
+  fBNSpheres.reserve(fPlacedBNCenters.size());
+  for (const auto &center : fPlacedBNCenters)
+  {
+    SphereInfo sphere;
+    sphere.phase = Phase::BN;
+    sphere.center = center;
+    sphere.radius = fBNRadius;
+    fBNSpheres.push_back(sphere);
+  }
+
+  fZnSSpheres.reserve(fPlacedZnSCenters.size());
+  for (const auto &center : fPlacedZnSCenters)
+  {
+    SphereInfo sphere;
+    sphere.phase = Phase::ZnS;
+    sphere.center = center;
+    sphere.radius = fZnSRadius;
+    fZnSSpheres.push_back(sphere);
+  }
 
   fSafeBNCenters.clear();
   for (const auto &pos : fPlacedBNCenters)

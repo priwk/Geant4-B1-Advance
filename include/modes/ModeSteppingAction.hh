@@ -15,6 +15,9 @@ class StageASteppingAction;
 class StageCOpticalRunAction;
 class StageCOpticalPrimaryGeneratorAction;
 class StageCOpticalSteppingAction;
+class StageDOpticalRunAction;
+class StageDOpticalSteppingAction;
+class StageDOpticalEventAction;
 
 class ModeSteppingAction : public G4UserSteppingAction
 {
@@ -24,20 +27,26 @@ public:
                      ModePrimaryGeneratorAction *modePrimaryAction,
                      EventAction *stageBEventAction,
                      PrimaryGeneratorAction *stageBPrimaryAction,
-                     StageCOpticalPrimaryGeneratorAction *stageCPrimaryAction);
+                     StageCOpticalPrimaryGeneratorAction *stageCPrimaryAction,
+                     StageDOpticalEventAction *stageDEventAction);
   ~ModeSteppingAction() override;
 
   void UserSteppingAction(const G4Step *step) override;
+
+private:
+  StageDOpticalSteppingAction *EnsureStageDSteppingAction();
 
 private:
   AnalysisConfig *fConfig;
   ModePrimaryGeneratorAction *fModePrimaryAction;
   StageCOpticalRunAction *fStageCRunAction;
   StageCOpticalPrimaryGeneratorAction *fStageCPrimaryAction;
+  StageDOpticalRunAction *fStageDRunAction;
 
   SteppingAction *fStageBSteppingAction;
   StageASteppingAction *fStageASteppingAction;
   StageCOpticalSteppingAction *fStageCSteppingAction;
+  StageDOpticalSteppingAction *fStageDSteppingAction;
 };
 
 #endif

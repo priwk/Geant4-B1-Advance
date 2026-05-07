@@ -4,6 +4,7 @@
 #include "RunAction.hh"
 #include "StageARunAction.hh"
 #include "StageCOpticalRunAction.hh"
+#include "StageDOpticalRunAction.hh"
 
 #include "G4Run.hh"
 #include "G4Exception.hh"
@@ -14,7 +15,8 @@ ModeRunAction::ModeRunAction(AnalysisConfig *config)
       fConfig(config),
       fStageBRunAction(nullptr),
       fStageARunAction(nullptr),
-      fStageCRunAction(nullptr)
+      fStageCRunAction(nullptr),
+      fStageDRunAction(nullptr)
 {
     if (fConfig == nullptr)
     {
@@ -29,6 +31,7 @@ ModeRunAction::ModeRunAction(AnalysisConfig *config)
     fStageBRunAction = new RunAction(nullptr, fConfig);
     fStageARunAction = new StageARunAction(fConfig);
     fStageCRunAction = new StageCOpticalRunAction(fConfig);
+    fStageDRunAction = new StageDOpticalRunAction(fConfig);
 
     G4cout << "[ModeRunAction] Dispatcher initialized."
            << " current runMode = "
@@ -41,6 +44,7 @@ ModeRunAction::~ModeRunAction()
     delete fStageARunAction;
     delete fStageBRunAction;
     delete fStageCRunAction;
+    delete fStageDRunAction;
 }
 
 void ModeRunAction::BeginOfRunAction(const G4Run *run)
@@ -92,6 +96,17 @@ void ModeRunAction::BeginOfRunAction(const G4Run *run)
             return;
         }
         fStageCRunAction->BeginOfRunAction(run);
+        return;
+
+    case RunMode::StageD_OpticalHomogenization:
+        if (fStageDRunAction == nullptr)
+        {
+            G4Exception("ModeRunAction::BeginOfRunAction",
+                        "BNZS_MODE_RUN_014", FatalException,
+                        "Stage D optical run action is null.");
+            return;
+        }
+        fStageDRunAction->BeginOfRunAction(run);
         return;
 
     default:
@@ -153,6 +168,17 @@ void ModeRunAction::EndOfRunAction(const G4Run *run)
         fStageCRunAction->EndOfRunAction(run);
         return;
 
+    case RunMode::StageD_OpticalHomogenization:
+        if (fStageDRunAction == nullptr)
+        {
+            G4Exception("ModeRunAction::EndOfRunAction",
+                        "BNZS_MODE_RUN_015", FatalException,
+                        "Stage D optical run action is null.");
+            return;
+        }
+        fStageDRunAction->EndOfRunAction(run);
+        return;
+
     default:
         G4Exception("ModeRunAction::EndOfRunAction",
                     "BNZS_MODE_RUN_011", FatalException,
@@ -174,6 +200,11 @@ StageARunAction *ModeRunAction::GetStageARunAction() const
 StageCOpticalRunAction *ModeRunAction::GetStageCRunAction() const
 {
     return fStageCRunAction;
+}
+
+StageDOpticalRunAction *ModeRunAction::GetStageDRunAction() const
+{
+    return fStageDRunAction;
 }
 
 void ModeRunAction::SetStageBPrimaryAction(const PrimaryGeneratorAction *primaryAction)

@@ -29,6 +29,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include/stageA
   ${PROJECT_SOURCE_DIR}/include/stageB
   ${PROJECT_SOURCE_DIR}/include/stageC
+  ${PROJECT_SOURCE_DIR}/include/stageD
   )
 
 
@@ -57,6 +58,7 @@ set(BNZS_SCRIPTS
   StageA.mac
   StageC_test.mac
   StageC_OpticalRVE.mac
+  StageD_OpticalHomogenization.mac
   )
 
 foreach(_script ${BNZS_SCRIPTS})
