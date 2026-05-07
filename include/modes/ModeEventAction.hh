@@ -9,6 +9,7 @@ class AnalysisConfig;
 class ModeRunAction;
 class ModePrimaryGeneratorAction;
 class EventAction;
+class StageDOpticalEventAction;
 
 class ModeEventAction : public G4UserEventAction
 {
@@ -23,10 +24,18 @@ public:
 
   // For ModeSteppingAction to reuse the existing Stage B event logic
   EventAction* GetStageBEventAction() const;
+  StageDOpticalEventAction* GetStageDEventAction() const;
+
+private:
+  StageDOpticalEventAction* EnsureStageDEventAction();
+  EventAction* EnsureStageBEventAction();
 
 private:
   AnalysisConfig* fConfig;
+  ModeRunAction* fModeRunAction;
+  ModePrimaryGeneratorAction* fModePrimaryAction;
   EventAction* fStageBEventAction;
+  StageDOpticalEventAction* fStageDEventAction;
 };
 
 #endif

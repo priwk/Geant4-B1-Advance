@@ -11,6 +11,7 @@ class StageARunAction;
 class PrimaryGeneratorAction;
 class StageCOpticalPrimaryGeneratorAction;
 class StageCOpticalRunAction;
+class StageDOpticalRunAction;
 
 class ModeRunAction : public G4UserRunAction
 {
@@ -25,6 +26,7 @@ public:
   RunAction *GetStageBRunAction() const;
   StageARunAction *GetStageARunAction() const;
   StageCOpticalRunAction *GetStageCRunAction() const;
+  StageDOpticalRunAction *GetStageDRunAction() const;
   void SetStageBPrimaryAction(const PrimaryGeneratorAction *primaryAction);
   void SetStageCPrimaryAction(const StageCOpticalPrimaryGeneratorAction *primaryAction);
 
@@ -34,6 +36,7 @@ private:
   RunAction *fStageBRunAction;
   StageARunAction *fStageARunAction;
   StageCOpticalRunAction *fStageCRunAction;
+  StageDOpticalRunAction *fStageDRunAction;
 };
 
 #endif

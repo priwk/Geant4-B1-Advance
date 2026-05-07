@@ -7,6 +7,8 @@ class AnalysisConfig;
 class G4UIdirectory;
 class G4UIcmdWithAString;
 class G4UIcmdWithABool;
+class G4UIcmdWithADouble;
+class G4UIcmdWithAnInteger;
 class G4UIcommand;
 
 class AnalysisMessenger : public G4UImessenger
@@ -30,6 +32,17 @@ private:
   G4UIcmdWithABool *fUseRandomPlacementCmd;
   G4UIcmdWithABool *fAllowThicknessEqualCmd;
   G4UIcmdWithABool *fWriteStageCPhotonCsvCmd;
+  G4UIdirectory *fStageDDir;
+  G4UIcmdWithADouble *fStageDWavelengthNmCmd;
+  G4UIcmdWithAString *fStageDSourceModeCmd;
+  G4UIcmdWithAString *fStageDBoundaryModeCmd;
+  G4UIcmdWithAString *fStageDReentryModeCmd;
+  G4UIcmdWithAString *fStageDMatrixReentryModeCmd;
+  G4UIcmdWithADouble *fStageDThetaThresholdDegCmd;
+  G4UIcmdWithAnInteger *fStageDMaxReentryCmd;
+  G4UIcmdWithAnInteger *fStageDMaxStepsCmd;
+  G4UIcmdWithADouble *fStageDMaxPathLengthUmCmd;
+  G4UIcmdWithAString *fStageDOutputDirCmd;
   G4UIcommand *fOpticalSamplesPerStepCmd;
   G4UIcommand *fOpticalParamsCmd;
   G4UIcommand *fWeightRatioCmd;

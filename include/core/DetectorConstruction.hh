@@ -6,6 +6,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4ThreeVector.hh"
 
+#include <string>
 #include <vector>
 
 class G4VPhysicalVolume;
@@ -16,6 +17,22 @@ class AnalysisConfig;
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
+  enum class Phase
+  {
+    BN,
+    ZnS,
+    Matrix,
+    World,
+    Unknown
+  };
+
+  struct SphereInfo
+  {
+    Phase phase = Phase::Unknown;
+    G4ThreeVector center;
+    G4double radius = 0.0;
+  };
+
   explicit DetectorConstruction(AnalysisConfig *config);
   ~DetectorConstruction() override;
 
@@ -52,10 +69,23 @@ public:
   const std::vector<G4ThreeVector> &GetSafeBNCenters() const { return fSafeBNCenters; }
   const std::vector<G4ThreeVector> &GetUsableZnSCandidateCenters() const { return fUsableZnSCandidateCenters; }
   const std::vector<G4ThreeVector> &GetPlacedZnSCenters() const { return fPlacedZnSCenters; }
+  const std::vector<SphereInfo> &GetBNSpheres() const { return fBNSpheres; }
+  const std::vector<SphereInfo> &GetZnSSpheres() const { return fZnSSpheres; }
 
   const G4String &GetLoadedPlacementFile() const { return fLoadedPlacementFile; }
   const G4String &GetLoadedPlacementFileForRecord() const { return fLoadedPlacementFileForRecord; }
   const G4String &GetLoadedPlacementSeedBase() const { return fLoadedPlacementSeedBase; }
+
+  G4double GetPatchHalfXUm() const { return 0.5 * fPatchXY / um; }
+  G4double GetPatchHalfYUm() const { return 0.5 * fPatchXY / um; }
+  G4double GetPatchHalfZUm() const { return 0.5 * GetEffectiveLocalThickness() / um; }
+  G4double GetPatchXUm() const { return fPatchXY / um; }
+  G4double GetPatchYUm() const { return fPatchXY / um; }
+  G4double GetPatchZUm() const { return GetEffectiveLocalThickness() / um; }
+
+  Phase FindPhaseAtPointUm(G4double xUm, G4double yUm, G4double zUm) const;
+  Phase FindPhaseAtPoint(const G4ThreeVector &point) const;
+  static const char *PhaseName(Phase phase);
 
 private:
   void DefineMaterials();
@@ -107,6 +137,8 @@ private:
   std::vector<G4ThreeVector> fSafeBNCenters;
   std::vector<G4ThreeVector> fUsableZnSCandidateCenters;
   std::vector<G4ThreeVector> fPlacedZnSCenters;
+  std::vector<SphereInfo> fBNSpheres;
+  std::vector<SphereInfo> fZnSSpheres;
 
   // ---- shared analysis config ----
   AnalysisConfig *fConfig;

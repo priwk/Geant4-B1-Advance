@@ -9,6 +9,7 @@ class AnalysisConfig;
 class PrimaryGeneratorAction;
 class StageAPrimaryGeneratorAction;
 class StageCOpticalPrimaryGeneratorAction;
+class StageDOpticalPrimaryGeneratorAction;
 
 class ModePrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -21,6 +22,7 @@ public:
   // For ModeEventAction / ModeSteppingAction to reuse the existing Stage B chain
   PrimaryGeneratorAction *GetStageBPrimaryAction() const;
   StageCOpticalPrimaryGeneratorAction *GetStageCPrimaryAction();
+  StageDOpticalPrimaryGeneratorAction *GetStageDPrimaryAction();
 
 private:
   AnalysisConfig *fConfig;
@@ -29,6 +31,7 @@ private:
   PrimaryGeneratorAction *fStageBPrimary;
   StageAPrimaryGeneratorAction *fStageAPrimary;
   StageCOpticalPrimaryGeneratorAction *fStageCPrimary;
+  StageDOpticalPrimaryGeneratorAction *fStageDPrimary;
 };
 
 #endif

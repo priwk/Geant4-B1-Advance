@@ -7,6 +7,9 @@
 #include "RunAction.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "EventAction.hh"
+#include "StageDOpticalEventAction.hh"
+#include "StageDOpticalPrimaryGeneratorAction.hh"
+#include "StageDOpticalRunAction.hh"
 
 #include "G4Event.hh"
 #include "G4Exception.hh"
@@ -17,7 +20,10 @@ ModeEventAction::ModeEventAction(ModeRunAction *modeRunAction,
                                  AnalysisConfig *config)
     : G4UserEventAction(),
       fConfig(config),
-      fStageBEventAction(nullptr)
+      fModeRunAction(modeRunAction),
+      fModePrimaryAction(modePrimaryAction),
+      fStageBEventAction(nullptr),
+      fStageDEventAction(nullptr)
 {
   if (fConfig == nullptr)
   {
@@ -27,7 +33,7 @@ ModeEventAction::ModeEventAction(ModeRunAction *modeRunAction,
     return;
   }
 
-  if (modeRunAction == nullptr)
+  if (fModeRunAction == nullptr)
   {
     G4Exception("ModeEventAction::ModeEventAction",
                 "BNZS_MODE_EVT_002", FatalException,
@@ -35,7 +41,7 @@ ModeEventAction::ModeEventAction(ModeRunAction *modeRunAction,
     return;
   }
 
-  if (modePrimaryAction == nullptr)
+  if (fModePrimaryAction == nullptr)
   {
     G4Exception("ModeEventAction::ModeEventAction",
                 "BNZS_MODE_EVT_003", FatalException,
@@ -44,12 +50,23 @@ ModeEventAction::ModeEventAction(ModeRunAction *modeRunAction,
   }
 
   // Reuse the existing Stage B event implementation
-  RunAction *stageBRunAction = modeRunAction->GetStageBRunAction();
-  PrimaryGeneratorAction *stageBPrimaryAction = modePrimaryAction->GetStageBPrimaryAction();
+  RunAction *stageBRunAction = fModeRunAction->GetStageBRunAction();
+  PrimaryGeneratorAction *stageBPrimaryAction = fModePrimaryAction->GetStageBPrimaryAction();
 
   if (stageBRunAction != nullptr && stageBPrimaryAction != nullptr)
   {
     fStageBEventAction = new EventAction(stageBRunAction, stageBPrimaryAction);
+  }
+
+  StageDOpticalRunAction *stageDRunAction = fModeRunAction->GetStageDRunAction();
+  StageDOpticalPrimaryGeneratorAction *stageDPrimaryAction =
+      fModePrimaryAction->GetStageDPrimaryAction();
+  if (stageDRunAction != nullptr && stageDPrimaryAction != nullptr)
+  {
+    fStageDEventAction = new StageDOpticalEventAction(
+        stageDRunAction,
+        stageDPrimaryAction,
+        fConfig);
   }
 
   G4cout << "[ModeEventAction] Dispatcher initialized."
@@ -61,6 +78,43 @@ ModeEventAction::ModeEventAction(ModeRunAction *modeRunAction,
 ModeEventAction::~ModeEventAction()
 {
   delete fStageBEventAction;
+  delete fStageDEventAction;
+}
+
+EventAction *ModeEventAction::EnsureStageBEventAction()
+{
+  if (fStageBEventAction != nullptr)
+    return fStageBEventAction;
+  if (fModeRunAction == nullptr || fModePrimaryAction == nullptr)
+    return nullptr;
+
+  RunAction *stageBRunAction = fModeRunAction->GetStageBRunAction();
+  PrimaryGeneratorAction *stageBPrimaryAction = fModePrimaryAction->GetStageBPrimaryAction();
+  if (stageBRunAction != nullptr && stageBPrimaryAction != nullptr)
+  {
+    fStageBEventAction = new EventAction(stageBRunAction, stageBPrimaryAction);
+  }
+  return fStageBEventAction;
+}
+
+StageDOpticalEventAction *ModeEventAction::EnsureStageDEventAction()
+{
+  if (fStageDEventAction != nullptr)
+    return fStageDEventAction;
+  if (fModeRunAction == nullptr || fModePrimaryAction == nullptr)
+    return nullptr;
+
+  StageDOpticalRunAction *stageDRunAction = fModeRunAction->GetStageDRunAction();
+  StageDOpticalPrimaryGeneratorAction *stageDPrimaryAction =
+      fModePrimaryAction->GetStageDPrimaryAction();
+  if (stageDRunAction != nullptr && stageDPrimaryAction != nullptr)
+  {
+    fStageDEventAction = new StageDOpticalEventAction(
+        stageDRunAction,
+        stageDPrimaryAction,
+        fConfig);
+  }
+  return fStageDEventAction;
 }
 
 void ModeEventAction::BeginOfEventAction(const G4Event *event)
@@ -80,7 +134,7 @@ void ModeEventAction::BeginOfEventAction(const G4Event *event)
     return;
 
   case RunMode::StageB_ReplayAlphaLi:
-    if (fStageBEventAction == nullptr)
+    if (EnsureStageBEventAction() == nullptr)
     {
       G4Exception("ModeEventAction::BeginOfEventAction",
                   "BNZS_MODE_EVT_005", FatalException,
@@ -97,6 +151,17 @@ void ModeEventAction::BeginOfEventAction(const G4Event *event)
     return;
 
   case RunMode::StageC_OpticalRVE:
+    return;
+
+  case RunMode::StageD_OpticalHomogenization:
+    if (EnsureStageDEventAction() == nullptr)
+    {
+      G4Exception("ModeEventAction::BeginOfEventAction",
+                  "BNZS_MODE_EVT_012", FatalException,
+                  "Stage D event action is null.");
+      return;
+    }
+    fStageDEventAction->BeginOfEventAction(event);
     return;
 
   default:
@@ -124,7 +189,7 @@ void ModeEventAction::EndOfEventAction(const G4Event *event)
     return;
 
   case RunMode::StageB_ReplayAlphaLi:
-    if (fStageBEventAction == nullptr)
+    if (EnsureStageBEventAction() == nullptr)
     {
       G4Exception("ModeEventAction::EndOfEventAction",
                   "BNZS_MODE_EVT_009", FatalException,
@@ -143,6 +208,17 @@ void ModeEventAction::EndOfEventAction(const G4Event *event)
   case RunMode::StageC_OpticalRVE:
     return;
 
+  case RunMode::StageD_OpticalHomogenization:
+    if (EnsureStageDEventAction() == nullptr)
+    {
+      G4Exception("ModeEventAction::EndOfEventAction",
+                  "BNZS_MODE_EVT_013", FatalException,
+                  "Stage D event action is null.");
+      return;
+    }
+    fStageDEventAction->EndOfEventAction(event);
+    return;
+
   default:
     G4Exception("ModeEventAction::EndOfEventAction",
                 "BNZS_MODE_EVT_011", FatalException,
@@ -154,4 +230,9 @@ void ModeEventAction::EndOfEventAction(const G4Event *event)
 EventAction *ModeEventAction::GetStageBEventAction() const
 {
   return fStageBEventAction;
+}
+
+StageDOpticalEventAction *ModeEventAction::GetStageDEventAction() const
+{
+  return fStageDEventAction;
 }

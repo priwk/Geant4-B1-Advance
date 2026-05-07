@@ -1,0 +1,19 @@
+# Stage D optical homogenization example
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+/cfg/setRunMode StageD_OpticalHomogenization
+/cfg/stageD/setWavelengthNm 450
+/cfg/stageD/setSourceMode uniform_ZnS
+/cfg/stageD/setBoundaryMode same_phase_reentry
+/cfg/stageD/setReentryMode same_phase_rho_over_R
+/cfg/stageD/setMatrixReentryMode random_matrix
+/cfg/stageD/setThetaThresholdDeg 1.0
+/cfg/stageD/setMaxReentry 10000
+/cfg/stageD/setMaxSteps 100000
+/cfg/stageD/setMaxPathLengthUm 1000000
+
+/run/initialize
+/run/beamOn 1000

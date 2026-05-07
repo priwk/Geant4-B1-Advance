@@ -4,6 +4,7 @@
 #include "PrimaryGeneratorAction.hh"
 #include "StageAPrimaryGeneratorAction.hh"
 #include "StageCOpticalPrimaryGeneratorAction.hh"
+#include "StageDOpticalPrimaryGeneratorAction.hh"
 
 #include "G4Event.hh"
 #include "G4Exception.hh"
@@ -14,7 +15,8 @@ ModePrimaryGeneratorAction::ModePrimaryGeneratorAction(AnalysisConfig *config)
       fConfig(config),
       fStageBPrimary(nullptr),
       fStageAPrimary(nullptr),
-      fStageCPrimary(nullptr)
+      fStageCPrimary(nullptr),
+      fStageDPrimary(nullptr)
 {
     if (fConfig == nullptr)
     {
@@ -22,22 +24,6 @@ ModePrimaryGeneratorAction::ModePrimaryGeneratorAction(AnalysisConfig *config)
                     "BNZS_MODE_PRI_001", FatalException,
                     "AnalysisConfig pointer is null.");
         return;
-    }
-
-    // Build only the primary generator needed for the selected mode.
-    // Stage B opens capture CSV files in its constructor, so constructing it
-    // during Stage A would make neutron-only batches depend on replay inputs.
-    if (fConfig->runMode == RunMode::StageA_NeutronPatch)
-    {
-        fStageAPrimary = new StageAPrimaryGeneratorAction(fConfig);
-    }
-    else if (fConfig->runMode == RunMode::StageB_ReplayAlphaLi)
-    {
-        fStageBPrimary = new PrimaryGeneratorAction(fConfig);
-    }
-    else if (fConfig->runMode == RunMode::StageC_OpticalRVE)
-    {
-        fStageCPrimary = new StageCOpticalPrimaryGeneratorAction(fConfig);
     }
 
     G4cout << "[ModePrimaryGeneratorAction] Dispatcher initialized."
@@ -51,6 +37,7 @@ ModePrimaryGeneratorAction::~ModePrimaryGeneratorAction()
     delete fStageAPrimary;
     delete fStageBPrimary;
     delete fStageCPrimary;
+    delete fStageDPrimary;
 }
 
 void ModePrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
@@ -95,6 +82,14 @@ void ModePrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
         fStageCPrimary->GeneratePrimaries(event);
         return;
 
+    case RunMode::StageD_OpticalHomogenization:
+        if (fStageDPrimary == nullptr)
+        {
+            fStageDPrimary = new StageDOpticalPrimaryGeneratorAction(fConfig);
+        }
+        fStageDPrimary->GeneratePrimaries(event);
+        return;
+
     default:
         G4Exception("ModePrimaryGeneratorAction::GeneratePrimaries",
                     "BNZS_MODE_PRI_006", FatalException,
@@ -117,4 +112,15 @@ StageCOpticalPrimaryGeneratorAction *ModePrimaryGeneratorAction::GetStageCPrimar
         fStageCPrimary = new StageCOpticalPrimaryGeneratorAction(fConfig);
     }
     return fStageCPrimary;
+}
+
+StageDOpticalPrimaryGeneratorAction *ModePrimaryGeneratorAction::GetStageDPrimaryAction()
+{
+    if (fStageDPrimary == nullptr &&
+        fConfig != nullptr &&
+        fConfig->runMode == RunMode::StageD_OpticalHomogenization)
+    {
+        fStageDPrimary = new StageDOpticalPrimaryGeneratorAction(fConfig);
+    }
+    return fStageDPrimary;
 }

@@ -214,6 +214,16 @@ AnalysisConfig::AnalysisConfig()
       opticalBnAbsLengthUm(10.0),
       opticalZnsRIndex(2.36),
       opticalZnsAbsLengthUm(50.0),
+      stageD_wavelength_nm(450.0),
+      stageD_source_mode("uniform_ZnS"),
+      stageD_boundary_mode("same_phase_reentry"),
+      stageD_reentry_mode("same_phase_rho_over_R"),
+      stageD_matrix_reentry_mode("random_matrix"),
+      stageD_theta_threshold_deg(1.0),
+      stageD_max_reentry(10000),
+      stageD_max_steps(100000),
+      stageD_max_path_length_um(1.0e6),
+      stageD_output_dir(""),
       allowThicknessEqualLocalPatch(true)
 {
   const char *runModeEnv = std::getenv("BNZS_RUN_MODE");
@@ -235,6 +245,10 @@ AnalysisConfig::AnalysisConfig()
     else if (mode == "stagec_opticalrve" || mode == "opticalrve")
     {
       runMode = RunMode::StageC_OpticalRVE;
+    }
+    else if (mode == "staged_opticalhomogenization" || mode == "staged" || mode == "d")
+    {
+      runMode = RunMode::StageD_OpticalHomogenization;
     }
   }
 
@@ -359,6 +373,49 @@ AnalysisConfig::AnalysisConfig()
   readOpticalDoubleEnv("BNZS_OPTICAL_ZNS_RINDEX", opticalZnsRIndex);
   readOpticalDoubleEnv("BNZS_OPTICAL_ZNS_ABSLENGTH_UM", opticalZnsAbsLengthUm);
 
+  readOpticalDoubleEnv("BNZS_STAGED_WAVELENGTH_NM", stageD_wavelength_nm);
+  readOpticalDoubleEnv("BNZS_STAGED_THETA_THRESHOLD_DEG", stageD_theta_threshold_deg);
+  readOpticalDoubleEnv("BNZS_STAGED_MAX_PATH_LENGTH_UM", stageD_max_path_length_um);
+
+  auto readPositiveIntEnv = [](const char *name, int &target)
+  {
+    const char *value = std::getenv(name);
+    if (value == nullptr || std::string(value).empty())
+      return;
+    try
+    {
+      const int parsed = std::stoi(value);
+      if (parsed > 0)
+        target = parsed;
+    }
+    catch (...)
+    {
+    }
+  };
+
+  readPositiveIntEnv("BNZS_STAGED_MAX_REENTRY", stageD_max_reentry);
+  readPositiveIntEnv("BNZS_STAGED_MAX_STEPS", stageD_max_steps);
+
+  const char *stageDSourceModeEnv = std::getenv("BNZS_STAGED_SOURCE_MODE");
+  if (stageDSourceModeEnv != nullptr && std::string(stageDSourceModeEnv).size() > 0)
+    stageD_source_mode = stageDSourceModeEnv;
+
+  const char *stageDBoundaryModeEnv = std::getenv("BNZS_STAGED_BOUNDARY_MODE");
+  if (stageDBoundaryModeEnv != nullptr && std::string(stageDBoundaryModeEnv).size() > 0)
+    stageD_boundary_mode = stageDBoundaryModeEnv;
+
+  const char *stageDReentryModeEnv = std::getenv("BNZS_STAGED_REENTRY_MODE");
+  if (stageDReentryModeEnv != nullptr && std::string(stageDReentryModeEnv).size() > 0)
+    stageD_reentry_mode = stageDReentryModeEnv;
+
+  const char *stageDMatrixReentryModeEnv = std::getenv("BNZS_STAGED_MATRIX_REENTRY_MODE");
+  if (stageDMatrixReentryModeEnv != nullptr && std::string(stageDMatrixReentryModeEnv).size() > 0)
+    stageD_matrix_reentry_mode = stageDMatrixReentryModeEnv;
+
+  const char *stageDOutputDirEnv = std::getenv("BNZS_STAGED_OUTPUT_DIR");
+  if (stageDOutputDirEnv != nullptr && std::string(stageDOutputDirEnv).size() > 0)
+    stageD_output_dir = stageDOutputDirEnv;
+
   const char *bnWtEnv = std::getenv("BNZS_BN_WT");
   const char *znsWtEnv = std::getenv("BNZS_ZNS_WT");
   if (bnWtEnv != nullptr && znsWtEnv != nullptr)
@@ -393,6 +450,8 @@ const char *AnalysisConfig::RunModeName(RunMode mode)
     return "StageC_OpticalStub";
   case RunMode::StageC_OpticalRVE:
     return "StageC_OpticalRVE";
+  case RunMode::StageD_OpticalHomogenization:
+    return "StageD_OpticalHomogenization";
   default:
     return "UnknownRunMode";
   }

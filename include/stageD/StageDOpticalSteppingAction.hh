@@ -1,0 +1,40 @@
+#ifndef StageDOpticalSteppingAction_h
+#define StageDOpticalSteppingAction_h 1
+
+#include "G4UserSteppingAction.hh"
+#include "globals.hh"
+
+class G4Step;
+class G4Track;
+class AnalysisConfig;
+class DetectorConstruction;
+class StageDOpticalEventAction;
+class StageDOpticalRunAction;
+class StageDReentrySampler;
+
+class StageDOpticalSteppingAction : public G4UserSteppingAction
+{
+public:
+  StageDOpticalSteppingAction(StageDOpticalRunAction *runAction,
+                              StageDOpticalEventAction *eventAction,
+                              AnalysisConfig *config);
+  ~StageDOpticalSteppingAction() override;
+
+  void UserSteppingAction(const G4Step *step) override;
+
+private:
+  const DetectorConstruction *ResolveDetector() const;
+  G4bool HandleBoundaryReentry(const G4Step *step,
+                               G4Track *track,
+                               const DetectorConstruction *detector);
+  G4bool HandleLimitKills(const G4Step *step, G4Track *track);
+
+private:
+  AnalysisConfig *fConfig;
+  StageDOpticalRunAction *fRunAction;
+  StageDOpticalEventAction *fEventAction;
+  mutable const DetectorConstruction *fDetector;
+  StageDReentrySampler *fReentrySampler;
+};
+
+#endif

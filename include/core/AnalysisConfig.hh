@@ -9,7 +9,8 @@ enum class RunMode
   StageA_NeutronPatch,  // 固定 50x50x30 um^3 微结构 patch 做热中子等效化
   StageB_ReplayAlphaLi, // 读取 capture CSV，重放 alpha / Li7
   StageC_OpticalStub,   // 预留光学接口骨架
-  StageC_OpticalRVE     // 读取 ZnS step source，原位追踪 optical photon
+  StageC_OpticalRVE,    // 读取 ZnS step source，原位追踪 optical photon
+  StageD_OpticalHomogenization // 随机 RVE 统计均匀化光学输运参数
 };
 
 class AnalysisConfig
@@ -55,6 +56,18 @@ public:
   double opticalBnAbsLengthUm;
   double opticalZnsRIndex;
   double opticalZnsAbsLengthUm;
+
+  // ---- Stage D optical homogenization ----
+  double stageD_wavelength_nm;
+  std::string stageD_source_mode;
+  std::string stageD_boundary_mode;
+  std::string stageD_reentry_mode;
+  std::string stageD_matrix_reentry_mode;
+  double stageD_theta_threshold_deg;
+  int stageD_max_reentry;
+  int stageD_max_steps;
+  double stageD_max_path_length_um;
+  std::string stageD_output_dir;
 
   // ---- Stage B 深度映射兼容开关 ----
   // true: 允许 thickness_um == local patch thickness
