@@ -23,6 +23,11 @@ namespace
   {
     return (1239.841984 / wavelengthNm) * eV;
   }
+
+  const char *PhaseToString(DetectorConstruction::Phase phase)
+  {
+    return DetectorConstruction::PhaseName(phase);
+  }
 }
 
 StageDOpticalPrimaryGeneratorAction::StageDOpticalPrimaryGeneratorAction(
@@ -123,6 +128,30 @@ G4ThreeVector StageDOpticalPrimaryGeneratorAction::SampleUniformPointInZnSSphere
   return selected->center + radius * RandomUnitVector();
 }
 
+G4ThreeVector StageDOpticalPrimaryGeneratorAction::SampleUniformPointInWholeRve(
+    std::string &phaseName) const
+{
+  const auto *detector = ResolveDetector();
+  if (detector == nullptr)
+  {
+    G4Exception("StageDOpticalPrimaryGeneratorAction::SampleUniformPointInWholeRve",
+                "BNZS_D_PRI_006", FatalException,
+                "DetectorConstruction is null.");
+    phaseName = "Unknown";
+    return G4ThreeVector();
+  }
+
+  const G4double halfX = detector->GetPatchHalfXUm() * um;
+  const G4double halfY = detector->GetPatchHalfYUm() * um;
+  const G4double halfZ = detector->GetPatchHalfZUm() * um;
+  const G4ThreeVector point(
+      (2.0 * G4UniformRand() - 1.0) * halfX,
+      (2.0 * G4UniformRand() - 1.0) * halfY,
+      (2.0 * G4UniformRand() - 1.0) * halfZ);
+  phaseName = PhaseToString(detector->FindPhaseAtPoint(point));
+  return point;
+}
+
 void StageDOpticalPrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
 {
   if (fConfig == nullptr)
@@ -133,7 +162,8 @@ void StageDOpticalPrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
     return;
   }
 
-  if (fConfig->stageD_source_mode != "uniform_ZnS")
+  if (fConfig->stageD_source_mode != "uniform_ZnS" &&
+      fConfig->stageD_source_mode != "uniform_all_phase")
   {
     G4Exception("StageDOpticalPrimaryGeneratorAction::GeneratePrimaries",
                 "BNZS_D_PRI_005", FatalException,
@@ -143,7 +173,17 @@ void StageDOpticalPrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
     return;
   }
 
-  const G4ThreeVector sourcePosition = SampleUniformPointInZnSSphere();
+  std::string sourcePhase = "ZnS";
+  G4ThreeVector sourcePosition;
+  if (fConfig->stageD_source_mode == "uniform_ZnS")
+  {
+    sourcePosition = SampleUniformPointInZnSSphere();
+    sourcePhase = "ZnS";
+  }
+  else
+  {
+    sourcePosition = SampleUniformPointInWholeRve(sourcePhase);
+  }
   const G4ThreeVector direction = RandomUnitVector();
   const G4ThreeVector polarization = RandomPolarization(direction);
   const G4double energy = EnergyFromWavelengthNm(fConfig->stageD_wavelength_nm);
@@ -152,7 +192,7 @@ void StageDOpticalPrimaryGeneratorAction::GeneratePrimaries(G4Event *event)
   fCurrentPhoton.geantEventID = event->GetEventID();
   fCurrentPhoton.wavelength_nm = fConfig->stageD_wavelength_nm;
   fCurrentPhoton.source_mode = fConfig->stageD_source_mode;
-  fCurrentPhoton.source_phase = "ZnS";
+  fCurrentPhoton.source_phase = sourcePhase;
   fCurrentPhoton.source_position = sourcePosition;
   fCurrentPhoton.momentum_direction = direction;
   fCurrentPhoton.polarization = polarization;

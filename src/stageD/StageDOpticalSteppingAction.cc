@@ -59,6 +59,12 @@ namespace
             std::abs(position.y()) > halfY ||
             std::abs(position.z()) > halfZ);
   }
+
+  G4bool IsParticlePhase(DetectorConstruction::Phase phase)
+  {
+    return phase == DetectorConstruction::Phase::BN ||
+           phase == DetectorConstruction::Phase::ZnS;
+  }
 }
 
 StageDOpticalSteppingAction::StageDOpticalSteppingAction(
@@ -196,6 +202,18 @@ G4bool StageDOpticalSteppingAction::HandleLimitKills(const G4Step *step, G4Track
 
   auto &event = fEventAction->MutableCurrentEvent();
 
+  const G4int primaryScatterCount =
+      (fConfig->stageD_scatter_metric == "step_angle_threshold")
+          ? event.num_real_scatter
+          : event.num_particle_scatter;
+
+  if (primaryScatterCount >= fConfig->stageD_target_primary_scatter)
+  {
+    fEventAction->SetFinalStatus("target_primary_scatter", false);
+    track->SetTrackStatus(fStopAndKill);
+    return true;
+  }
+
   if (event.num_steps >= fConfig->stageD_max_steps)
   {
     fEventAction->SetFinalStatus("max_steps", false);
@@ -256,28 +274,89 @@ void StageDOpticalSteppingAction::UserSteppingAction(const G4Step *step)
           : DetectorConstruction::Phase::World;
 
   const std::string processName = ProcessName(postPoint);
-  if (!isOuterRveExit &&
+  const G4bool isMaterialBoundary =
+      !isOuterRveExit &&
       (processName == "OpBoundary" ||
        (prePhase != DetectorConstruction::Phase::Unknown &&
         postPhase != DetectorConstruction::Phase::Unknown &&
         prePhase != postPhase &&
         prePhase != DetectorConstruction::Phase::World &&
-        postPhase != DetectorConstruction::Phase::World)))
+        postPhase != DetectorConstruction::Phase::World));
+  if (isMaterialBoundary)
   {
     ++event.num_material_boundary;
+  }
+
+  const G4ThreeVector preDir = prePoint->GetMomentumDirection();
+  const G4ThreeVector postDir = postPoint->GetMomentumDirection();
+
+  if (IsParticlePhase(prePhase) &&
+      !event.in_particle_segment)
+  {
+    event.in_particle_segment = true;
+    event.particle_segment_phase = DetectorConstruction::PhaseName(prePhase);
+    event.particle_segment_entry_direction = preDir;
+  }
+
+  if (event.in_particle_segment &&
+      IsParticlePhase(prePhase) &&
+      prePhase != postPhase)
+  {
+    const G4double thetaDeg =
+        AngleDeg(event.particle_segment_entry_direction, postDir);
+    if (thetaDeg > fConfig->stageD_theta_threshold_deg)
+    {
+      const G4double cosTheta = std::clamp(
+          event.particle_segment_entry_direction.dot(postDir),
+          -1.0, 1.0);
+      ++event.num_particle_scatter;
+      event.sum_cos_theta_particle += cosTheta;
+      if (prePhase == DetectorConstruction::Phase::BN)
+      {
+        ++event.num_particle_scatter_BN;
+        event.sum_cos_theta_particle_BN += cosTheta;
+      }
+      else if (prePhase == DetectorConstruction::Phase::ZnS)
+      {
+        ++event.num_particle_scatter_ZnS;
+        event.sum_cos_theta_particle_ZnS += cosTheta;
+      }
+    }
+    event.in_particle_segment = false;
+    event.particle_segment_phase.clear();
   }
 
   if (!isOuterRveExit && processName != "OpAbsorption")
   {
     const G4double thetaDeg =
-        AngleDeg(prePoint->GetMomentumDirection(),
-                 postPoint->GetMomentumDirection());
+        AngleDeg(preDir, postDir);
     if (thetaDeg > fConfig->stageD_theta_threshold_deg)
     {
       ++event.num_real_scatter;
-      event.sum_cos_theta += std::clamp(
-          prePoint->GetMomentumDirection().dot(postPoint->GetMomentumDirection()),
+      const G4double cosTheta = std::clamp(
+          preDir.dot(postDir),
           -1.0, 1.0);
+      event.sum_cos_theta += cosTheta;
+      if (isMaterialBoundary)
+      {
+        ++event.num_boundary_scatter;
+        event.sum_cos_theta_boundary += cosTheta;
+        if (prePhase == DetectorConstruction::Phase::BN)
+        {
+          ++event.num_boundary_scatter_BN;
+          event.sum_cos_theta_boundary_BN += cosTheta;
+        }
+        else if (prePhase == DetectorConstruction::Phase::ZnS)
+        {
+          ++event.num_boundary_scatter_ZnS;
+          event.sum_cos_theta_boundary_ZnS += cosTheta;
+        }
+      }
+      else
+      {
+        ++event.num_bulk_scatter;
+        event.sum_cos_theta_bulk += cosTheta;
+      }
     }
   }
 

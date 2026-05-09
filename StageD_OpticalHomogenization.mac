@@ -10,10 +10,12 @@
 /cfg/stageD/setBoundaryMode same_phase_reentry
 /cfg/stageD/setReentryMode same_phase_rho_over_R
 /cfg/stageD/setMatrixReentryMode random_matrix
-/cfg/stageD/setThetaThresholdDeg 1.0
+/cfg/stageD/setScatterMetric step_angle_threshold
+/cfg/stageD/setTargetPrimaryScatter 160
+/cfg/stageD/setThetaThresholdDeg 0.10
 /cfg/stageD/setMaxReentry 10000
 /cfg/stageD/setMaxSteps 100000
-/cfg/stageD/setMaxPathLengthUm 1000000
+/cfg/stageD/setMaxPathLengthUm 5000
 
 /run/initialize
 /run/beamOn 1000

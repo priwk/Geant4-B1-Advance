@@ -38,6 +38,8 @@ private:
   G4UIcmdWithAString *fStageDBoundaryModeCmd;
   G4UIcmdWithAString *fStageDReentryModeCmd;
   G4UIcmdWithAString *fStageDMatrixReentryModeCmd;
+  G4UIcmdWithAString *fStageDScatterMetricCmd;
+  G4UIcmdWithAnInteger *fStageDTargetPrimaryScatterCmd;
   G4UIcmdWithADouble *fStageDThetaThresholdDegCmd;
   G4UIcmdWithAnInteger *fStageDMaxReentryCmd;
   G4UIcmdWithAnInteger *fStageDMaxStepsCmd;

@@ -55,10 +55,13 @@ namespace
   //   solid  = BN + ZnS particles
   //   binder = binder in matrix background
   //   air    = void in matrix background
+  // Current background split: binder:air = 21.6:14.4 -> void fraction = 0.40
   // --------------------------------------------------------------------
   G4double gSolidPart = 64.0;
   G4double gBinderPart = 21.6;
   G4double gAirPart = 14.4;
+  constexpr G4double kBinderPlexiglassRIndex = 1.49;
+  constexpr G4double kAirRIndex = 1.0;
 
   inline G4double ComputeMatrixVoidFractionFromOverallParts()
   {
@@ -66,7 +69,34 @@ namespace
     if (bgPart <= 0.0)
       return 0.0;
 
-    return gAirPart / bgPart; // 21.6 / (14.4 + 21.6) = 0.60
+    return gAirPart / bgPart; // 14.4 / (21.6 + 14.4) = 0.40
+  }
+
+  inline G4double LorentzLorenzTerm(G4double rindex)
+  {
+    const G4double n2 = rindex * rindex;
+    return (n2 - 1.0) / (n2 + 2.0);
+  }
+
+  inline G4double RIndexFromLorentzLorenzTerm(G4double term)
+  {
+    const G4double clamped = std::clamp(term, -0.499999, 0.999999);
+    const G4double n2 = (1.0 + 2.0 * clamped) / (1.0 - clamped);
+    return (n2 > 0.0) ? std::sqrt(n2) : 1.0;
+  }
+
+  G4double ComputeMatrixRIndexLorentzLorenz()
+  {
+    const G4double bgPart = gBinderPart + gAirPart;
+    if (bgPart <= 0.0)
+      return kBinderPlexiglassRIndex;
+
+    const G4double binderFrac = gBinderPart / bgPart;
+    const G4double airFrac = gAirPart / bgPart;
+    const G4double mixedTerm =
+        binderFrac * LorentzLorenzTerm(kBinderPlexiglassRIndex) +
+        airFrac * LorentzLorenzTerm(kAirRIndex);
+    return RIndexFromLorentzLorenzTerm(mixedTerm);
   }
 
   std::string Trim(const std::string &s)
@@ -897,8 +927,13 @@ void DetectorConstruction::DefineMaterials()
   // ---------------------------------------------------------
   // 2. 基质/空气孔隙混合物 (Binder + Voids Matrix)
   // ---------------------------------------------------------
-  const G4double matrixRIndex = fConfig ? fConfig->opticalMatrixRIndex : 1.5;
+  const G4double matrixRIndex =
+      (fConfig != nullptr && fConfig->opticalMatrixRIndex > 0.0)
+          ? fConfig->opticalMatrixRIndex
+          : ComputeMatrixRIndexLorentzLorenz();
   const G4double matrixAbsLength = (fConfig ? fConfig->opticalMatrixAbsLengthUm : 1.0e6) * um;
+  if (fConfig != nullptr && fConfig->opticalMatrixRIndex <= 0.0)
+    fConfig->opticalMatrixRIndex = matrixRIndex;
   G4double rindexMatrix[] = {matrixRIndex, matrixRIndex, matrixRIndex};
   G4double absMatrix[] = {matrixAbsLength, matrixAbsLength, matrixAbsLength};
   auto *mptMatrix = new G4MaterialPropertiesTable();
@@ -910,7 +945,7 @@ void DetectorConstruction::DefineMaterials()
   // 3. 氮化硼 (BN)
   // ---------------------------------------------------------
   const G4double bnRIndex = fConfig ? fConfig->opticalBnRIndex : 2.1;
-  const G4double bnAbsLength = (fConfig ? fConfig->opticalBnAbsLengthUm : 10.0) * um;
+  const G4double bnAbsLength = (fConfig ? fConfig->opticalBnAbsLengthUm : 1.0e6) * um;
   G4double rindexBN[] = {bnRIndex, bnRIndex, bnRIndex};
   G4double absBN[] = {bnAbsLength, bnAbsLength, bnAbsLength};
   auto *mptBN = new G4MaterialPropertiesTable();
@@ -922,7 +957,7 @@ void DetectorConstruction::DefineMaterials()
   // 4. 闪烁体 (ZnS:Ag 0.1 wt%)
   // ---------------------------------------------------------
   const G4double znsRIndex = fConfig ? fConfig->opticalZnsRIndex : 2.36;
-  const G4double znsAbsLength = (fConfig ? fConfig->opticalZnsAbsLengthUm : 50.0) * um;
+  const G4double znsAbsLength = (fConfig ? fConfig->opticalZnsAbsLengthUm : 1.0e6) * um;
   G4double rindexZnS[] = {znsRIndex, znsRIndex, znsRIndex};
   G4double absZnS[] = {znsAbsLength, znsAbsLength, znsAbsLength};
 
@@ -953,10 +988,24 @@ void DetectorConstruction::DefineMaterials()
 
   if (fConfig != nullptr)
   {
-    if (!fConfig->opticalParamsProvided && fConfig->runMode == RunMode::StageC_OpticalRVE)
+    if (!fConfig->opticalParamsProvided &&
+        (fConfig->runMode == RunMode::StageC_OpticalRVE ||
+         fConfig->runMode == RunMode::StageD_OpticalHomogenization))
     {
-      G4cout << "[DetectorConstruction] Warning: Stage C optical parameters are using built-in placeholder defaults. "
+      G4cout << "[DetectorConstruction] Warning: optical parameters are using built-in defaults/estimates for "
+             << AnalysisConfig::RunModeName(fConfig->runMode) << ". "
+             << "Built-in absorption defaults are intentionally near-transparent placeholders for scatter extraction. "
              << "Set /cfg/setOpticalParams matrix_n matrix_abs_um bn_n bn_abs_um zns_n zns_abs_um for physics runs."
+             << G4endl;
+    }
+
+    if (!fConfig->opticalParamsProvided)
+    {
+      G4cout << "[DetectorConstruction] Auto-estimated matrix n with Lorentz-Lorenz:"
+             << " binder_n=" << kBinderPlexiglassRIndex
+             << " binder_frac=" << (gBinderPart / (gBinderPart + gAirPart))
+             << " air_frac=" << (gAirPart / (gBinderPart + gAirPart))
+             << " -> matrix_n=" << matrixRIndex
              << G4endl;
     }
 

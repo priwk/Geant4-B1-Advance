@@ -63,6 +63,8 @@ public:
   std::string stageD_boundary_mode;
   std::string stageD_reentry_mode;
   std::string stageD_matrix_reentry_mode;
+  std::string stageD_scatter_metric;
+  int stageD_target_primary_scatter;
   double stageD_theta_threshold_deg;
   int stageD_max_reentry;
   int stageD_max_steps;

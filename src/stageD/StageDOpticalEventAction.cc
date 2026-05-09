@@ -90,6 +90,39 @@ void StageDOpticalEventAction::EndOfEventAction(const G4Event *event)
     fCurrentEvent.mean_cos_theta_for_this_photon = 0.0;
   }
 
+  if (fCurrentEvent.num_particle_scatter > 0)
+  {
+    fCurrentEvent.mean_cos_theta_particle_for_this_photon =
+        fCurrentEvent.sum_cos_theta_particle /
+        static_cast<G4double>(fCurrentEvent.num_particle_scatter);
+  }
+  else
+  {
+    fCurrentEvent.mean_cos_theta_particle_for_this_photon = 0.0;
+  }
+
+  if (fCurrentEvent.num_bulk_scatter > 0)
+  {
+    fCurrentEvent.mean_cos_theta_bulk_for_this_photon =
+        fCurrentEvent.sum_cos_theta_bulk /
+        static_cast<G4double>(fCurrentEvent.num_bulk_scatter);
+  }
+  else
+  {
+    fCurrentEvent.mean_cos_theta_bulk_for_this_photon = 0.0;
+  }
+
+  if (fCurrentEvent.num_boundary_scatter > 0)
+  {
+    fCurrentEvent.mean_cos_theta_boundary_for_this_photon =
+        fCurrentEvent.sum_cos_theta_boundary /
+        static_cast<G4double>(fCurrentEvent.num_boundary_scatter);
+  }
+  else
+  {
+    fCurrentEvent.mean_cos_theta_boundary_for_this_photon = 0.0;
+  }
+
   if (fRunAction != nullptr)
     fRunAction->RecordPhotonEvent(fCurrentEvent);
 }

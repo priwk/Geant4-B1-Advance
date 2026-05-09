@@ -40,7 +40,14 @@ struct StageDPhotonEventRecord
 
   G4double total_path_length_um = 0.0;
   G4int num_steps = 0;
+  G4int num_particle_scatter = 0;
+  G4int num_particle_scatter_BN = 0;
+  G4int num_particle_scatter_ZnS = 0;
   G4int num_real_scatter = 0;
+  G4int num_bulk_scatter = 0;
+  G4int num_boundary_scatter = 0;
+  G4int num_boundary_scatter_BN = 0;
+  G4int num_boundary_scatter_ZnS = 0;
   G4int num_material_boundary = 0;
   G4int num_reentry = 0;
   G4int num_reentry_BN = 0;
@@ -48,8 +55,22 @@ struct StageDPhotonEventRecord
   G4int num_reentry_matrix = 0;
 
   G4double sum_cos_theta = 0.0;
+  G4double sum_cos_theta_particle = 0.0;
+  G4double sum_cos_theta_particle_BN = 0.0;
+  G4double sum_cos_theta_particle_ZnS = 0.0;
+  G4double sum_cos_theta_bulk = 0.0;
+  G4double sum_cos_theta_boundary = 0.0;
+  G4double sum_cos_theta_boundary_BN = 0.0;
+  G4double sum_cos_theta_boundary_ZnS = 0.0;
+  G4double mean_cos_theta_particle_for_this_photon = 0.0;
   G4double mean_cos_theta_for_this_photon = 0.0;
+  G4double mean_cos_theta_bulk_for_this_photon = 0.0;
+  G4double mean_cos_theta_boundary_for_this_photon = 0.0;
   G4double weight = 1.0;
+
+  G4bool in_particle_segment = false;
+  std::string particle_segment_phase;
+  G4ThreeVector particle_segment_entry_direction;
 };
 
 #endif

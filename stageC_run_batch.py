@@ -62,10 +62,10 @@ def parse_args():
     )
     parser.add_argument(
         "--optical-params",
-        default="1.5 1000000 2.1 10 2.36 50",
+        default="1.27657 1000000 2.1 1000000 2.36 1000000",
         help=(
             "Six values: matrix_n matrix_abs_um bn_n bn_abs_um zns_n zns_abs_um. "
-            "Default is the current placeholder set."
+            "Default is a near-transparent placeholder set for transport debugging."
         ),
     )
     parser.add_argument(

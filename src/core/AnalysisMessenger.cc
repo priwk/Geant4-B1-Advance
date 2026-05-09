@@ -87,6 +87,18 @@ namespace
     return "";
   }
 
+  std::string NormalizeStageDScatterMetric(const std::string &raw)
+  {
+    const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "boundary_deflection" || value == "boundarydeflection")
+      return "boundary_deflection";
+    if (value == "particle_exit_deflection" || value == "particleexitdeflection")
+      return "particle_exit_deflection";
+    if (value == "step_angle_threshold" || value == "stepanglethreshold")
+      return "step_angle_threshold";
+    return "";
+  }
+
   RunMode ParseRunModeOrThrow(const std::string &raw)
   {
     const std::string v = ToLowerCopy(Trim(raw));
@@ -346,6 +358,19 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
   fStageDMatrixReentryModeCmd->SetGuidance("Set Stage D matrix re-entry mode: random_matrix | distance_matched_matrix.");
   fStageDMatrixReentryModeCmd->SetParameterName("matrixReentryMode", false);
   fStageDMatrixReentryModeCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDScatterMetricCmd = new G4UIcmdWithAString("/cfg/stageD/setScatterMetric", this);
+  fStageDScatterMetricCmd->SetGuidance(
+      "Set Stage D scatter metric: boundary_deflection | particle_exit_deflection | step_angle_threshold.");
+  fStageDScatterMetricCmd->SetParameterName("scatterMetric", false);
+  fStageDScatterMetricCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+
+  fStageDTargetPrimaryScatterCmd = new G4UIcmdWithAnInteger("/cfg/stageD/setTargetPrimaryScatter", this);
+  fStageDTargetPrimaryScatterCmd->SetGuidance(
+      "Set Stage D target number of primary scatter events per photon before early stop.");
+  fStageDTargetPrimaryScatterCmd->SetParameterName("targetPrimaryScatter", false);
+  fStageDTargetPrimaryScatterCmd->SetRange("targetPrimaryScatter>0");
+  fStageDTargetPrimaryScatterCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
   fStageDThetaThresholdDegCmd = new G4UIcmdWithADouble("/cfg/stageD/setThetaThresholdDeg", this);
   fStageDThetaThresholdDegCmd->SetGuidance("Set Stage D minimum direction change angle counted as effective scatter.");
@@ -686,6 +711,31 @@ void AnalysisMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
     fConfig->stageD_matrix_reentry_mode = normalized;
     G4cout << "[AnalysisMessenger] stageD_matrix_reentry_mode set to "
            << fConfig->stageD_matrix_reentry_mode
+           << G4endl;
+    return;
+  }
+  if (command == fStageDScatterMetricCmd)
+  {
+    const std::string normalized = NormalizeStageDScatterMetric(newValue);
+    if (normalized.empty())
+    {
+      G4Exception("AnalysisMessenger::SetNewValue",
+                  "BNZS_CFG_013", FatalException,
+                  "Stage D scatterMetric must be boundary_deflection, particle_exit_deflection, or step_angle_threshold.");
+      return;
+    }
+    fConfig->stageD_scatter_metric = normalized;
+    G4cout << "[AnalysisMessenger] stageD_scatter_metric set to "
+           << fConfig->stageD_scatter_metric
+           << G4endl;
+    return;
+  }
+  if (command == fStageDTargetPrimaryScatterCmd)
+  {
+    fConfig->stageD_target_primary_scatter =
+        fStageDTargetPrimaryScatterCmd->GetNewIntValue(newValue);
+    G4cout << "[AnalysisMessenger] stageD_target_primary_scatter set to "
+           << fConfig->stageD_target_primary_scatter
            << G4endl;
     return;
   }

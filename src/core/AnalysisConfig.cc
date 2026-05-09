@@ -208,21 +208,23 @@ AnalysisConfig::AnalysisConfig()
       opticalSamplesPerStep(1),
       writeStageCPhotonCsv(false),
       opticalParamsProvided(false),
-      opticalMatrixRIndex(1.5),
+      opticalMatrixRIndex(0.0),
       opticalMatrixAbsLengthUm(1.0e6),
       opticalBnRIndex(2.1),
-      opticalBnAbsLengthUm(10.0),
+      opticalBnAbsLengthUm(1.0e6),
       opticalZnsRIndex(2.36),
-      opticalZnsAbsLengthUm(50.0),
+      opticalZnsAbsLengthUm(1.0e6),
       stageD_wavelength_nm(450.0),
       stageD_source_mode("uniform_ZnS"),
       stageD_boundary_mode("same_phase_reentry"),
       stageD_reentry_mode("same_phase_rho_over_R"),
       stageD_matrix_reentry_mode("random_matrix"),
-      stageD_theta_threshold_deg(1.0),
+      stageD_scatter_metric("step_angle_threshold"),
+      stageD_target_primary_scatter(160),
+      stageD_theta_threshold_deg(0.10),
       stageD_max_reentry(10000),
       stageD_max_steps(100000),
-      stageD_max_path_length_um(1.0e6),
+      stageD_max_path_length_um(5000.0),
       stageD_output_dir(""),
       allowThicknessEqualLocalPatch(true)
 {
@@ -395,6 +397,7 @@ AnalysisConfig::AnalysisConfig()
 
   readPositiveIntEnv("BNZS_STAGED_MAX_REENTRY", stageD_max_reentry);
   readPositiveIntEnv("BNZS_STAGED_MAX_STEPS", stageD_max_steps);
+  readPositiveIntEnv("BNZS_STAGED_TARGET_PRIMARY_SCATTER", stageD_target_primary_scatter);
 
   const char *stageDSourceModeEnv = std::getenv("BNZS_STAGED_SOURCE_MODE");
   if (stageDSourceModeEnv != nullptr && std::string(stageDSourceModeEnv).size() > 0)
@@ -411,6 +414,10 @@ AnalysisConfig::AnalysisConfig()
   const char *stageDMatrixReentryModeEnv = std::getenv("BNZS_STAGED_MATRIX_REENTRY_MODE");
   if (stageDMatrixReentryModeEnv != nullptr && std::string(stageDMatrixReentryModeEnv).size() > 0)
     stageD_matrix_reentry_mode = stageDMatrixReentryModeEnv;
+
+  const char *stageDScatterMetricEnv = std::getenv("BNZS_STAGED_SCATTER_METRIC");
+  if (stageDScatterMetricEnv != nullptr && std::string(stageDScatterMetricEnv).size() > 0)
+    stageD_scatter_metric = stageDScatterMetricEnv;
 
   const char *stageDOutputDirEnv = std::getenv("BNZS_STAGED_OUTPUT_DIR");
   if (stageDOutputDirEnv != nullptr && std::string(stageDOutputDirEnv).size() > 0)

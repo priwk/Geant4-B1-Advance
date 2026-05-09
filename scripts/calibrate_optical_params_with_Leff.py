@@ -86,21 +86,22 @@ def main():
             method = "no_experimental_leff"
 
             if exp is not None:
-                method = "diffusion_initial_guess_fixed_g_fixed_mu_a"
+                method = "diffusion_initial_guess_fixed_g_fixed_mu_s_prime"
                 leff = exp["L_eff_exp_um"]
                 leff_val = float(leff)
-                if mu_a_raw > 0.0 and leff_val > 0.0:
-                    mu_sp_guess = 1.0 / (3.0 * mu_a_raw * leff_val * leff_val) - mu_a_raw
-                    if mu_sp_guess >= 0.0:
-                        mu_sp_cal = mu_sp_guess
+                if mu_sp_raw >= 0.0 and leff_val > 0.0:
+                    disc = mu_sp_raw * mu_sp_raw + 4.0 / (3.0 * leff_val * leff_val)
+                    mu_a_guess = 0.5 * (-mu_sp_raw + math.sqrt(disc))
+                    if mu_a_guess >= 0.0:
+                        mu_a_cal = mu_a_guess
+                        mu_sp_cal = mu_sp_raw
                         mu_s_cal = mu_sp_cal / max(1.0e-12, 1.0 - g_raw)
                     else:
                         warning = (
-                            "mu_s_prime_calibrated became negative; raw mu_a is incompatible with L_eff "
-                            "under the fixed-g fixed-mu_a initial guess."
+                            "mu_a_calibrated became negative under the fixed-g fixed-mu_s_prime initial guess."
                         )
                 else:
-                    warning = "Experimental L_eff or mu_a_raw is non-positive."
+                    warning = "Experimental L_eff or mu_s_prime_raw is invalid."
 
             writer.writerow(
                 [

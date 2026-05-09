@@ -22,6 +22,7 @@ public:
 private:
   const DetectorConstruction *ResolveDetector() const;
   G4ThreeVector SampleUniformPointInZnSSphere() const;
+  G4ThreeVector SampleUniformPointInWholeRve(std::string &phaseName) const;
   G4ThreeVector RandomUnitVector() const;
   G4ThreeVector RandomPolarization(const G4ThreeVector &direction) const;
 

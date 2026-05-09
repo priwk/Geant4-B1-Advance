@@ -79,6 +79,14 @@ def parse_args():
         help="StageD photon wavelength in nm.",
     )
     parser.add_argument(
+        "--optical-params",
+        default=None,
+        help=(
+            "Six values: matrix_n matrix_abs_um bn_n bn_abs_um zns_n zns_abs_um. "
+            "If omitted, StageD uses the code-side defaults/estimates."
+        ),
+    )
+    parser.add_argument(
         "--source-mode",
         default="uniform_ZnS",
         choices=["uniform_ZnS", "uniform_all_phase", "from_zns_step_sources"],
@@ -103,9 +111,21 @@ def parse_args():
         help="StageD matrix re-entry mode.",
     )
     parser.add_argument(
+        "--scatter-metric",
+        default="step_angle_threshold",
+        choices=["boundary_deflection", "particle_exit_deflection", "step_angle_threshold"],
+        help="StageD scatter metric written to summary primary columns.",
+    )
+    parser.add_argument(
+        "--target-primary-scatter",
+        type=int,
+        default=160,
+        help="Stop a photon once it accumulates this many primary scatter events.",
+    )
+    parser.add_argument(
         "--theta-threshold-deg",
         type=float,
-        default=1.0,
+        default=0.10,
         help="StageD effective scatter angle threshold.",
     )
     parser.add_argument(
@@ -123,7 +143,7 @@ def parse_args():
     parser.add_argument(
         "--max-path-length-um",
         type=float,
-        default=1.0e6,
+        default=5000.0,
         help="StageD maximum physical path length per photon in um.",
     )
     parser.add_argument(
@@ -192,11 +212,14 @@ def macro_text(
     bn_wt: str,
     zns_wt: str,
     beam_on: int,
+    optical_params: str | None,
     wavelength_nm: float,
     source_mode: str,
     boundary_mode: str,
     reentry_mode: str,
     matrix_reentry_mode: str,
+    scatter_metric: str,
+    target_primary_scatter: int,
     theta_threshold_deg: float,
     max_reentry: int,
     max_steps: int,
@@ -211,11 +234,14 @@ def macro_text(
             "/cfg/setRunMode StageD_OpticalHomogenization",
             f"/cfg/setWeightRatio {bn_wt} {zns_wt}",
             f"/cfg/setPlacementFile {placement_rel_to_build}",
+            *([f"/cfg/setOpticalParams {optical_params}"] if optical_params else []),
             f"/cfg/stageD/setWavelengthNm {wavelength_nm}",
             f"/cfg/stageD/setSourceMode {source_mode}",
             f"/cfg/stageD/setBoundaryMode {boundary_mode}",
             f"/cfg/stageD/setReentryMode {reentry_mode}",
             f"/cfg/stageD/setMatrixReentryMode {matrix_reentry_mode}",
+            f"/cfg/stageD/setScatterMetric {scatter_metric}",
+            f"/cfg/stageD/setTargetPrimaryScatter {target_primary_scatter}",
             f"/cfg/stageD/setThetaThresholdDeg {theta_threshold_deg}",
             f"/cfg/stageD/setMaxReentry {max_reentry}",
             f"/cfg/stageD/setMaxSteps {max_steps}",
@@ -238,6 +264,8 @@ def main():
         raise SystemExit("--wavelength-nm must be > 0")
     if args.theta_threshold_deg < 0.0:
         raise SystemExit("--theta-threshold-deg must be >= 0")
+    if args.target_primary_scatter <= 0:
+        raise SystemExit("--target-primary-scatter must be > 0")
     if args.max_reentry <= 0 or args.max_steps <= 0 or args.max_path_length_um <= 0.0:
         raise SystemExit("--max-reentry, --max-steps, and --max-path-length-um must be > 0")
 
@@ -299,6 +327,9 @@ def main():
     print(f"Ratio tag:    {args.ratio_tag}")
     print(f"Placement dir:{placement_dir}")
     print(f"Placements:   {len(placements)}")
+    print(f"Optical:      {args.optical_params if args.optical_params else '<code defaults/estimates>'}")
+    print(f"Scatter:      {args.scatter_metric}")
+    print(f"Target scat:  {args.target_primary_scatter}")
     print(f"Run enabled:  {'yes' if args.run else 'no'}")
 
     for idx, placement in enumerate(placements, start=1):
@@ -314,11 +345,14 @@ def main():
                 bn_wt=bn_wt,
                 zns_wt=zns_wt,
                 beam_on=args.beam_on,
+                optical_params=args.optical_params,
                 wavelength_nm=args.wavelength_nm,
                 source_mode=args.source_mode,
                 boundary_mode=args.boundary_mode,
                 reentry_mode=args.reentry_mode,
                 matrix_reentry_mode=args.matrix_reentry_mode,
+                scatter_metric=args.scatter_metric,
+                target_primary_scatter=args.target_primary_scatter,
                 theta_threshold_deg=args.theta_threshold_deg,
                 max_reentry=args.max_reentry,
                 max_steps=args.max_steps,
