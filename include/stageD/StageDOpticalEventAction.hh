@@ -24,7 +24,7 @@ public:
   const StageDPhotonEventRecord &GetCurrentEvent() const { return fCurrentEvent; }
 
   void SetFinalStatus(const std::string &status, G4bool absorbed);
-  void MarkAbsorbed();
+  void MarkAbsorbed(const std::string &phaseLabel);
 
 private:
   AnalysisConfig *fConfig;

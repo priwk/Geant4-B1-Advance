@@ -10,6 +10,7 @@
 #include "G4Exception.hh"
 #include "G4DynamicParticle.hh"
 #include "G4OpticalPhoton.hh"
+#include "G4LogicalVolume.hh"
 #include "G4RunManager.hh"
 #include "G4StackManager.hh"
 #include "G4Step.hh"
@@ -18,9 +19,11 @@
 #include "G4Track.hh"
 #include "G4TrackStatus.hh"
 #include "G4VProcess.hh"
+#include "G4VPhysicalVolume.hh"
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 namespace
 {
@@ -36,6 +39,11 @@ namespace
     return std::acos(dot) / deg;
   }
 
+  G4double ClampCosTheta(const G4ThreeVector &a, const G4ThreeVector &b)
+  {
+    return std::clamp(a.dot(b), -1.0, 1.0);
+  }
+
   std::string ProcessName(const G4StepPoint *point)
   {
     if (point == nullptr)
@@ -44,6 +52,34 @@ namespace
     if (process == nullptr)
       return "";
     return process->GetProcessName();
+  }
+
+  G4bool StartsWith(const G4String &s, const char *prefix)
+  {
+    const std::string value = s;
+    const std::string p = prefix;
+    return value.rfind(p, 0) == 0;
+  }
+
+  DetectorConstruction::Phase PhaseFromPhysicalVolume(const G4VPhysicalVolume *pv)
+  {
+    if (pv == nullptr)
+      return DetectorConstruction::Phase::World;
+
+    const auto *lv = pv->GetLogicalVolume();
+    if (lv == nullptr)
+      return DetectorConstruction::Phase::World;
+
+    const auto &lvName = lv->GetName();
+    if (lvName == "BN_LV" || StartsWith(lvName, "BN_ClipLV_"))
+      return DetectorConstruction::Phase::BN;
+    if (lvName == "ZnS_LV" || StartsWith(lvName, "ZnS_ClipLV_"))
+      return DetectorConstruction::Phase::ZnS;
+    if (lvName == "MatrixLV")
+      return DetectorConstruction::Phase::Matrix;
+    if (lvName == "WorldLV")
+      return DetectorConstruction::Phase::World;
+    return DetectorConstruction::Phase::Unknown;
   }
 
   G4bool IsOutsideRve(const G4ThreeVector &position,
@@ -64,6 +100,19 @@ namespace
   {
     return phase == DetectorConstruction::Phase::BN ||
            phase == DetectorConstruction::Phase::ZnS;
+  }
+
+  G4int PhaseFunctionBin(const G4double cosTheta)
+  {
+    constexpr G4double kMin = -1.0;
+    constexpr G4double kMax = 1.0;
+    constexpr G4double kSpan = kMax - kMin;
+    const G4double shifted = std::clamp(cosTheta, kMin, kMax) - kMin;
+    const G4double normalized = shifted / kSpan;
+    const G4int index = static_cast<G4int>(
+        normalized * static_cast<G4double>(StageDPhotonEventRecord::kPhaseFunctionBins));
+    return std::clamp(index, 0,
+                      static_cast<G4int>(StageDPhotonEventRecord::kPhaseFunctionBins) - 1);
   }
 }
 
@@ -111,6 +160,8 @@ G4bool StageDOpticalSteppingAction::HandleBoundaryReentry(
 
   if (fConfig->stageD_boundary_mode == "escape")
   {
+    event.in_particle_segment = false;
+    event.particle_segment_phase.clear();
     fEventAction->SetFinalStatus("escaped_debug", false);
     track->SetTrackStatus(fStopAndKill);
     return true;
@@ -121,6 +172,8 @@ G4bool StageDOpticalSteppingAction::HandleBoundaryReentry(
 
   if (event.num_reentry >= fConfig->stageD_max_reentry)
   {
+    event.in_particle_segment = false;
+    event.particle_segment_phase.clear();
     fEventAction->SetFinalStatus("max_reentry", false);
     track->SetTrackStatus(fStopAndKill);
     return true;
@@ -153,6 +206,8 @@ G4bool StageDOpticalSteppingAction::HandleBoundaryReentry(
 
   if (!ok)
   {
+    event.in_particle_segment = false;
+    event.particle_segment_phase.clear();
     fEventAction->SetFinalStatus("reentry_failed", false);
     track->SetTrackStatus(fStopAndKill);
     return true;
@@ -177,6 +232,8 @@ G4bool StageDOpticalSteppingAction::HandleBoundaryReentry(
   if (stackManager == nullptr)
   {
     delete continuationTrack;
+    event.in_particle_segment = false;
+    event.particle_segment_phase.clear();
     fEventAction->SetFinalStatus("reentry_failed", false);
     track->SetTrackStatus(fStopAndKill);
     return true;
@@ -191,6 +248,8 @@ G4bool StageDOpticalSteppingAction::HandleBoundaryReentry(
   else if (phase == DetectorConstruction::Phase::Matrix)
     ++event.num_reentry_matrix;
 
+  event.in_particle_segment = false;
+  event.particle_segment_phase.clear();
   track->SetTrackStatus(fStopAndKill);
   return true;
 }
@@ -202,12 +261,7 @@ G4bool StageDOpticalSteppingAction::HandleLimitKills(const G4Step *step, G4Track
 
   auto &event = fEventAction->MutableCurrentEvent();
 
-  const G4int primaryScatterCount =
-      (fConfig->stageD_scatter_metric == "step_angle_threshold")
-          ? event.num_real_scatter
-          : event.num_particle_scatter;
-
-  if (primaryScatterCount >= fConfig->stageD_target_primary_scatter)
+  if (event.num_encounter_total >= fConfig->stageD_target_primary_scatter)
   {
     fEventAction->SetFinalStatus("target_primary_scatter", false);
     track->SetTrackStatus(fStopAndKill);
@@ -231,7 +285,10 @@ G4bool StageDOpticalSteppingAction::HandleLimitKills(const G4Step *step, G4Track
   const std::string processName = ProcessName(step->GetPostStepPoint());
   if (processName == "OpAbsorption")
   {
-    fEventAction->MarkAbsorbed();
+    const auto *prePoint = step->GetPreStepPoint();
+    const auto *prePV = (prePoint != nullptr) ? prePoint->GetPhysicalVolume() : nullptr;
+    const auto phase = PhaseFromPhysicalVolume(prePV);
+    fEventAction->MarkAbsorbed(DetectorConstruction::PhaseName(phase));
     return false;
   }
 
@@ -265,13 +322,22 @@ void StageDOpticalSteppingAction::UserSteppingAction(const G4Step *step)
   const auto *detector = ResolveDetector();
   const G4bool isOuterRveExit =
       (detector != nullptr && IsOutsideRve(postPoint->GetPosition(), detector));
-  const auto prePhase =
-      (detector != nullptr) ? detector->FindPhaseAtPoint(prePoint->GetPosition())
-                            : DetectorConstruction::Phase::Unknown;
+  const auto *prePV = prePoint->GetPhysicalVolume();
+  const auto *postPV = postPoint->GetPhysicalVolume();
+  const auto prePhase = PhaseFromPhysicalVolume(prePV);
   const auto postPhase =
-      (detector != nullptr && !isOuterRveExit)
-          ? detector->FindPhaseAtPoint(postPoint->GetPosition())
-          : DetectorConstruction::Phase::World;
+      isOuterRveExit ? DetectorConstruction::Phase::World
+                     : PhaseFromPhysicalVolume(postPV);
+
+  const G4double stepLengthUm = step->GetStepLength() / um;
+  if (prePhase == DetectorConstruction::Phase::BN)
+    event.path_length_bn_um += stepLengthUm;
+  else if (prePhase == DetectorConstruction::Phase::ZnS)
+    event.path_length_zns_um += stepLengthUm;
+  else if (prePhase == DetectorConstruction::Phase::Matrix)
+    event.path_length_matrix_um += stepLengthUm;
+  else
+    event.path_length_world_um += stepLengthUm;
 
   const std::string processName = ProcessName(postPoint);
   const G4bool isMaterialBoundary =
@@ -291,37 +357,58 @@ void StageDOpticalSteppingAction::UserSteppingAction(const G4Step *step)
   const G4ThreeVector postDir = postPoint->GetMomentumDirection();
 
   if (IsParticlePhase(prePhase) &&
-      !event.in_particle_segment)
+      (!event.in_particle_segment || event.particle_segment_phase != DetectorConstruction::PhaseName(prePhase)))
   {
     event.in_particle_segment = true;
     event.particle_segment_phase = DetectorConstruction::PhaseName(prePhase);
     event.particle_segment_entry_direction = preDir;
   }
 
-  if (event.in_particle_segment &&
+  const G4bool isParticleExitInsideRve =
+      event.in_particle_segment &&
       IsParticlePhase(prePhase) &&
-      prePhase != postPhase)
+      prePhase != postPhase &&
+      !isOuterRveExit &&
+      postPhase != DetectorConstruction::Phase::World;
+
+  if (isParticleExitInsideRve)
   {
-    const G4double thetaDeg =
-        AngleDeg(event.particle_segment_entry_direction, postDir);
-    if (thetaDeg > fConfig->stageD_theta_threshold_deg)
+    const G4double cosTheta = ClampCosTheta(
+        event.particle_segment_entry_direction,
+        postDir);
+    const G4double oneMinusCosTheta = 1.0 - cosTheta;
+    const G4double cos2Theta = cosTheta * cosTheta;
+
+    ++event.num_encounter_total;
+    event.sum_cos_theta_encounter += cosTheta;
+    event.sum_one_minus_cos_theta_encounter += oneMinusCosTheta;
+    event.sum_cos2_theta_encounter += cos2Theta;
+    ++event.phase_function_histogram[PhaseFunctionBin(cosTheta)];
+
+    ++event.num_particle_scatter;
+    event.sum_cos_theta_particle += cosTheta;
+
+    if (prePhase == DetectorConstruction::Phase::BN)
     {
-      const G4double cosTheta = std::clamp(
-          event.particle_segment_entry_direction.dot(postDir),
-          -1.0, 1.0);
-      ++event.num_particle_scatter;
-      event.sum_cos_theta_particle += cosTheta;
-      if (prePhase == DetectorConstruction::Phase::BN)
-      {
-        ++event.num_particle_scatter_BN;
-        event.sum_cos_theta_particle_BN += cosTheta;
-      }
-      else if (prePhase == DetectorConstruction::Phase::ZnS)
-      {
-        ++event.num_particle_scatter_ZnS;
-        event.sum_cos_theta_particle_ZnS += cosTheta;
-      }
+      ++event.num_encounter_BN;
+      event.sum_cos_theta_encounter_BN += cosTheta;
+      event.sum_one_minus_cos_theta_encounter_BN += oneMinusCosTheta;
+      event.sum_cos2_theta_encounter_BN += cos2Theta;
+
+      ++event.num_particle_scatter_BN;
+      event.sum_cos_theta_particle_BN += cosTheta;
     }
+    else if (prePhase == DetectorConstruction::Phase::ZnS)
+    {
+      ++event.num_encounter_ZnS;
+      event.sum_cos_theta_encounter_ZnS += cosTheta;
+      event.sum_one_minus_cos_theta_encounter_ZnS += oneMinusCosTheta;
+      event.sum_cos2_theta_encounter_ZnS += cos2Theta;
+
+      ++event.num_particle_scatter_ZnS;
+      event.sum_cos_theta_particle_ZnS += cosTheta;
+    }
+
     event.in_particle_segment = false;
     event.particle_segment_phase.clear();
   }

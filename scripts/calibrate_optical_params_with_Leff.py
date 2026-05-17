@@ -72,9 +72,9 @@ def main():
             exp = exp_by_key.get(key)
 
             mu_a_raw = float(raw["mu_a_mean_per_um"])
-            mu_s_raw = float(raw["mu_s_mean_per_um"])
-            g_raw = float(raw["g_mean"])
-            mu_sp_raw = float(raw["mu_s_prime_mean_per_um"])
+            mu_s_raw = float(raw.get("mu_s_mean_per_um", raw.get("mu_s_total_mean_per_um", 0.0)))
+            g_raw = float(raw.get("g_mean", raw.get("g_total_mean", 0.0)))
+            mu_sp_raw = float(raw.get("mu_s_prime_mean_per_um", raw.get("mu_s_prime_total_mean_per_um", 0.0)))
 
             mu_a_cal = mu_a_raw
             mu_sp_cal = mu_sp_raw

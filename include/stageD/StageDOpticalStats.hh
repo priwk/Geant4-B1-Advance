@@ -4,6 +4,7 @@
 #include "G4ThreeVector.hh"
 #include "globals.hh"
 
+#include <array>
 #include <string>
 
 struct StageDPhotonLaunchRecord
@@ -21,6 +22,8 @@ struct StageDPhotonLaunchRecord
 
 struct StageDPhotonEventRecord
 {
+  static constexpr std::size_t kPhaseFunctionBins = 64;
+
   G4int photonID = -1;
   std::string ratio;
   std::string placement_file;
@@ -39,7 +42,31 @@ struct StageDPhotonEventRecord
   G4bool absorbed = false;
 
   G4double total_path_length_um = 0.0;
+  G4double path_length_bn_um = 0.0;
+  G4double path_length_zns_um = 0.0;
+  G4double path_length_matrix_um = 0.0;
+  G4double path_length_world_um = 0.0;
   G4int num_steps = 0;
+
+  G4int num_absorbed_total = 0;
+  G4int num_absorbed_BN = 0;
+  G4int num_absorbed_ZnS = 0;
+  G4int num_absorbed_Matrix = 0;
+  G4int num_absorbed_World = 0;
+
+  G4int num_encounter_total = 0;
+  G4int num_encounter_BN = 0;
+  G4int num_encounter_ZnS = 0;
+  G4double sum_cos_theta_encounter = 0.0;
+  G4double sum_cos_theta_encounter_BN = 0.0;
+  G4double sum_cos_theta_encounter_ZnS = 0.0;
+  G4double sum_one_minus_cos_theta_encounter = 0.0;
+  G4double sum_one_minus_cos_theta_encounter_BN = 0.0;
+  G4double sum_one_minus_cos_theta_encounter_ZnS = 0.0;
+  G4double sum_cos2_theta_encounter = 0.0;
+  G4double sum_cos2_theta_encounter_BN = 0.0;
+  G4double sum_cos2_theta_encounter_ZnS = 0.0;
+
   G4int num_particle_scatter = 0;
   G4int num_particle_scatter_BN = 0;
   G4int num_particle_scatter_ZnS = 0;
@@ -62,11 +89,16 @@ struct StageDPhotonEventRecord
   G4double sum_cos_theta_boundary = 0.0;
   G4double sum_cos_theta_boundary_BN = 0.0;
   G4double sum_cos_theta_boundary_ZnS = 0.0;
+  G4double g1_encounter_for_this_photon = 0.0;
+  G4double g2_encounter_for_this_photon = 0.0;
+  G4double mu_s_prime_direct_encounter_per_um_for_this_photon = 0.0;
   G4double mean_cos_theta_particle_for_this_photon = 0.0;
   G4double mean_cos_theta_for_this_photon = 0.0;
   G4double mean_cos_theta_bulk_for_this_photon = 0.0;
   G4double mean_cos_theta_boundary_for_this_photon = 0.0;
   G4double weight = 1.0;
+
+  std::array<G4int, kPhaseFunctionBins> phase_function_histogram{};
 
   G4bool in_particle_segment = false;
   std::string particle_segment_phase;

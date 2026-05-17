@@ -112,9 +112,14 @@ def parse_args():
     )
     parser.add_argument(
         "--scatter-metric",
-        default="step_angle_threshold",
-        choices=["boundary_deflection", "particle_exit_deflection", "step_angle_threshold"],
-        help="StageD scatter metric written to summary primary columns.",
+        default="particle_encounter_no_threshold",
+        choices=[
+            "particle_encounter_no_threshold",
+            "boundary_deflection",
+            "particle_exit_deflection",
+            "step_angle_threshold",
+        ],
+        help="StageD scatter metric label. Primary outputs use particle encounter without threshold.",
     )
     parser.add_argument(
         "--target-primary-scatter",
@@ -269,6 +274,11 @@ def main():
     if args.max_reentry <= 0 or args.max_steps <= 0 or args.max_path_length_um <= 0.0:
         raise SystemExit("--max-reentry, --max-steps, and --max-path-length-um must be > 0")
 
+    wavelength_tag = (
+        f"lambda_{int(round(args.wavelength_nm))}nm"
+        if abs(args.wavelength_nm - round(args.wavelength_nm)) < 1.0e-9
+        else f"lambda_{args.wavelength_nm:.3f}nm"
+    )
     project_root = (
         Path(args.project_root).resolve()
         if args.project_root
@@ -287,12 +297,12 @@ def main():
     macro_dir = (
         Path(args.macro_dir).resolve()
         if args.macro_dir
-        else project_root / "Output" / "stageD_macros" / args.ratio_tag
+        else project_root / "Output" / "stageD_macros" / args.ratio_tag / wavelength_tag
     )
     log_dir = (
         Path(args.log_dir).resolve()
         if args.log_dir
-        else project_root / "logs" / "stageD" / args.ratio_tag
+        else project_root / "logs" / "stageD" / args.ratio_tag / wavelength_tag
     )
     executable = build_dir / args.executable_name
 

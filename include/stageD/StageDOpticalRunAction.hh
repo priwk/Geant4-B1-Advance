@@ -4,6 +4,7 @@
 #include "G4UserRunAction.hh"
 #include "StageDOpticalStats.hh"
 
+#include <array>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -25,22 +26,26 @@ public:
 
   const std::string &GetEventsCsvPath() const { return fEventsCsvPath; }
   const std::string &GetSummaryCsvPath() const { return fSummaryCsvPath; }
+  const std::string &GetPhaseFunctionCsvPath() const { return fPhaseFunctionCsvPath; }
   const std::string &GetRatioTag() const { return fRatioTag; }
   const std::string &GetPlacementStem() const { return fPlacementStem; }
 
 private:
   std::string MakeRatioTag() const;
   std::string MakePlacementStem() const;
+  std::string MakeWavelengthTag() const;
   std::string ResolveOutputDirectory() const;
   void OpenOutputs();
   void WriteEventHeader();
   void WriteSummaryFile() const;
+  void WritePhaseFunctionFile() const;
 
 private:
   AnalysisConfig *fConfig;
   std::ofstream fEventsCsv;
   std::string fEventsCsvPath;
   std::string fSummaryCsvPath;
+  std::string fPhaseFunctionCsvPath;
   std::string fOutputDir;
   std::string fRatioTag;
   std::string fPlacementFile;

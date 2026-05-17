@@ -90,6 +90,11 @@ namespace
   std::string NormalizeStageDScatterMetric(const std::string &raw)
   {
     const std::string value = ToLowerCopy(Trim(raw));
+    if (value == "particle_encounter_no_threshold" ||
+        value == "particleencounternothreshold" ||
+        value == "encounter" ||
+        value == "particle_encounter")
+      return "particle_encounter_no_threshold";
     if (value == "boundary_deflection" || value == "boundarydeflection")
       return "boundary_deflection";
     if (value == "particle_exit_deflection" || value == "particleexitdeflection")
@@ -361,7 +366,8 @@ AnalysisMessenger::AnalysisMessenger(AnalysisConfig *config)
 
   fStageDScatterMetricCmd = new G4UIcmdWithAString("/cfg/stageD/setScatterMetric", this);
   fStageDScatterMetricCmd->SetGuidance(
-      "Set Stage D scatter metric: boundary_deflection | particle_exit_deflection | step_angle_threshold.");
+      "Set Stage D scatter metric label. Primary output always uses particle_encounter_no_threshold; "
+      "legacy/debug labels may use boundary_deflection | particle_exit_deflection | step_angle_threshold.");
   fStageDScatterMetricCmd->SetParameterName("scatterMetric", false);
   fStageDScatterMetricCmd->AvailableForStates(G4State_PreInit, G4State_Idle);
 
@@ -721,7 +727,7 @@ void AnalysisMessenger::SetNewValue(G4UIcommand *command, G4String newValue)
     {
       G4Exception("AnalysisMessenger::SetNewValue",
                   "BNZS_CFG_013", FatalException,
-                  "Stage D scatterMetric must be boundary_deflection, particle_exit_deflection, or step_angle_threshold.");
+                  "Stage D scatterMetric must be particle_encounter_no_threshold, boundary_deflection, particle_exit_deflection, or step_angle_threshold.");
       return;
     }
     fConfig->stageD_scatter_metric = normalized;

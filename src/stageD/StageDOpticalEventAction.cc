@@ -8,7 +8,9 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 
+#include <algorithm>
 #include <filesystem>
+#include <cmath>
 #include <sstream>
 
 namespace
@@ -123,6 +125,33 @@ void StageDOpticalEventAction::EndOfEventAction(const G4Event *event)
     fCurrentEvent.mean_cos_theta_boundary_for_this_photon = 0.0;
   }
 
+  if (fCurrentEvent.num_encounter_total > 0)
+  {
+    const G4double nEncounter =
+        static_cast<G4double>(fCurrentEvent.num_encounter_total);
+    const G4double g1 =
+        fCurrentEvent.sum_cos_theta_encounter / nEncounter;
+    const G4double meanCos2 =
+        fCurrentEvent.sum_cos2_theta_encounter / nEncounter;
+    fCurrentEvent.g1_encounter_for_this_photon = g1;
+    fCurrentEvent.g2_encounter_for_this_photon =
+        0.5 * (3.0 * meanCos2 - 1.0);
+  }
+  else
+  {
+    fCurrentEvent.g1_encounter_for_this_photon = 0.0;
+    fCurrentEvent.g2_encounter_for_this_photon = 0.0;
+  }
+
+  const G4double mediumPathLengthUm =
+      fCurrentEvent.path_length_bn_um +
+      fCurrentEvent.path_length_zns_um +
+      fCurrentEvent.path_length_matrix_um;
+  fCurrentEvent.mu_s_prime_direct_encounter_per_um_for_this_photon =
+      (mediumPathLengthUm > 0.0)
+          ? (fCurrentEvent.sum_one_minus_cos_theta_encounter / mediumPathLengthUm)
+          : 0.0;
+
   if (fRunAction != nullptr)
     fRunAction->RecordPhotonEvent(fCurrentEvent);
 }
@@ -135,7 +164,17 @@ void StageDOpticalEventAction::SetFinalStatus(
   fCurrentEvent.absorbed = absorbed;
 }
 
-void StageDOpticalEventAction::MarkAbsorbed()
+void StageDOpticalEventAction::MarkAbsorbed(const std::string &phaseLabel)
 {
+  ++fCurrentEvent.num_absorbed_total;
+  if (phaseLabel == "BN")
+    ++fCurrentEvent.num_absorbed_BN;
+  else if (phaseLabel == "ZnS")
+    ++fCurrentEvent.num_absorbed_ZnS;
+  else if (phaseLabel == "Matrix")
+    ++fCurrentEvent.num_absorbed_Matrix;
+  else
+    ++fCurrentEvent.num_absorbed_World;
+
   SetFinalStatus("absorbed", true);
 }

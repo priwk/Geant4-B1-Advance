@@ -957,7 +957,7 @@ void DetectorConstruction::DefineMaterials()
   // 4. 闪烁体 (ZnS:Ag 0.1 wt%)
   // ---------------------------------------------------------
   const G4double znsRIndex = fConfig ? fConfig->opticalZnsRIndex : 2.36;
-  const G4double znsAbsLength = (fConfig ? fConfig->opticalZnsAbsLengthUm : 1.0e6) * um;
+  const G4double znsAbsLength = (fConfig ? fConfig->opticalZnsAbsLengthUm : 1.0e4) * um;
   G4double rindexZnS[] = {znsRIndex, znsRIndex, znsRIndex};
   G4double absZnS[] = {znsAbsLength, znsAbsLength, znsAbsLength};
 
@@ -994,7 +994,8 @@ void DetectorConstruction::DefineMaterials()
     {
       G4cout << "[DetectorConstruction] Warning: optical parameters are using built-in defaults/estimates for "
              << AnalysisConfig::RunModeName(fConfig->runMode) << ". "
-             << "Built-in absorption defaults are intentionally near-transparent placeholders for scatter extraction. "
+             << "Built-in absorption defaults keep matrix/BN near-transparent and assign a shorter ZnS absorption "
+             << "length as a fallback, not as phase-resolved material data. "
              << "Set /cfg/setOpticalParams matrix_n matrix_abs_um bn_n bn_abs_um zns_n zns_abs_um for physics runs."
              << G4endl;
     }

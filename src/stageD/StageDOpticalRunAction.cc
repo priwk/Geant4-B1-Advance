@@ -50,6 +50,7 @@ StageDOpticalRunAction::StageDOpticalRunAction(AnalysisConfig *config)
       fEventsCsv(),
       fEventsCsvPath(""),
       fSummaryCsvPath(""),
+      fPhaseFunctionCsvPath(""),
       fOutputDir(""),
       fRatioTag(""),
       fPlacementFile(""),
@@ -79,6 +80,20 @@ std::string StageDOpticalRunAction::MakePlacementStem() const
   return std::filesystem::path(fPlacementFile).stem().string();
 }
 
+std::string StageDOpticalRunAction::MakeWavelengthTag() const
+{
+  const G4double wavelengthNm = fConfig ? fConfig->stageD_wavelength_nm : 0.0;
+  const G4double rounded = std::round(wavelengthNm);
+  std::ostringstream oss;
+  oss << "lambda_";
+  if (std::abs(wavelengthNm - rounded) < 1.0e-9)
+    oss << static_cast<long long>(rounded);
+  else
+    oss << std::fixed << std::setprecision(3) << wavelengthNm;
+  oss << "nm";
+  return oss.str();
+}
+
 std::string StageDOpticalRunAction::ResolveOutputDirectory() const
 {
   if (fConfig != nullptr && !fConfig->stageD_output_dir.empty())
@@ -88,7 +103,8 @@ std::string StageDOpticalRunAction::ResolveOutputDirectory() const
           "Output" /
           "stageD_optical_homogenization" /
           fRatioTag /
-          fPlacementStem)
+          fPlacementStem /
+          MakeWavelengthTag())
       .string();
 }
 
@@ -110,32 +126,56 @@ void StageDOpticalRunAction::WriteEventHeader()
       << "final_status,"
       << "absorbed,"
       << "total_path_length_um,"
+      << "path_length_bn_um,"
+      << "path_length_zns_um,"
+      << "path_length_matrix_um,"
+      << "path_length_world_um,"
       << "num_steps,"
-      << "num_particle_scatter,"
-      << "num_particle_scatter_BN,"
-      << "num_particle_scatter_ZnS,"
-      << "num_real_scatter,"
-      << "num_bulk_scatter,"
-      << "num_boundary_scatter,"
-      << "num_boundary_scatter_BN,"
-      << "num_boundary_scatter_ZnS,"
+      << "num_absorbed_total,"
+      << "num_absorbed_BN,"
+      << "num_absorbed_ZnS,"
+      << "num_absorbed_Matrix,"
+      << "num_absorbed_World,"
+      << "num_encounter_total,"
+      << "num_encounter_BN,"
+      << "num_encounter_ZnS,"
+      << "sum_cos_theta_encounter,"
+      << "sum_cos_theta_encounter_BN,"
+      << "sum_cos_theta_encounter_ZnS,"
+      << "sum_one_minus_cos_theta_encounter,"
+      << "sum_one_minus_cos_theta_encounter_BN,"
+      << "sum_one_minus_cos_theta_encounter_ZnS,"
+      << "sum_cos2_theta_encounter,"
+      << "sum_cos2_theta_encounter_BN,"
+      << "sum_cos2_theta_encounter_ZnS,"
+      << "g1_encounter_for_this_photon,"
+      << "g2_encounter_for_this_photon,"
+      << "mu_s_prime_direct_encounter_per_um_for_this_photon,"
+      << "num_particle_scatter_legacy,"
+      << "num_particle_scatter_BN_legacy,"
+      << "num_particle_scatter_ZnS_legacy,"
+      << "num_real_scatter_debug,"
+      << "num_bulk_scatter_debug,"
+      << "num_boundary_scatter_debug,"
+      << "num_boundary_scatter_BN_debug,"
+      << "num_boundary_scatter_ZnS_debug,"
       << "num_material_boundary,"
       << "num_reentry,"
       << "num_reentry_BN,"
       << "num_reentry_ZnS,"
       << "num_reentry_matrix,"
-      << "sum_cos_theta_particle,"
-      << "sum_cos_theta_particle_BN,"
-      << "sum_cos_theta_particle_ZnS,"
-      << "sum_cos_theta,"
-      << "sum_cos_theta_bulk,"
-      << "sum_cos_theta_boundary,"
-      << "sum_cos_theta_boundary_BN,"
-      << "sum_cos_theta_boundary_ZnS,"
-      << "mean_cos_theta_particle_for_this_photon,"
-      << "mean_cos_theta_for_this_photon,"
-      << "mean_cos_theta_bulk_for_this_photon,"
-      << "mean_cos_theta_boundary_for_this_photon,"
+      << "sum_cos_theta_particle_legacy,"
+      << "sum_cos_theta_particle_BN_legacy,"
+      << "sum_cos_theta_particle_ZnS_legacy,"
+      << "sum_cos_theta_debug,"
+      << "sum_cos_theta_bulk_debug,"
+      << "sum_cos_theta_boundary_debug,"
+      << "sum_cos_theta_boundary_BN_debug,"
+      << "sum_cos_theta_boundary_ZnS_debug,"
+      << "mean_cos_theta_particle_for_this_photon_legacy,"
+      << "mean_cos_theta_for_this_photon_debug,"
+      << "mean_cos_theta_bulk_for_this_photon_debug,"
+      << "mean_cos_theta_boundary_for_this_photon_debug,"
       << "weight"
       << "\n";
 }
@@ -153,11 +193,14 @@ void StageDOpticalRunAction::OpenOutputs()
   }
 
   fEventsCsvPath = (std::filesystem::path(fOutputDir) /
-                    "optical_homogenization_events.csv")
+                    "stageD_events.csv")
                        .string();
   fSummaryCsvPath = (std::filesystem::path(fOutputDir) /
-                     "optical_homogenization_summary.csv")
+                     "stageD_summary.csv")
                         .string();
+  fPhaseFunctionCsvPath = (std::filesystem::path(fOutputDir) /
+                           "phase_function.csv")
+                              .string();
 
   fEventsCsv.open(fEventsCsvPath.c_str(), std::ios::out);
   if (!fEventsCsv)
@@ -212,7 +255,31 @@ void StageDOpticalRunAction::RecordPhotonEvent(const StageDPhotonEventRecord &ev
       << CsvQuote(event.final_status) << ","
       << (event.absorbed ? 1 : 0) << ","
       << event.total_path_length_um << ","
+      << event.path_length_bn_um << ","
+      << event.path_length_zns_um << ","
+      << event.path_length_matrix_um << ","
+      << event.path_length_world_um << ","
       << event.num_steps << ","
+      << event.num_absorbed_total << ","
+      << event.num_absorbed_BN << ","
+      << event.num_absorbed_ZnS << ","
+      << event.num_absorbed_Matrix << ","
+      << event.num_absorbed_World << ","
+      << event.num_encounter_total << ","
+      << event.num_encounter_BN << ","
+      << event.num_encounter_ZnS << ","
+      << event.sum_cos_theta_encounter << ","
+      << event.sum_cos_theta_encounter_BN << ","
+      << event.sum_cos_theta_encounter_ZnS << ","
+      << event.sum_one_minus_cos_theta_encounter << ","
+      << event.sum_one_minus_cos_theta_encounter_BN << ","
+      << event.sum_one_minus_cos_theta_encounter_ZnS << ","
+      << event.sum_cos2_theta_encounter << ","
+      << event.sum_cos2_theta_encounter_BN << ","
+      << event.sum_cos2_theta_encounter_ZnS << ","
+      << event.g1_encounter_for_this_photon << ","
+      << event.g2_encounter_for_this_photon << ","
+      << event.mu_s_prime_direct_encounter_per_um_for_this_photon << ","
       << event.num_particle_scatter << ","
       << event.num_particle_scatter_BN << ","
       << event.num_particle_scatter_ZnS << ","
@@ -255,8 +322,24 @@ void StageDOpticalRunAction::WriteSummaryFile() const
 
   G4long nPhotons = static_cast<G4long>(fEvents.size());
   G4long nAbsorbed = 0;
+  G4long nAbsorbedBN = 0;
+  G4long nAbsorbedZnS = 0;
+  G4long nAbsorbedMatrix = 0;
   G4long nLost = 0;
   G4double totalPathLengthUm = 0.0;
+  G4double totalPathLengthBNUm = 0.0;
+  G4double totalPathLengthZnSUm = 0.0;
+  G4double totalPathLengthMatrixUm = 0.0;
+  G4double totalPathLengthWorldUm = 0.0;
+  G4long totalEncounter = 0;
+  G4long totalEncounterBN = 0;
+  G4long totalEncounterZnS = 0;
+  G4double sumCosThetaEncounter = 0.0;
+  G4double sumCosThetaEncounterBN = 0.0;
+  G4double sumCosThetaEncounterZnS = 0.0;
+  G4double sumOneMinusCosThetaEncounter = 0.0;
+  G4double sumCos2ThetaEncounter = 0.0;
+  std::array<G4long, StageDPhotonEventRecord::kPhaseFunctionBins> phaseFunctionCounts{};
   G4long totalParticleScatter = 0;
   G4long totalParticleScatterBN = 0;
   G4long totalParticleScatterZnS = 0;
@@ -282,10 +365,28 @@ void StageDOpticalRunAction::WriteSummaryFile() const
   {
     if (event.absorbed)
       ++nAbsorbed;
+    nAbsorbedBN += event.num_absorbed_BN;
+    nAbsorbedZnS += event.num_absorbed_ZnS;
+    nAbsorbedMatrix += event.num_absorbed_Matrix;
     if (event.final_status == "lost" || event.final_status == "reentry_failed")
       ++nLost;
 
     totalPathLengthUm += event.total_path_length_um;
+    totalPathLengthBNUm += event.path_length_bn_um;
+    totalPathLengthZnSUm += event.path_length_zns_um;
+    totalPathLengthMatrixUm += event.path_length_matrix_um;
+    totalPathLengthWorldUm += event.path_length_world_um;
+    totalEncounter += event.num_encounter_total;
+    totalEncounterBN += event.num_encounter_BN;
+    totalEncounterZnS += event.num_encounter_ZnS;
+    sumCosThetaEncounter += event.sum_cos_theta_encounter;
+    sumCosThetaEncounterBN += event.sum_cos_theta_encounter_BN;
+    sumCosThetaEncounterZnS += event.sum_cos_theta_encounter_ZnS;
+    sumOneMinusCosThetaEncounter += event.sum_one_minus_cos_theta_encounter;
+    sumCos2ThetaEncounter += event.sum_cos2_theta_encounter;
+    for (std::size_t i = 0; i < phaseFunctionCounts.size(); ++i)
+      phaseFunctionCounts[i] += event.phase_function_histogram[i];
+
     totalParticleScatter += event.num_particle_scatter;
     totalParticleScatterBN += event.num_particle_scatter_BN;
     totalParticleScatterZnS += event.num_particle_scatter_ZnS;
@@ -309,10 +410,55 @@ void StageDOpticalRunAction::WriteSummaryFile() const
   }
 
   const G4double nPhotonsD = (nPhotons > 0) ? static_cast<G4double>(nPhotons) : 1.0;
-  const std::string scatterMetric = fConfig ? fConfig->stageD_scatter_metric : "";
-  const G4double muA = (totalPathLengthUm > 0.0)
-                           ? static_cast<G4double>(nAbsorbed) / totalPathLengthUm
-                           : 0.0;
+  const G4double totalMediumPathLengthUm =
+      totalPathLengthBNUm + totalPathLengthZnSUm + totalPathLengthMatrixUm;
+  const G4double muACount = (totalMediumPathLengthUm > 0.0)
+                                ? static_cast<G4double>(nAbsorbed) / totalMediumPathLengthUm
+                                : 0.0;
+  const G4double muAExpected =
+      (totalMediumPathLengthUm > 0.0 && fConfig != nullptr)
+          ? ((totalPathLengthBNUm / std::max(1.0e-12, fConfig->opticalBnAbsLengthUm)) +
+             (totalPathLengthZnSUm / std::max(1.0e-12, fConfig->opticalZnsAbsLengthUm)) +
+             (totalPathLengthMatrixUm / std::max(1.0e-12, fConfig->opticalMatrixAbsLengthUm))) /
+                totalMediumPathLengthUm
+          : 0.0;
+  const G4double muABNCount = (totalPathLengthBNUm > 0.0)
+                                  ? static_cast<G4double>(nAbsorbedBN) / totalPathLengthBNUm
+                                  : 0.0;
+  const G4double muAZnSCount = (totalPathLengthZnSUm > 0.0)
+                                   ? static_cast<G4double>(nAbsorbedZnS) / totalPathLengthZnSUm
+                                   : 0.0;
+  const G4double muAMatrixCount = (totalPathLengthMatrixUm > 0.0)
+                                      ? static_cast<G4double>(nAbsorbedMatrix) / totalPathLengthMatrixUm
+                                      : 0.0;
+
+  const G4double muSEncounter = (totalMediumPathLengthUm > 0.0)
+                                    ? static_cast<G4double>(totalEncounter) / totalMediumPathLengthUm
+                                    : 0.0;
+  const G4double muSEncounterBN = (totalMediumPathLengthUm > 0.0)
+                                      ? static_cast<G4double>(totalEncounterBN) / totalMediumPathLengthUm
+                                      : 0.0;
+  const G4double muSEncounterZnS = (totalMediumPathLengthUm > 0.0)
+                                       ? static_cast<G4double>(totalEncounterZnS) / totalMediumPathLengthUm
+                                       : 0.0;
+  const G4double g1Encounter = (totalEncounter > 0)
+                                   ? sumCosThetaEncounter / static_cast<G4double>(totalEncounter)
+                                   : 0.0;
+  const G4double g1EncounterBN = (totalEncounterBN > 0)
+                                     ? sumCosThetaEncounterBN / static_cast<G4double>(totalEncounterBN)
+                                     : 0.0;
+  const G4double g1EncounterZnS = (totalEncounterZnS > 0)
+                                      ? sumCosThetaEncounterZnS / static_cast<G4double>(totalEncounterZnS)
+                                      : 0.0;
+  const G4double meanCos2Encounter = (totalEncounter > 0)
+                                         ? sumCos2ThetaEncounter / static_cast<G4double>(totalEncounter)
+                                         : 0.0;
+  const G4double g2Encounter = 0.5 * (3.0 * meanCos2Encounter - 1.0);
+  const G4double muSPrimeDirectEncounter = (totalMediumPathLengthUm > 0.0)
+                                               ? sumOneMinusCosThetaEncounter / totalMediumPathLengthUm
+                                               : 0.0;
+  const G4double muSPrimeEncounterFromG = muSEncounter * (1.0 - g1Encounter);
+
   const G4double muSParticle = (totalPathLengthUm > 0.0)
                                    ? static_cast<G4double>(totalParticleScatter) / totalPathLengthUm
                                    : 0.0;
@@ -332,8 +478,8 @@ void StageDOpticalRunAction::WriteSummaryFile() const
                                       ? static_cast<G4double>(totalBoundaryScatterZnS) / totalPathLengthUm
                                       : 0.0;
   const G4double muSStepTotal = (totalPathLengthUm > 0.0)
-                           ? static_cast<G4double>(totalRealScatter) / totalPathLengthUm
-                           : 0.0;
+                                    ? static_cast<G4double>(totalRealScatter) / totalPathLengthUm
+                                    : 0.0;
   const G4double muSBulk = (totalPathLengthUm > 0.0)
                                ? static_cast<G4double>(totalBulkScatter) / totalPathLengthUm
                                : 0.0;
@@ -359,8 +505,8 @@ void StageDOpticalRunAction::WriteSummaryFile() const
                                     ? sumCosThetaBoundaryScatterZnS / static_cast<G4double>(totalBoundaryScatterZnS)
                                     : 0.0;
   const G4double gStepRaw = (totalRealScatter > 0)
-                            ? sumCosThetaAllScatter / static_cast<G4double>(totalRealScatter)
-                            : 0.0;
+                                ? sumCosThetaAllScatter / static_cast<G4double>(totalRealScatter)
+                                : 0.0;
   const G4double gBulk = (totalBulkScatter > 0)
                              ? sumCosThetaBulkScatter / static_cast<G4double>(totalBulkScatter)
                              : 0.0;
@@ -368,75 +514,64 @@ void StageDOpticalRunAction::WriteSummaryFile() const
                                  ? sumCosThetaBoundaryScatter / static_cast<G4double>(totalBoundaryScatter)
                                  : 0.0;
   const G4double muSPrimeParticle = muSParticle * (1.0 - gParticle);
-  const G4double muSPrimeParticleBN = muSBN * (1.0 - gParticleBN);
-  const G4double muSPrimeParticleZnS = muSZnS * (1.0 - gParticleZnS);
   const G4double muSPrimeBoundaryPrimary = muSBoundaryPrimary * (1.0 - gBoundaryPrimary);
-  const G4double muSPrimeBoundaryBN = muSBoundaryBN * (1.0 - gBoundaryBN);
-  const G4double muSPrimeBoundaryZnS = muSBoundaryZnS * (1.0 - gBoundaryZnS);
   const G4double muSPrimeStepTotal = muSStepTotal * (1.0 - gStepRaw);
   const G4double muSPrimeBulk = muSBulk * (1.0 - gBulk);
   const G4double muSPrimeBoundary = muSBoundary * (1.0 - gBoundary);
 
-  G4double muSPrimary = muSParticle;
-  G4double muSPrimaryBN = muSBN;
-  G4double muSPrimaryZnS = muSZnS;
-  G4double gPrimary = gParticle;
-  G4double gPrimaryBN = gParticleBN;
-  G4double gPrimaryZnS = gParticleZnS;
-  G4double muSPrimePrimary = muSPrimeParticle;
-  G4double muSPrimePrimaryBN = muSPrimeParticleBN;
-  G4double muSPrimePrimaryZnS = muSPrimeParticleZnS;
-
-  if (scatterMetric == "boundary_deflection")
-  {
-    muSPrimary = muSBoundaryPrimary;
-    muSPrimaryBN = muSBoundaryBN;
-    muSPrimaryZnS = muSBoundaryZnS;
-    gPrimary = gBoundaryPrimary;
-    gPrimaryBN = gBoundaryBN;
-    gPrimaryZnS = gBoundaryZnS;
-    muSPrimePrimary = muSPrimeBoundaryPrimary;
-    muSPrimePrimaryBN = muSPrimeBoundaryBN;
-    muSPrimePrimaryZnS = muSPrimeBoundaryZnS;
-  }
-  else if (scatterMetric == "step_angle_threshold")
-  {
-    muSPrimary = muSStepTotal;
-    muSPrimaryBN = 0.0;
-    muSPrimaryZnS = 0.0;
-    gPrimary = gStepRaw;
-    gPrimaryBN = 0.0;
-    gPrimaryZnS = 0.0;
-    muSPrimePrimary = muSPrimeStepTotal;
-    muSPrimePrimaryBN = 0.0;
-    muSPrimePrimaryZnS = 0.0;
-  }
-
   fout
       << "ratio,"
       << "placement_file,"
+      << "param_model,"
+      << "primary_scatter_metric,"
       << "source_mode,"
       << "boundary_mode,"
       << "reentry_mode,"
       << "matrix_reentry_mode,"
       << "wavelength_nm,"
       << "n_photons,"
+      << "num_absorbed_total,"
+      << "num_absorbed_BN,"
+      << "num_absorbed_ZnS,"
+      << "num_absorbed_Matrix,"
       << "n_absorbed,"
       << "absorbed_fraction,"
       << "n_lost,"
       << "lost_fraction,"
       << "total_path_length_um,"
+      << "path_length_BN_um,"
+      << "path_length_ZnS_um,"
+      << "path_length_Matrix_um,"
+      << "path_length_World_um,"
       << "mean_path_length_um,"
-      << "total_particle_scatter,"
-      << "mean_num_particle_scatter,"
-      << "total_particle_scatter_BN,"
-      << "total_particle_scatter_ZnS,"
-      << "total_real_scatter,"
-      << "mean_num_real_scatter,"
-      << "total_bulk_scatter,"
-      << "mean_num_bulk_scatter,"
-      << "total_boundary_scatter,"
-      << "mean_num_boundary_scatter,"
+      << "total_medium_path_length_um,"
+      << "path_length_closure_error_um,"
+      << "num_encounter_total,"
+      << "num_encounter_BN,"
+      << "num_encounter_ZnS,"
+      << "mu_a_count_per_um,"
+      << "mu_a_expected_per_um,"
+      << "mu_a_BN_count_per_um,"
+      << "mu_a_ZnS_count_per_um,"
+      << "mu_a_Matrix_count_per_um,"
+      << "mu_s_per_um,"
+      << "mu_s_BN_per_um,"
+      << "mu_s_ZnS_per_um,"
+      << "mu_s_prime_direct_per_um,"
+      << "mu_s_prime_from_g_per_um,"
+      << "g1,"
+      << "g2,"
+      << "phase_function_file,"
+      << "total_particle_scatter_legacy,"
+      << "mean_num_particle_scatter_legacy,"
+      << "total_particle_scatter_BN_legacy,"
+      << "total_particle_scatter_ZnS_legacy,"
+      << "total_real_scatter_debug,"
+      << "mean_num_real_scatter_debug,"
+      << "total_bulk_scatter_debug,"
+      << "mean_num_bulk_scatter_debug,"
+      << "total_boundary_scatter_debug,"
+      << "mean_num_boundary_scatter_debug,"
       << "total_reentry,"
       << "mean_num_reentry,"
       << "total_reentry_BN,"
@@ -485,6 +620,8 @@ void StageDOpticalRunAction::WriteSummaryFile() const
   fout
       << CsvQuote(fRatioTag) << ","
       << CsvQuote(fPlacementFile) << ","
+      << "GO_RVE,"
+      << "particle_encounter_no_threshold,"
       << CsvQuote(fConfig ? fConfig->stageD_source_mode : "") << ","
       << CsvQuote(fConfig ? fConfig->stageD_boundary_mode : "") << ","
       << CsvQuote(fConfig ? fConfig->stageD_reentry_mode : "") << ","
@@ -492,11 +629,37 @@ void StageDOpticalRunAction::WriteSummaryFile() const
       << (fConfig ? fConfig->stageD_wavelength_nm : 0.0) << ","
       << nPhotons << ","
       << nAbsorbed << ","
+      << nAbsorbedBN << ","
+      << nAbsorbedZnS << ","
+      << nAbsorbedMatrix << ","
+      << nAbsorbed << ","
       << static_cast<G4double>(nAbsorbed) / nPhotonsD << ","
       << nLost << ","
       << static_cast<G4double>(nLost) / nPhotonsD << ","
       << totalPathLengthUm << ","
+      << totalPathLengthBNUm << ","
+      << totalPathLengthZnSUm << ","
+      << totalPathLengthMatrixUm << ","
+      << totalPathLengthWorldUm << ","
       << totalPathLengthUm / nPhotonsD << ","
+      << totalMediumPathLengthUm << ","
+      << (totalPathLengthUm - totalMediumPathLengthUm - totalPathLengthWorldUm) << ","
+      << totalEncounter << ","
+      << totalEncounterBN << ","
+      << totalEncounterZnS << ","
+      << muACount << ","
+      << muAExpected << ","
+      << muABNCount << ","
+      << muAZnSCount << ","
+      << muAMatrixCount << ","
+      << muSEncounter << ","
+      << muSEncounterBN << ","
+      << muSEncounterZnS << ","
+      << muSPrimeDirectEncounter << ","
+      << muSPrimeEncounterFromG << ","
+      << g1Encounter << ","
+      << g2Encounter << ","
+      << CsvQuote(std::filesystem::path(fPhaseFunctionCsvPath).filename().string()) << ","
       << totalParticleScatter << ","
       << static_cast<G4double>(totalParticleScatter) / nPhotonsD << ","
       << totalParticleScatterBN << ","
@@ -512,28 +675,28 @@ void StageDOpticalRunAction::WriteSummaryFile() const
       << totalReentryBN << ","
       << totalReentryZnS << ","
       << totalReentryMatrix << ","
-      << muA << ","
-      << muSPrimary << ","
+      << muACount << ","
+      << muSEncounter << ","
       << muSParticle << ","
       << muSBoundaryPrimary << ","
-      << muSPrimaryBN << ","
-      << muSPrimaryZnS << ","
+      << muSEncounterBN << ","
+      << muSEncounterZnS << ","
       << muSStepTotal << ","
       << muSBulk << ","
       << muSBoundary << ","
-      << gPrimary << ","
+      << g1Encounter << ","
       << gParticle << ","
       << gBoundaryPrimary << ","
-      << gPrimaryBN << ","
-      << gPrimaryZnS << ","
+      << g1EncounterBN << ","
+      << g1EncounterZnS << ","
       << gStepRaw << ","
       << gBulk << ","
       << gBoundary << ","
-      << muSPrimePrimary << ","
+      << muSPrimeDirectEncounter << ","
       << muSPrimeParticle << ","
       << muSPrimeBoundaryPrimary << ","
-      << muSPrimePrimaryBN << ","
-      << muSPrimePrimaryZnS << ","
+      << (muSEncounterBN * (1.0 - g1EncounterBN)) << ","
+      << (muSEncounterZnS * (1.0 - g1EncounterZnS)) << ","
       << muSPrimeStepTotal << ","
       << muSPrimeBulk << ","
       << muSPrimeBoundary << ","
@@ -551,6 +714,61 @@ void StageDOpticalRunAction::WriteSummaryFile() const
       << (fConfig ? fConfig->stageD_max_steps : 0) << ","
       << (fConfig ? fConfig->stageD_max_path_length_um : 0.0)
       << "\n";
+
+  std::error_code copyEc;
+  std::filesystem::copy_file(
+      fSummaryCsvPath,
+      (std::filesystem::path(fOutputDir) / "optical_homogenization_summary.csv").string(),
+      std::filesystem::copy_options::overwrite_existing,
+      copyEc);
+}
+
+void StageDOpticalRunAction::WritePhaseFunctionFile() const
+{
+  std::ofstream fout(fPhaseFunctionCsvPath.c_str(), std::ios::out);
+  if (!fout)
+  {
+    G4Exception("StageDOpticalRunAction::WritePhaseFunctionFile",
+                "BNZS_D_RUN_004", FatalException,
+                ("Failed to open Stage D phase function CSV: " + fPhaseFunctionCsvPath).c_str());
+    return;
+  }
+
+  std::array<G4long, StageDPhotonEventRecord::kPhaseFunctionBins> counts{};
+  G4long totalCount = 0;
+  for (const auto &event : fEvents)
+  {
+    for (std::size_t i = 0; i < counts.size(); ++i)
+    {
+      counts[i] += event.phase_function_histogram[i];
+      totalCount += event.phase_function_histogram[i];
+    }
+  }
+
+  fout << "lambda_nm,bin_id,cos_theta_min,cos_theta_max,count,probability,probability_density\n";
+  const G4double binWidth = 2.0 / static_cast<G4double>(counts.size());
+  for (std::size_t i = 0; i < counts.size(); ++i)
+  {
+    const G4double cosMin = -1.0 + static_cast<G4double>(i) * binWidth;
+    const G4double cosMax = cosMin + binWidth;
+    const G4double probability =
+        (totalCount > 0) ? static_cast<G4double>(counts[i]) / static_cast<G4double>(totalCount) : 0.0;
+    const G4double density = (binWidth > 0.0) ? (probability / binWidth) : 0.0;
+    fout << (fConfig ? fConfig->stageD_wavelength_nm : 0.0) << ","
+         << i << ","
+         << cosMin << ","
+         << cosMax << ","
+         << counts[i] << ","
+         << probability << ","
+         << density << "\n";
+  }
+
+  std::error_code copyEc;
+  std::filesystem::copy_file(
+      fPhaseFunctionCsvPath,
+      (std::filesystem::path(fOutputDir) / "phase_function_lambda.csv").string(),
+      std::filesystem::copy_options::overwrite_existing,
+      copyEc);
 }
 
 void StageDOpticalRunAction::EndOfRunAction(const G4Run *run)
@@ -561,10 +779,12 @@ void StageDOpticalRunAction::EndOfRunAction(const G4Run *run)
     fEventsCsv.close();
 
   WriteSummaryFile();
+  WritePhaseFunctionFile();
 
   G4cout << "[StageDOpticalRunAction] End run"
          << "\n  events csv  = " << fEventsCsvPath
          << "\n  summary csv = " << fSummaryCsvPath
+         << "\n  phase csv   = " << fPhaseFunctionCsvPath
          << "\n  n photons   = " << fEvents.size()
          << G4endl;
 }
